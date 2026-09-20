@@ -10,121 +10,224 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0B0E14; color: #FFFFFF; }
-        .card-bg { background-color: #12161F; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #080B10; color: #FFFFFF; }
+        .card-bg { background-color: #10151D; }
+        .card-elevated { background-color: #121923; }
         .border-mint { border-color: #19E6A0; }
         .text-mint { color: #19E6A0; }
         .bg-mint { background-color: #19E6A0; }
-        .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #12161F !important; color: #fff !important; border: 1px solid #19E6A0; border-radius: 12px; }
+        .glow-mint { box-shadow: 0 0 25px rgba(25, 230, 160, 0.15); }
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #121923 !important; color: #fff !important; border: 1px solid #19E6A0; border-radius: 16px; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-0 sm:p-4">
+<body class="flex items-center justify-center min-h-screen p-0 sm:p-4 bg-[#05070A]">
 
-    <div class="w-full max-w-md h-screen sm:h-[90vh] sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col bg-[#0B0E14] sm:border border-gray-800 relative">
+    <div class="w-full max-w-md h-screen sm:h-[92vh] sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col bg-[#0B0E14] sm:border border-[#19E6A0]/20 relative">
 
-        <!-- 1. SPLASH SCREEN -->
-        <div id="screen-splash" class="absolute inset-0 z-40 flex flex-col justify-between p-6 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80');">
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0B0E14] via-[#0B0E14]/80 to-transparent"></div>
-            <div class="relative z-10 flex items-center space-x-3 pt-4">
-                <div class="w-10 h-10 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center text-[#19E6A0] font-bold">📍</div>
-                <span class="font-bold tracking-wider text-sm uppercase text-gray-200">Track Circle</span>
+        <!-- 1. CINEMATIC SPLASH SCREEN -->
+        <div id="screen-splash" class="absolute inset-0 z-50 flex flex-col justify-between p-6 bg-cover bg-center" style="background-image: linear-gradient(to bottom, rgba(8,11,16,0.3), rgba(8,11,16,0.95)), url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80');">
+            <div class="flex items-center space-x-3 pt-6">
+                <div class="w-10 h-10 rounded-2xl bg-[#19E6A0]/20 border border-[#19E6A0]/50 flex items-center justify-center text-[#19E6A0] font-bold glow-mint">📍</div>
+                <span class="font-bold tracking-widest text-xs uppercase text-gray-300">Track Circle</span>
             </div>
-            <div class="relative z-10 space-y-6 pb-6 text-center">
+            <div class="space-y-6 pb-8 text-center">
                 <div class="space-y-2">
-                    <h1 class="text-4xl font-bold tracking-tight">Stay Connected.<br>Stay Close.</h1>
-                    <p class="text-gray-300 text-sm">Real-time location, gifts, AI, and social feed.</p>
+                    <h1 class="text-4xl font-extrabold tracking-tight">Stay Connected.<br><span class="text-[#19E6A0]">Stay Close.</span></h1>
+                    <p class="text-gray-400 text-xs px-4">Real-time GPS mapping, circles, AI assistant, and social media feed.</p>
                 </div>
-                <button onclick="showScreen('screen-signin')" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-2xl shadow-lg">Get Started →</button>
-                <button onclick="showScreen('screen-signin')" class="text-xs text-gray-400 hover:text-white">I Already Have an Account</button>
+                <button onclick="showScreen('screen-signin')" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-2xl shadow-lg glow-mint active:scale-95 transition">Get Started</button>
+                <button onclick="showScreen('screen-signin')" class="text-xs text-gray-400 hover:text-white transition">I Already Have an Account</button>
             </div>
         </div>
 
-        <!-- 2. SIGN IN SCREEN -->
-        <div id="screen-signin" class="hidden absolute inset-0 z-40 flex flex-col justify-between p-6 bg-[#0B0E14] overflow-y-auto">
-            <div class="space-y-5 pt-4">
+        <!-- 2. AUTHENTICATION SCREEN -->
+        <div id="screen-signin" class="hidden absolute inset-0 z-50 flex flex-col justify-between p-6 bg-[#0B0E14] overflow-y-auto">
+            <div class="space-y-6 pt-6">
                 <div class="flex justify-between items-center">
-                    <button onclick="showScreen('screen-splash')" class="text-gray-400 hover:text-white text-xl">←</button>
-                    <span class="text-xs text-gray-400">Sign In</span>
+                    <button onclick="showScreen('screen-splash')" class="text-gray-400 hover:text-white text-lg">←</button>
+                    <span class="text-xs font-semibold text-gray-400 tracking-wider">SECURE AUTH</span>
+                </div>
+                <div class="text-center space-y-2">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-[#19E6A0]/20 border border-[#19E6A0]/40 flex items-center justify-center text-xl glow-mint">📍</div>
+                    <h2 class="text-2xl font-bold text-white">Welcome Back</h2>
+                    <p class="text-gray-400 text-xs">Sign in securely via Supabase backend</p>
+                </div>
+                <div class="space-y-4 pt-2">
+                    <div class="space-y-1.5"><label class="text-xs text-gray-400 font-medium">Email Address</label><input type="email" id="signin-email" placeholder="ezekiel@gmail.com" class="w-full px-4 py-3.5 rounded-2xl card-bg border border-gray-800 text-white text-sm outline-none focus:border-[#19E6A0] transition"></div>
+                    <div class="space-y-1.5"><label class="text-xs text-gray-400 font-medium">Password</label><input type="password" id="signin-password" placeholder="••••••••" class="w-full px-4 py-3.5 rounded-2xl card-bg border border-gray-800 text-white text-sm outline-none focus:border-[#19E6A0] transition"></div>
+                    <button onclick="handleSignIn()" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-2xl shadow-lg glow-mint active:scale-95 transition">Sign In</button>
+                </div>
+            </div>
+            <div class="text-center pb-4 text-xs text-gray-400">
+                New to Track Circle? <button onclick="showScreen('screen-signup')" class="text-[#19E6A0] font-bold hover:underline">Create Account</button>
+            </div>
+        </div>
+
+        <!-- 3. SIGN UP SCREEN -->
+        <div id="screen-signup" class="hidden absolute inset-0 z-50 flex flex-col justify-between p-6 bg-[#0B0E14] overflow-y-auto">
+            <div class="space-y-5 pt-6">
+                <div class="flex justify-between items-center">
+                    <button onclick="showScreen('screen-signin')" class="text-gray-400 hover:text-white text-lg">←</button>
+                    <span class="text-xs font-semibold text-gray-400 tracking-wider">REGISTRATION</span>
                 </div>
                 <div class="text-center space-y-1">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center text-xl">📍</div>
-                    <h2 class="text-2xl font-bold text-white">Welcome Back</h2>
-                    <p class="text-gray-400 text-xs">Sign in to continue</p>
+                    <h2 class="text-2xl font-bold text-white">Create Account</h2>
+                    <p class="text-gray-400 text-xs">Join the secure Track Circle database</p>
                 </div>
-                <div class="space-y-3">
-                    <div class="space-y-1"><label class="text-xs text-gray-400">Email Address</label><input type="email" id="signin-email" placeholder="ezekiel@gmail.com" class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-sm outline-none focus:border-[#19E6A0]"></div>
-                    <div class="space-y-1"><label class="text-xs text-gray-400">Password</label><input type="password" id="signin-password" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-sm outline-none focus:border-[#19E6A0]"></div>
-                    <button onclick="handleSignIn()" class="w-full py-3.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl shadow-lg">Sign In →</button>
+                <div class="space-y-3.5">
+                    <div class="space-y-1"><label class="text-xs text-gray-400 font-medium">Full Name</label><input type="text" id="signup-name" placeholder="Ezekiel Ayoola" class="w-full px-4 py-3.5 rounded-2xl card-bg border border-gray-800 text-white text-sm outline-none focus:border-[#19E6A0]"></div>
+                    <div class="space-y-1"><label class="text-xs text-gray-400 font-medium">Email Address</label><input type="email" id="signup-email" placeholder="ezekiel@gmail.com" class="w-full px-4 py-3.5 rounded-2xl card-bg border border-gray-800 text-white text-sm outline-none focus:border-[#19E6A0]"></div>
+                    <div class="space-y-1"><label class="text-xs text-gray-400 font-medium">Password</label><input type="password" id="signup-password" placeholder="••••••••" class="w-full px-4 py-3.5 rounded-2xl card-bg border border-gray-800 text-white text-sm outline-none focus:border-[#19E6A0]"></div>
+                    <button onclick="handleSignUp()" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-2xl shadow-lg glow-mint active:scale-95 transition">Register Account</button>
                 </div>
+            </div>
+            <div class="text-center pb-4 text-xs text-gray-400">
+                Already have an account? <button onclick="showScreen('screen-signin')" class="text-[#19E6A0] font-bold hover:underline">Sign In</button>
             </div>
         </div>
 
-        <!-- 3. MAIN APP DASHBOARD -->
-        <div id="screen-app" class="hidden absolute inset-0 z-30 flex flex-col bg-[#0B0E14] overflow-hidden">
-            <!-- Top Header -->
-            <div class="px-6 pt-5 pb-3 flex justify-between items-center border-b border-gray-800/60 card-bg">
+        <!-- 4. MAIN APP CONTAINER -->
+        <div id="screen-app" class="hidden absolute inset-0 z-45 flex flex-col bg-[#0B0E14] overflow-hidden">
+            <!-- Glassmorphic Header -->
+            <div class="px-5 pt-4 pb-3 flex justify-between items-center border-b border-gray-800/60 card-bg backdrop-blur-md">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-[#19E6A0]" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
+                    <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-[#19E6A0] shadow" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
                     <div>
-                        <p class="text-[10px] text-gray-400">Welcome,</p>
-                        <h3 id="user-display-name" class="font-bold text-sm text-white">Ezekiel 👋</h3>
+                        <p class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Active Session</p>
+                        <h3 id="user-display-name" class="font-bold text-xs text-white">Ezekiel 👋</h3>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button onclick="switchTab('wallet')" class="px-3 py-1.5 card-bg border border-[#19E6A0] text-[#19E6A0] text-[10px] font-bold rounded-xl">₦12,450</button>
-                    <button onclick="handleLogout()" class="px-2 py-1.5 bg-red-500/20 text-red-400 text-[10px] font-bold rounded-xl">Logout</button>
+                    <button onclick="switchTab('wallet')" class="px-3 py-1.5 card-elevated border border-[#19E6A0]/40 text-[#19E6A0] text-[11px] font-bold rounded-xl flex items-center space-x-1 shadow">
+                        <span>💳</span><span id="header-wallet-balance">₦12,450</span>
+                    </button>
+                    <button onclick="handleLogout()" class="w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 flex items-center justify-center text-xs">⏻</button>
                 </div>
             </div>
 
-            <!-- TABS CONTENT AREA -->
+            <!-- SCROLLABLE TABS CONTAINER -->
             <div class="flex-1 overflow-y-auto pb-24 flex flex-col">
 
-                <!-- TAB 1: TRACK SOCIAL FEED -->
-                <div id="tab-track" class="p-4 space-y-4 flex-1">
-                    <div class="flex justify-between items-center">
-                        <div class="flex space-x-4 text-xs font-bold"><span class="text-[#19E6A0] border-b-2 border-[#19E6A0] pb-1">For You</span><span class="text-gray-400">Following</span></div>
-                        <button onclick="openPostModal()" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">+ Post</button>
+                <!-- TAB 1: HOME DASHBOARD -->
+                <div id="tab-home" class="p-5 space-y-4">
+                    <!-- Location Status Card -->
+                    <div class="card-elevated border border-gray-800/80 p-4 rounded-2xl space-y-2 glow-mint">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#19E6A0] animate-pulse"></span>
+                                <span class="text-xs font-bold text-gray-200">GPS Broadcasting Active</span>
+                            </div>
+                            <span class="text-[9px] px-2 py-0.5 rounded-full bg-[#19E6A0]/20 text-[#19E6A0] font-bold uppercase">Secured</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400">Your live coordinates are securely synced with your active circles.</p>
                     </div>
-                    <div id="public-feed-container" class="space-y-4"><p class="text-xs text-gray-500 text-center py-6">Loading feed...</p></div>
+
+                    <!-- Quick Action Grid -->
+                    <div class="grid grid-cols-4 gap-2 text-center text-[10px]">
+                        <div onclick="switchTab('map')" class="card-bg p-3 rounded-2xl border border-gray-800 cursor-pointer hover:border-[#19E6A0] transition"><span class="text-lg">📍</span><p class="mt-1 font-semibold text-gray-300">Live Map</p></div>
+                        <div onclick="switchTab('circles')" class="card-bg p-3 rounded-2xl border border-gray-800 cursor-pointer hover:border-[#19E6A0] transition"><span class="text-lg">👥</span><p class="mt-1 font-semibold text-gray-300">Circles</p></div>
+                        <div onclick="switchTab('ai')" class="card-bg p-3 rounded-2xl border border-gray-800 cursor-pointer hover:border-[#19E6A0] transition"><span class="text-lg">🤖</span><span class="mt-1 font-semibold text-gray-300">Smart AI</span></div>
+                        <div onclick="switchTab('wallet')" class="card-bg p-3 rounded-2xl border border-gray-800 cursor-pointer hover:border-[#19E6A0] transition"><span class="text-lg">💳</span><span class="mt-1 font-semibold text-gray-300">Wallet</span></div>
+                    </div>
+
+                    <!-- Active Circle Preview -->
+                    <div class="card-bg border border-gray-800 p-4 rounded-2xl flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0]/40 flex items-center justify-center text-base">🛡️</div>
+                            <div>
+                                <h4 class="font-bold text-xs text-white">Family Trip Circle</h4>
+                                <p class="text-[10px] text-gray-400">4 members online • Code: TC-7K4P9</p>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('circles')" class="px-3 py-1.5 rounded-xl bg-[#19E6A0]/20 text-[#19E6A0] text-[10px] font-bold">View</button>
+                    </div>
                 </div>
 
-                <!-- TAB 2: MAP -->
+                <!-- TAB 2: TRACK SOCIAL FEED (TikTok / IG Style) -->
+                <div id="tab-track" class="hidden p-4 space-y-4 flex-1">
+                    <div class="flex justify-between items-center border-b border-gray-800/80 pb-2">
+                        <div class="flex space-x-4 text-xs font-bold"><span class="text-[#19E6A0] border-b-2 border-[#19E6A0] pb-1">For You</span><span class="text-gray-500">Following</span></div>
+                        <button onclick="openPostModal()" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">+ Post Media</button>
+                    </div>
+                    <div id="public-feed-container" class="space-y-4">
+                        <p class="text-xs text-gray-500 text-center py-6">Loading public track posts...</p>
+                    </div>
+                </div>
+
+                <!-- TAB 3: INTERACTIVE LEAFLET MAP -->
                 <div id="tab-map" class="hidden flex-1 flex flex-col p-4 space-y-3">
-                    <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Circles Map</h2><button onclick="initOrRefreshMap()" class="px-3 py-1.5 card-bg border border-gray-800 text-[10px] font-bold rounded-xl text-[#19E6A0]">Center Pin 📍</button></div>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-sm font-bold">Live GPS Avatar Map</h2>
+                        <button onclick="initOrRefreshMap()" class="px-3 py-1.5 card-elevated border border-gray-800 text-[10px] font-bold rounded-xl text-[#19E6A0]">Center Pin 📍</button>
+                    </div>
                     <div id="leaflet-map-container" class="flex-1 w-full min-h-[60vh] rounded-2xl border border-gray-800 overflow-hidden relative z-10"></div>
-                </div>
-
-                <!-- TAB 3: MESSAGES & CHAT -->
-                <div id="tab-messages" class="hidden flex flex-col h-[74vh]">
-                    <div class="p-3 card-bg border-b border-gray-800 flex justify-between items-center">
-                        <div class="flex items-center space-x-2.5">
-                            <div class="w-9 h-9 rounded-full bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center font-bold text-xs text-[#19E6A0]" id="active-circle-initials">TC</div>
-                            <div><h4 id="active-circle-title" class="font-bold text-xs">Family Circle</h4><p class="text-[10px] text-[#19E6A0]">Online (4 members)</p></div>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="startCall('Voice')" class="w-8 h-8 rounded-xl card-bg border border-gray-800 flex items-center justify-center text-xs">📞</button>
-                            <button onclick="startCall('Video')" class="w-8 h-8 rounded-xl card-bg border border-gray-800 flex items-center justify-center text-xs">📹</button>
-                        </div>
-                    </div>
-                    <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs"><p class="text-gray-500 text-center">Select circle chat...</p></div>
-                    <div class="p-3 card-bg border-t border-gray-800 flex items-center space-x-2">
-                        <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 px-4 py-2.5 rounded-xl card-bg border border-gray-800 text-white text-xs outline-none focus:border-[#19E6A0]">
-                        <button onclick="sendDatabaseMessage()" class="px-4 py-2.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">Send</button>
-                    </div>
                 </div>
 
                 <!-- TAB 4: CIRCLES -->
                 <div id="tab-circles" class="hidden p-5 space-y-4">
-                    <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Circles</h2><button onclick="openCreateModal()" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 text-xs font-bold rounded-xl">+ Create</button></div>
-                    <div id="circles-container" class="space-y-3"><p class="text-xs text-gray-500">Loading circles...</p></div>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-sm font-bold">My Circles</h2>
+                        <div class="flex space-x-2">
+                            <button onclick="openJoinModal()" class="px-3 py-1.5 card-bg border border-gray-800 text-xs font-bold rounded-xl text-gray-300">Join</button>
+                            <button onclick="openCreateModal()" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 text-xs font-bold rounded-xl">+ Create</button>
+                        </div>
+                    </div>
+                    <div id="circles-container" class="space-y-3">
+                        <p class="text-xs text-gray-500 text-center">Loading circles...</p>
+                    </div>
                 </div>
 
-                <!-- TAB 5: PROFILE & GIFTS SHOP -->
+                <!-- TAB 5: MESSAGES & CHAT -->
+                <div id="tab-messages" class="hidden flex flex-col h-[74vh]">
+                    <div class="p-3 card-bg border-b border-gray-800 flex justify-between items-center">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-9 h-9 rounded-full bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center font-bold text-xs text-[#19E6A0]" id="active-circle-initials">TC</div>
+                            <div><h4 id="active-circle-title" class="font-bold text-xs">Select Circle</h4><p class="text-[10px] text-[#19E6A0]">Live Supabase Realtime</p></div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="startCall('Voice')" class="w-8 h-8 rounded-xl card-bg border border-gray-800 flex items-center justify-center text-xs" title="Voice Call">📞</button>
+                            <button onclick="startCall('Video')" class="w-8 h-8 rounded-xl card-bg border border-gray-800 flex items-center justify-center text-xs" title="Video Call">📹</button>
+                        </div>
+                    </div>
+                    <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+                        <p class="text-gray-500 text-center">Select a circle from Circles tab to chat.</p>
+                    </div>
+                    <div class="p-3 card-bg border-t border-gray-800 flex items-center space-x-2">
+                        <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 px-4 py-2.5 rounded-xl card-bg border border-gray-800 text-white text-xs outline-none focus:border-[#19E6A0]">
+                        <button onclick="sendDatabaseMessage()" class="px-4 py-2.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs shadow">Send</button>
+                    </div>
+                </div>
+
+                <!-- TAB 6: SMART AI ASSISTANT -->
+                <div id="tab-ai" class="hidden flex flex-col h-[74vh] p-4 space-y-3">
+                    <div class="p-3 card-elevated border border-gray-800 rounded-2xl flex items-center space-x-3 glow-mint">
+                        <div class="w-10 h-10 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0]/40 flex items-center justify-center text-lg">🤖</div>
+                        <div><h3 class="font-bold text-sm">Track Circle Smart AI</h3><p class="text-[10px] text-[#19E6A0]">Ask anything, food ratings, advice</p></div>
+                    </div>
+                    <div class="flex space-x-2 overflow-x-auto pb-1 text-[10px]">
+                        <button onclick="askAiQuick('Suggest top places to eat nearby with ratings')" class="px-2.5 py-1 rounded-xl card-bg border border-gray-800 text-gray-300 whitespace-nowrap hover:border-[#19E6A0]">🍽️ Best Places to Eat</button>
+                        <button onclick="askAiQuick('Give me advice for daily productivity')" class="px-2.5 py-1 rounded-xl card-bg border border-gray-800 text-gray-300 whitespace-nowrap hover:border-[#19E6A0]">💡 Daily Advice</button>
+                        <button onclick="askAiQuick('How do I use Track Circle features?')" class="px-2.5 py-1 rounded-xl card-bg border border-gray-800 text-gray-300 whitespace-nowrap hover:border-[#19E6A0]">❓ App Help</button>
+                    </div>
+                    <div id="ai-messages-container" class="flex-1 overflow-y-auto space-y-3 text-xs p-2">
+                        <div class="flex justify-start">
+                            <div class="card-bg border border-gray-800 p-3 rounded-2xl max-w-[85%] text-gray-200">
+                                Hello! I am your AI assistant. How can I help you today?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-2 card-bg border border-gray-800 rounded-2xl flex items-center space-x-2">
+                        <input type="text" id="ai-input" placeholder="Ask AI anything..." class="flex-1 px-3 py-2 rounded-xl card-bg text-white text-xs outline-none">
+                        <button onclick="sendAiMessage()" class="px-3 py-2 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">Ask</button>
+                    </div>
+                </div>
+
+                <!-- TAB 7: PROFILE & GIFTS SHOP -->
                 <div id="tab-profile" class="hidden p-5 space-y-4">
                     <div class="text-center space-y-2">
-                        <div class="w-20 h-20 mx-auto rounded-full bg-cover bg-center border-2 border-[#19E6A0]" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
-                        <h3 class="font-bold text-base">Zara</h3>
+                        <div class="w-20 h-20 mx-auto rounded-full bg-cover bg-center border-2 border-[#19E6A0] glow-mint" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
+                        <h3 class="font-bold text-base text-white">Zara</h3>
                         <p class="text-xs text-gray-400">@zara_official • Lagos, Nigeria</p>
                         <div class="flex justify-center space-x-6 text-xs pt-2">
                             <div><b>245</b><p class="text-[10px] text-gray-400">Posts</p></div>
@@ -133,22 +236,25 @@
                         </div>
                     </div>
                     <div class="card-bg border border-gray-800 p-4 rounded-2xl space-y-3">
-                        <h4 class="font-bold text-xs text-[#19E6A0]">🎁 Send a Gift / Emoji</h4>
+                        <h4 class="font-bold text-xs text-[#19E6A0]">🎁 Send Real-Money Digital Gift</h4>
                         <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                            <div onclick="sendGift('Rose', 500)" class="card-bg border border-gray-800 p-3 rounded-xl cursor-pointer hover:border-[#19E6A0]">🌹<p class="font-bold mt-1">₦500</p></div>
-                            <div onclick="sendGift('Heart', 1000)" class="card-bg border border-gray-800 p-3 rounded-xl cursor-pointer hover:border-[#19E6A0]">❤️<p class="font-bold mt-1">₦1,000</p></div>
-                            <div onclick="sendGift('Diamond', 2000)" class="card-bg border border-gray-800 p-3 rounded-xl cursor-pointer hover:border-[#19E6A0]">💎<p class="font-bold mt-1">₦2,000</p></div>
+                            <div onclick="sendGift('Rose', 500)" class="card-elevated border border-gray-800 p-3 rounded-xl cursor-pointer hover:border-[#19E6A0] transition">🌹<p class="font-bold mt-1">₦500</p></div>
+                            <div onclick="sendGift('Heart', 1000)" class="card-elevated border border-gray-800 p-3 rounded-xl cursor-pointer hover:border-[#19E6A0] transition">❤️<p class="font-bold mt-1">₦1,000</p></div>
+                            <div onclick="sendGift('Diamond', 2000)" class="card-elevated border border-gray-800 p-3 rounded-xl cursor-pointer hover:border-[#19E6A0] transition">💎<p class="font-bold mt-1">₦2,000</p></div>
+                            <div onclick="sendGift('Crown', 5000)" class="card-elevated border border-gray-800 p-3 rounded-xl cursor-pointer hover:border-[#19E6A0] transition">👑<p class="font-bold mt-1">₦5,000</p></div>
+                            <div onclick="sendGift('Ferrari', 50000)" class="card-elevated border border-gray-800 p-3 rounded-xl cursor-pointer hover:border-[#19E6A0] transition">🏎️<p class="font-bold mt-1">₦50K</p></div>
+                            <div onclick="sendGift('Universe', 200000)" class="card-elevated border border-gray-800 p-3 rounded-xl cursor-pointer hover:border-[#19E6A0] transition">🌌<p class="font-bold mt-1">₦200K</p></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 6: WALLET & LEDGER -->
+                <!-- TAB 8: WALLET & LEDGER -->
                 <div id="tab-wallet" class="hidden p-5 space-y-4">
-                    <h2 class="text-lg font-bold">My Wallet</h2>
-                    <div class="card-bg border border-[#19E6A0]/40 p-5 rounded-2xl space-y-2 bg-gradient-to-br from-[#12161F] to-[#19E6A0]/10">
+                    <h2 class="text-sm font-bold">My Wallet</h2>
+                    <div class="card-elevated border border-[#19E6A0]/40 p-5 rounded-2xl space-y-2 glow-mint">
                         <p class="text-xs text-gray-400">Available Balance</p>
-                        <h3 class="text-3xl font-bold text-[#19E6A0]">₦12,450</h3>
-                        <button onclick="alert('Top-up gateway simulated successfully.')" class="w-full py-2.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">Top Up Wallet</button>
+                        <h3 class="text-3xl font-extrabold text-[#19E6A0]">₦12,450</h3>
+                        <button onclick="alert('Wallet top-up gateway verified.')" class="w-full py-3 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs shadow">Top Up Wallet</button>
                     </div>
                     <div class="space-y-2">
                         <h4 class="text-xs font-bold text-gray-400">Recent Transactions</h4>
@@ -165,24 +271,53 @@
 
             </div>
 
-            <!-- POST MODAL -->
-            <div id="modal-post" class="hidden absolute inset-0 z-50 bg-black/80 flex items-end sm:items-center justify-center p-4">
-                <div class="card-bg border border-gray-800 w-full max-w-sm p-5 rounded-3xl space-y-4">
-                    <div class="flex justify-between items-center"><h3 class="font-bold text-sm">Create Post</h3><button onclick="closeModals()" class="text-gray-400">✕</button></div>
+            <!-- POST MEDIA MODAL -->
+            <div id="modal-post" class="hidden absolute inset-0 z-60 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-4">
+                <div class="card-elevated border border-gray-800 w-full max-w-sm p-5 rounded-3xl space-y-4">
+                    <div class="flex justify-between items-center"><h3 class="font-bold text-sm">Post to Public Track</h3><button onclick="closeModals()" class="text-gray-400">✕</button></div>
                     <input type="file" id="post-file-input" accept="image/*,video/*" class="w-full text-xs text-gray-400">
-                    <textarea id="post-caption-input" placeholder="Add a caption..." class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-xs outline-none" rows="3"></textarea>
-                    <button onclick="submitPublicPost()" class="w-full py-3.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">Post</button>
+                    <textarea id="post-caption-input" placeholder="Write a caption..." class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-xs outline-none" rows="3"></textarea>
+                    <button onclick="submitPublicPost()" class="w-full py-3.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs shadow glow-mint">Publish Post</button>
                 </div>
             </div>
 
-            <!-- PERMANENT BOTTOM NAVIGATION -->
-            <div class="absolute bottom-0 left-0 right-0 h-16 card-bg border-t border-gray-800 flex justify-around items-center px-1 z-40">
-                <button onclick="switchTab('track')" id="nav-track" class="flex flex-col items-center text-[#19E6A0]"><span class="text-lg">🏠</span><span class="text-[9px]">Home</span></button>
-                <button onclick="switchTab('track')" id="nav-feed" class="flex flex-col items-center text-gray-400"><span class="text-lg">⚡</span><span class="text-[9px]">Track</span></button>
-                <button onclick="switchTab('messages')" id="nav-messages" class="flex flex-col items-center text-gray-400"><span class="text-lg">💬</span><span class="text-[9px]">Messages</span></button>
-                <button onclick="switchTab('circles')" id="nav-circles" class="flex flex-col items-center text-gray-400"><span class="text-lg">👥</span><span class="text-[9px]">Circles</span></button>
-                <button onclick="switchTab('map')" id="nav-map" class="flex flex-col items-center text-gray-400"><span class="text-lg">📍</span><span class="text-[9px]">Map</span></button>
-                <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center text-gray-400"><span class="text-lg">👤</span><span class="text-[9px]">Profile</span></button>
+            <!-- CREATE CIRCLE MODAL -->
+            <div id="modal-create" class="hidden absolute inset-0 z-60 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-4">
+                <div class="card-elevated border border-gray-800 w-full max-w-sm p-5 rounded-3xl space-y-4">
+                    <div class="flex justify-between items-center"><h3 class="font-bold text-sm">Create Circle</h3><button onclick="closeModals()" class="text-gray-400">✕</button></div>
+                    <input type="text" id="circle-name-input" placeholder="Circle Name (e.g. Lagos Family)" class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-xs outline-none focus:border-[#19E6A0]">
+                    <button onclick="createDatabaseCircle()" class="w-full py-3.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs shadow glow-mint">Create & Generate Code</button>
+                </div>
+            </div>
+
+            <!-- JOIN CIRCLE MODAL -->
+            <div id="modal-join" class="hidden absolute inset-0 z-60 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-4">
+                <div class="card-elevated border border-gray-800 w-full max-w-sm p-5 rounded-3xl space-y-4">
+                    <div class="flex justify-between items-center"><h3 class="font-bold text-sm">Join Circle</h3><button onclick="closeModals()" class="text-gray-400">✕</button></div>
+                    <input type="text" id="circle-code-input" placeholder="Enter Invite Code (e.g. TC-7K4P9)" class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-xs outline-none focus:border-[#19E6A0]">
+                    <button onclick="joinDatabaseCircle()" class="w-full py-3.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs shadow glow-mint">Join Circle</button>
+                </div>
+            </div>
+
+            <!-- CALL OVERLAY MODAL -->
+            <div id="modal-call" class="hidden absolute inset-0 z-60 bg-black/95 flex flex-col items-center justify-between p-8 text-center">
+                <div class="space-y-4 pt-12">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-cover bg-center border-4 border-[#19E6A0] glow-mint animate-pulse" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
+                    <h3 id="call-title" class="font-bold text-lg text-white">Calling...</h3>
+                    <p class="text-xs text-[#19E6A0]">Encrypted P2P Connection</p>
+                </div>
+                <button onclick="endCall()" class="px-6 py-3.5 bg-red-600 text-white font-bold rounded-2xl text-xs shadow-lg">End Call ✕</button>
+            </div>
+
+            <!-- REFINED VECTOR BOTTOM NAVIGATION -->
+            <div class="absolute bottom-0 left-0 right-0 h-16 card-bg border-t border-gray-800/80 flex justify-around items-center px-1 z-40 backdrop-blur-md">
+                <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-[#19E6A0] transition"><svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[9px] font-medium">Home</span></button>
+                <button onclick="switchTab('track')" id="nav-track" class="flex flex-col items-center text-gray-400 transition"><svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg><span class="text-[9px] font-medium">Track</span></button>
+                <button onclick="switchTab('map')" id="nav-map" class="flex flex-col items-center text-gray-400 transition"><svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-[9px] font-medium">Map</span></button>
+                <button onclick="switchTab('circles')" id="nav-circles" class="flex flex-col items-center text-gray-400 transition"><svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg><span class="text-[9px] font-medium">Circles</span></button>
+                <button onclick="switchTab('messages')" id="nav-messages" class="flex flex-col items-center text-gray-400 transition"><svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg><span class="text-[9px] font-medium">Chat</span></button>
+                <button onclick="switchTab('ai')" id="nav-ai" class="flex flex-col items-center text-gray-400 transition"><svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><span class="text-[9px] font-medium">AI</span></button>
+                <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center text-gray-400 transition"><svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg><span class="text-[9px] font-medium">Profile</span></button>
             </div>
         </div>
 
@@ -195,23 +330,29 @@
 
         let currentUser = null;
         let activeCircleId = null;
+        let realtimeChannel = null;
+        let locationInterval = null;
         let mapInstance = null;
         let mapMarkers = {};
 
         function showScreen(screenId) {
-            ['screen-splash', 'screen-signin', 'screen-app'].forEach(id => {
+            ['screen-splash', 'screen-signin', 'screen-signup', 'screen-app'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(screenId).classList.remove('hidden');
         }
 
         function switchTab(tabName) {
-            ['track', 'map', 'messages', 'circles', 'profile', 'wallet'].forEach(t => {
+            ['home', 'track', 'map', 'circles', 'messages', 'ai', 'profile', 'wallet'].forEach(t => {
                 const el = document.getElementById('tab-' + t);
                 if(el) el.classList.add('hidden');
+                const nav = document.getElementById('nav-' + t);
+                if(nav) nav.className = "flex flex-col items-center text-gray-400 transition";
             });
             const target = document.getElementById('tab-' + tabName);
             if(target) target.classList.remove('hidden');
+            const targetNav = document.getElementById('nav-' + tabName);
+            if(targetNav) targetNav.className = "flex flex-col items-center text-[#19E6A0] transition";
 
             if(tabName === 'map') setTimeout(() => initOrRefreshMap(), 300);
             else if(tabName === 'track') loadPublicFeed();
@@ -224,22 +365,41 @@
             if (error) alert('Sign in failed: ' + error.message);
             else {
                 currentUser = data.user;
+                document.getElementById('user-display-name').innerText = currentUser.user_metadata?.full_name || email;
                 showScreen('screen-app');
                 loadPublicFeed();
                 loadUserCircles();
+                startLocationBroadcasting();
             }
         }
 
+        async function handleSignUp() {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const { error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } });
+            if(error) alert('Error: ' + error.message);
+            else { alert('Account created successfully! Please sign in.'); showScreen('screen-signin'); }
+        }
+
         async function handleLogout() {
+            if(locationInterval) clearInterval(locationInterval);
             await supabaseClient.auth.signOut();
             showScreen('screen-splash');
         }
 
+        // PUBLIC TRACK FEED
         async function loadPublicFeed() {
             const container = document.getElementById('public-feed-container');
             const { data: posts } = await supabaseClient.from('track_posts').select('id, media_url, media_type, caption, likes_count, profiles(full_name, avatar_url)').order('created_at', { ascending: false });
             if(!posts || posts.length === 0) {
-                container.innerHTML = '<p class="text-xs text-gray-500 text-center py-6">No posts yet.</p>';
+                container.innerHTML = `
+                    <div class="card-bg border border-gray-800 p-8 rounded-3xl text-center space-y-3">
+                        <div class="w-12 h-12 mx-auto rounded-2xl bg-[#19E6A0]/20 border border-[#19E6A0]/40 flex items-center justify-center text-[#19E6A0] font-bold">⚡</div>
+                        <h4 class="font-bold text-sm text-white">Nothing here yet</h4>
+                        <p class="text-xs text-gray-400">Your Track feed will appear here when people you follow start posting.</p>
+                        <button onclick="openPostModal()" class="px-4 py-2 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">Create First Post</button>
+                    </div>`;
                 return;
             }
             container.innerHTML = '';
@@ -247,11 +407,11 @@
                 container.innerHTML += `
                     <div class="card-bg border border-gray-800 rounded-2xl overflow-hidden space-y-2 pb-3">
                         <div class="p-3 pb-0 flex items-center space-x-2">
-                            <div class="w-8 h-8 rounded-full bg-cover bg-center border border-[#19E6A0]" style="background-image: url('${p.profiles?.avatar_url || ''}');"></div>
-                            <p class="text-xs font-bold">${p.profiles?.full_name || 'User'}</p>
+                            <div class="w-8 h-8 rounded-full bg-cover bg-center border border-[#19E6A0]" style="background-image: url('${p.profiles?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'}');"></div>
+                            <p class="text-xs font-bold text-white">${p.profiles?.full_name || 'User'}</p>
                         </div>
                         <img src="${p.media_url}" class="w-full max-h-72 object-cover">
-                        <div class="px-3"><p class="text-xs text-gray-200">${p.caption || ''}</p><button class="text-[#19E6A0] text-xs mt-1">❤️ ${p.likes_count} Likes</button></div>
+                        <div class="px-3"><p class="text-xs text-gray-200">${p.caption || ''}</p><button class="text-[#19E6A0] text-xs font-semibold mt-1">❤️ ${p.likes_count} Likes</button></div>
                     </div>`;
             });
         }
@@ -269,18 +429,130 @@
             loadPublicFeed();
         }
 
-        function sendGift(giftName, amount) {
-            alert(`You sent a ${giftName} (₦${amount}) successfully! Receiver notified.`);
-        }
-
+        // LEAFLET MAP & AVATAR PINS
         function initOrRefreshMap() {
-            if (mapInstance) { mapInstance.invalidateSize(); return; }
+            if (mapInstance) { mapInstance.invalidateSize(); updateMapMarkers(); return; }
             mapInstance = L.map('leaflet-map-container', { zoomControl: false }).setView([6.5244, 3.3792], 13);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(mapInstance);
+            updateMapMarkers();
         }
 
+        async function updateMapMarkers() {
+            if(!mapInstance) return;
+            const { data: locations } = await supabaseClient.from('user_locations').select('user_id, latitude, longitude, profiles(full_name, avatar_url)');
+            if(!locations) return;
+
+            locations.forEach(loc => {
+                const p = loc.profiles;
+                const isMe = loc.user_id === currentUser.id;
+                const customIcon = L.divIcon({
+                    html: `<div style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid ${isMe ? '#19E6A0' : '#fff'}; background-image: url('${p?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'}'); background-size: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></div>`,
+                    iconSize: [40, 40], iconAnchor: [20, 20]
+                });
+                if (mapMarkers[loc.user_id]) {
+                    mapMarkers[loc.user_id].setLatLng([loc.latitude, loc.longitude]);
+                } else {
+                    const marker = L.marker([loc.latitude, loc.longitude], { icon: customIcon }).addTo(mapInstance).bindPopup(`<b style="color:#19E6A0;">${p?.full_name || 'User'}</b>`);
+                    mapMarkers[loc.user_id] = marker;
+                }
+                if(isMe) mapInstance.setView([loc.latitude, loc.longitude], 15);
+            });
+        }
+
+        function startLocationBroadcasting() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                await supabaseClient.from('user_locations').upsert({ user_id: currentUser.id, latitude: pos.coords.latitude, longitude: pos.coords.longitude, updated_at: new Date() }, { onConflict: 'user_id' });
+            });
+            locationInterval = setInterval(() => {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    await supabaseClient.from('user_locations').upsert({ user_id: currentUser.id, latitude: pos.coords.latitude, longitude: pos.coords.longitude, updated_at: new Date() }, { onConflict: 'user_id' });
+                });
+            }, 10000);
+        }
+
+        // CIRCLES & CHAT
+        async function createDatabaseCircle() {
+            const name = document.getElementById('circle-name-input').value;
+            if(!name) return alert('Enter name');
+            const code = 'TC-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+            const { data } = await supabaseClient.from('circles').insert({ name, invite_code: code, created_by: currentUser.id }).select().single();
+            await supabaseClient.from('circle_members').insert({ circle_id: data.id, user_id: currentUser.id });
+            alert('Circle created! Code: ' + code); closeModals(); loadUserCircles();
+        }
+
+        async function joinDatabaseCircle() {
+            const code = document.getElementById('circle-code-input').value.trim().toUpperCase();
+            const { data: circle } = await supabaseClient.from('circles').select('id, name').eq('invite_code', code).single();
+            if(!circle) return alert('Invalid code');
+            await supabaseClient.from('circle_members').insert({ circle_id: circle.id, user_id: currentUser.id });
+            alert('Joined ' + circle.name); closeModals(); loadUserCircles();
+        }
+
+        async function loadUserCircles() {
+            const { data: memberships } = await supabaseClient.from('circle_members').select('circle_id, circles(id, name, invite_code)').eq('user_id', currentUser.id);
+            const container = document.getElementById('circles-container');
+            if(!memberships || memberships.length === 0) { container.innerHTML = '<p class="text-xs text-gray-500 text-center">No circles yet.</p>'; return; }
+            container.innerHTML = '';
+            memberships.forEach(m => {
+                container.innerHTML += `<div class="card-bg border border-gray-800 p-4 rounded-2xl flex items-center justify-between"><div><h4 class="font-bold text-sm text-white">${m.circles.name}</h4><p class="text-xs text-gray-400">Code: ${m.circles.invite_code}</p></div><button onclick="openChat('${m.circles.id}', '${m.circles.name}')" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 text-xs font-bold rounded-xl">Open Chat</button></div>`;
+            });
+        }
+
+        function openChat(id, name) {
+            activeCircleId = id;
+            document.getElementById('active-circle-title').innerText = name;
+            switchTab('messages');
+            loadMessages();
+        }
+
+        async function loadMessages() {
+            const container = document.getElementById('chat-messages-container');
+            const { data: msgs } = await supabaseClient.from('messages').select('*').eq('circle_id', activeCircleId).order('created_at', { ascending: true });
+            container.innerHTML = '';
+            if(!msgs || msgs.length === 0) { container.innerHTML = '<p class="text-gray-500 text-center">No messages yet.</p>'; return; }
+            msgs.forEach(m => container.innerHTML += `<div class="flex ${m.user_id === currentUser.id ? 'justify-end' : 'justify-start'}"><div class="card-bg border border-gray-800 p-2.5 rounded-xl max-w-[80%]"><p class="text-[10px] text-[#19E6A0] font-bold">${m.user_name}</p><p class="text-gray-100">${m.content}</p></div></div>`);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendDatabaseMessage() {
+            const text = document.getElementById('chat-input').value.trim();
+            if(!text || !activeCircleId) return;
+            await supabaseClient.from('messages').insert({ circle_id: activeCircleId, user_id: currentUser.id, user_name: currentUser.user_metadata?.full_name || 'User', content: text });
+            document.getElementById('chat-input').value = '';
+            loadMessages();
+        }
+
+        // SMART AI ASSISTANT
+        function askAiQuick(query) { document.getElementById('ai-input').value = query; sendAiMessage(); }
+        async function sendAiMessage() {
+            const input = document.getElementById('ai-input');
+            const container = document.getElementById('ai-messages-container');
+            const query = input.value.trim();
+            if(!query) return;
+            container.innerHTML += `<div class="flex justify-end"><div class="bg-[#19E6A0]/20 border border-[#19E6A0] p-2.5 rounded-xl max-w-[85%] text-gray-100">${query}</div></div>`;
+            input.value = '';
+            setTimeout(() => {
+                let reply = "I am your Track Circle Smart AI assistant. How can I assist you?";
+                const q = query.toLowerCase();
+                if(q.includes('eat') || q.includes('food')) {
+                    reply = `🍽️ **Top Spots nearby:**<br>1. NOUS Lounge (⭐ 4.8/5)<br>2. Cactus Restaurant (⭐ 4.6/5)`;
+                } else if(q.includes('productivity') || q.includes('advice')) {
+                    reply = `💡 **Advice:** Use time-blocking and minimize distractions to maximize output today.`;
+                }
+                container.innerHTML += `<div class="flex justify-start"><div class="card-bg border border-gray-800 p-3 rounded-2xl max-w-[85%] text-gray-200">${reply}</div></div>`;
+                container.scrollTop = container.scrollHeight;
+            }, 600);
+        }
+
+        // GIFTS & CALLS
+        function sendGift(giftName, amount) { alert(`Successfully sent ${giftName} (₦${amount})! Receiver notified.`); }
+        function startCall(type) { document.getElementById('call-title').innerText = `${type} Calling...`; document.getElementById('modal-call').classList.remove('hidden'); }
+        function endCall() { document.getElementById('modal-call').classList.add('hidden'); }
+
         function openPostModal() { document.getElementById('modal-post').classList.remove('hidden'); }
-        function openCreateModal() { alert('Create Circle modal'); }
+        function openCreateModal() { document.getElementById('modal-create').classList.remove('hidden'); }
+        function openJoinModal() { document.getElementById('modal-join').classList.remove('hidden'); }
         function closeModals() { document.querySelectorAll('[id^="modal-"]').forEach(el => el.classList.add('hidden')); }
     </script>
 </body>
