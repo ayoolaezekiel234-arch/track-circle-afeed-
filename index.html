@@ -214,16 +214,16 @@
                     </div>
                 </div>
 
-                <!-- TAB 6: TRACK CIRCLE AI (OPTIMIZED SPEED 2.5 FACTOR) -->
+                <!-- TAB 6: TRACK CIRCLE AI (SECURE SUPABASE EDGE FUNCTION BACKEND) -->
                 <div id="tab-ai" class="hidden flex flex-col h-[76vh] p-4 space-y-3">
                     <div class="p-3.5 card-elevated border border-[#19E6A0]/40 rounded-2xl flex items-center space-x-3 glow-mint">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#19E6A0]/30 to-[#19E6A0]/10 border border-[#19E6A0] flex items-center justify-center text-lg shadow-inner">✨</div>
                         <div>
                             <div class="flex items-center space-x-1.5">
                                 <h3 class="font-bold text-sm text-white">Track Circle AI</h3>
-                                <span class="px-1.5 py-0.5 rounded bg-[#19E6A0]/20 text-[#19E6A0] text-[9px] font-extrabold tracking-wider">GEMINI 2.5</span>
+                                <span class="px-1.5 py-0.5 rounded bg-[#19E6A0]/20 text-[#19E6A0] text-[9px] font-extrabold tracking-wider">SECURE BACKEND</span>
                             </div>
-                            <p class="text-[10px] text-gray-400">High-speed intelligence engine</p>
+                            <p class="text-[10px] text-gray-400">Powered by Supabase Edge Functions & Gemini</p>
                         </div>
                     </div>
 
@@ -238,7 +238,7 @@
                             <div class="w-7 h-7 rounded-lg bg-[#19E6A0]/20 border border-[#19E6A0]/50 flex items-center justify-center text-xs text-[#19E6A0] shrink-0 mt-0.5">🤖</div>
                             <div class="card-bg border border-gray-800/80 p-3.5 rounded-2xl rounded-tl-sm max-w-[85%] text-gray-200 space-y-1 shadow-md">
                                 <p class="font-bold text-[10px] text-[#19E6A0] tracking-wider uppercase">Track Circle AI</p>
-                                <p class="leading-relaxed">Hello Ezekiel! Speed capacity is boosted to 2.5. How can I help you today?</p>
+                                <p class="leading-relaxed">Hello Ezekiel! I am connected securely via Supabase backend. Ask me anything!</p>
                             </div>
                         </div>
                     </div>
@@ -377,6 +377,7 @@
         let activeCircleId = null;
         let mapInstance = null;
         let mapMarkers = {};
+        let aiConversationHistory = [];
         let selectedGiftData = { name: 'Rose', price: 500, emoji: '🌹' };
 
         function showScreen(screenId) {
@@ -521,7 +522,7 @@
             }, 10000);
         }
 
-        // TRUE GEMINI API INTEGRATION (SPEED FACTOR 2.5 OPTIMIZED)
+        // SECURE SUPABASE BACKEND EDGE FUNCTION AI INTEGRATION
         function askAiQuick(query) { document.getElementById('ai-input').value = query; sendAiMessage(); }
         async function sendAiMessage() {
             const input = document.getElementById('ai-input');
@@ -529,42 +530,43 @@
             const query = input.value.trim();
             if(!query) return;
 
+            aiConversationHistory.push({ role: "user", parts: [{ text: query }] });
+
             container.innerHTML += `<div class="flex justify-end mb-3"><div class="bg-[#19E6A0] text-gray-950 font-medium p-3.5 rounded-2xl rounded-tr-sm max-w-[85%] text-xs shadow-md">${query}</div></div>`;
             input.value = '';
             container.scrollTop = container.scrollHeight;
 
             const loadingId = 'ai-loading-' + Date.now();
-            container.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-2.5 mb-3"><div class="w-7 h-7 rounded-lg bg-[#19E6A0]/20 border border-[#19E6A0]/50 flex items-center justify-center text-xs text-[#19E6A0] shrink-0 mt-0.5">🤖</div><div class="card-bg border border-gray-800/80 p-3.5 rounded-2xl rounded-tl-sm text-xs text-gray-400 animate-pulse">Thinking (Speed 2.5)...</div></div>`;
+            container.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-2.5 mb-3"><div class="w-7 h-7 rounded-lg bg-[#19E6A0]/20 border border-[#19E6A0]/50 flex items-center justify-center text-xs text-[#19E6A0] shrink-0 mt-0.5">🤖</div><div class="card-bg border border-gray-800/80 p-3.5 rounded-2xl rounded-tl-sm text-xs text-gray-400 animate-pulse">Thinking via secure backend...</div></div>`;
             container.scrollTop = container.scrollHeight;
 
             try {
-                const GEMINI_API_KEY = "AQ.Ab8RN6LOXMJ2idc-DYvZlAj1PRJTlip9T6SNya0loEqNvhHV7g";
-                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [
-                            {
-                                role: "user",
-                                parts: [{ text: `You are Track Circle AI, an intelligent mobile app assistant. Give fast, smart, concise answers. User query: ${query}` }]
-                            }
-                        ]
-                    })
+                const { data, error } = await supabaseClient.functions.invoke('track-circle-ai', {
+                    body: { messages: aiConversationHistory }
                 });
 
-                const data = await response.json();
-                document.getElementById(loadingId).remove();
+                if (error || !data?.reply) {
+                    throw new Error(error?.message || "Backend AI processing failed.");
+                }
 
-                const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm here! How can I help you?";
+                document.getElementById(loadingId).remove();
+                const aiReply = data.reply;
+
+                aiConversationHistory.push({ role: "model", parts: [{ text: aiReply }] });
 
                 container.innerHTML += `<div class="flex items-start space-x-2.5 mb-3"><div class="w-7 h-7 rounded-lg bg-[#19E6A0]/20 border border-[#19E6A0]/50 flex items-center justify-center text-xs text-[#19E6A0] shrink-0 mt-0.5">🤖</div><div class="card-bg border border-gray-800/80 p-3.5 rounded-2xl rounded-tl-sm max-w-[85%] text-gray-200 space-y-1 shadow-lg"><p class="font-bold text-[10px] text-[#19E6A0] tracking-wider uppercase">Track Circle AI</p><div class="leading-relaxed text-xs">${aiReply.replace(/\n/g, '<br>')}</div></div></div>`;
                 container.scrollTop = container.scrollHeight;
 
             } catch (err) {
                 document.getElementById(loadingId).remove();
-                container.innerHTML += `<div class="flex items-start space-x-2.5 mb-3"><div class="w-7 h-7 rounded-lg bg-red-500/20 border border-red-500/50 flex items-center justify-center text-xs text-red-400 shrink-0 mt-0.5">⚠️</div><div class="card-bg border border-red-500/30 p-3.5 rounded-2xl rounded-tl-sm text-xs text-red-400">Connection error. Please try again.</div></div>`;
+                container.innerHTML += `
+                    <div class="flex items-start space-x-2.5 mb-3">
+                        <div class="w-7 h-7 rounded-lg bg-red-500/20 border border-red-500/50 flex items-center justify-center text-xs text-red-400 shrink-0 mt-0.5">⚠️</div>
+                        <div class="card-bg border border-red-500/30 p-3.5 rounded-2xl rounded-tl-sm text-xs text-red-400 space-y-2">
+                            <p>Track Circle AI is temporarily unavailable.</p>
+                            <button onclick="sendAiMessage()" class="px-3 py-1 bg-red-500 text-white font-bold rounded-lg text-[10px]">Try Again</button>
+                        </div>
+                    </div>`;
                 container.scrollTop = container.scrollHeight;
             }
         }
@@ -641,10 +643,10 @@
 
         function startCall(type) { alert(`Starting P2P Encrypted ${type} Call...`); }
 
-        function openPostModal() { document.getElementById('modal-post').classList.remove('hidden'); }
-        function openCreateModal() { document.getElementById('modal-create').classList.remove('hidden'); }
-        function openJoinModal() { document.getElementById('modal-join').classList.remove('hidden'); }
-        function closeModals() { document.querySelectorAll('[id^="modal-"]').forEach(el => el.classList.add('hidden')); }
+        function openPostModal() { document.getElementById('modal-post').classList.add('flex'); document.getElementById('modal-post').classList.remove('hidden'); }
+        function openCreateModal() { document.getElementById('modal-create').classList.add('flex'); document.getElementById('modal-create').classList.remove('hidden'); }
+        function openJoinModal() { document.getElementById('modal-join').classList.add('flex'); document.getElementById('modal-join').classList.remove('hidden'); }
+        function closeModals() { document.querySelectorAll('[id^="modal-"]').forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); }); }
     </script>
 </body>
 </html>
