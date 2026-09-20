@@ -200,11 +200,11 @@
                     </div>
                 </div>
 
-                <!-- TAB 6: TRACK CIRCLE AI (POWERED BY GEMINI TOOLS) -->
+                <!-- TAB 6: TRACK CIRCLE AI (LIVE GEMINI INTEGRATION) -->
                 <div id="tab-ai" class="hidden flex flex-col h-[74vh] p-4 space-y-3">
                     <div class="p-3 card-elevated border border-gray-800 rounded-2xl flex items-center space-x-3 glow-mint">
                         <div class="w-10 h-10 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0]/40 flex items-center justify-center text-lg">🤖</div>
-                        <div><h3 class="font-bold text-sm">Track Circle AI (Gemini)</h3><p class="text-[10px] text-[#19E6A0]">Real-time search, calculations & location tools</p></div>
+                        <div><h3 class="font-bold text-sm">Track Circle AI (Gemini)</h3><p class="text-[10px] text-[#19E6A0]">Powered by Google Gemini API</p></div>
                     </div>
                     <div class="flex space-x-2 overflow-x-auto pb-1 text-[10px]">
                         <button onclick="askAiQuick('Where is Daniel?')" class="px-2.5 py-1 rounded-xl card-bg border border-gray-800 text-gray-300 whitespace-nowrap hover:border-[#19E6A0]">📍 Where is Daniel?</button>
@@ -214,7 +214,7 @@
                     <div id="ai-messages-container" class="flex-1 overflow-y-auto space-y-3 text-xs p-2">
                         <div class="flex justify-start">
                             <div class="card-bg border border-gray-800 p-3 rounded-2xl max-w-[85%] text-gray-200">
-                                Hello! I am Track Circle AI powered by Gemini. Ask me questions, check member locations, calculate figures, or search the web!
+                                Hello! I am Track Circle AI, powered directly by Gemini. Ask me any question, calculation, or request!
                             </div>
                         </div>
                     </div>
@@ -503,7 +503,7 @@
             }, 10000);
         }
 
-        // SMART GEMINI AI ASSISTANT FUNCTION
+        // LIVE GEMINI API INTEGRATION
         function askAiQuick(query) { document.getElementById('ai-input').value = query; sendAiMessage(); }
         async function sendAiMessage() {
             const input = document.getElementById('ai-input');
@@ -515,31 +515,40 @@
             input.value = '';
             container.scrollTop = container.scrollHeight;
 
-            setTimeout(async () => {
-                let reply = "";
-                const q = query.toLowerCase();
+            const loadingId = 'ai-loading-' + Date.now();
+            container.innerHTML += `<div id="${loadingId}" class="flex justify-start"><div class="card-bg border border-gray-800 p-3 rounded-xl text-xs text-gray-400 animate-pulse">Thinking with Gemini...</div></div>`;
+            container.scrollTop = container.scrollHeight;
 
-                if (q.includes('where is daniel')) {
-                    const { data } = await supabaseClient.from('user_locations').select('latitude, longitude, updated_at, profiles(full_name)').limit(1);
-                    reply = `📍 **Location Tool Result:**<br>Daniel's live GPS proximity is approximately **450 m away**.<br>_Status: Precise location permitted._<br><button onclick="switchTab('map')" class="mt-2 px-3 py-1 bg-[#19E6A0] text-gray-950 font-bold rounded-lg text-[10px]">View on Map</button>`;
-                } else if (q.includes('eat') || q.includes('food') || q.includes('restaurant')) {
-                    reply = `🍽️ **Gemini Search Grounding - Top Spots & Ratings:**<br>1. **NOUS Lounge** — Rating: ⭐ 4.8/5<br>2. **Cactus Restaurant** — Rating: ⭐ 4.6/5`;
-                } else if (q.includes('calculate') || q.includes('17%') || q.includes('430,000') || q.includes('math')) {
-                    const calc = 430000 * 0.17;
-                    reply = `🧮 **Calculator Tool Execution:**<br>17% of ₦430,000 = **₦${calc.toLocaleString()}**`;
-                } else if (q.includes('nigeria') || q.includes('today')) {
-                    reply = `🌐 **Google Search Grounding:**<br>Current events in Nigeria show robust tech ecosystem growth and active digital trade markets across Lagos and Abuja today.`;
-                } else if (q.includes('yoruba')) {
-                    reply = `🗣️ **Translation Tool:**<br>_Bawo ni? Ẹ nlẹ o!_ (Translation: Hello, how are you?)`;
-                } else if (q.includes('who are you') || q.includes('what kind of ai') || q.includes('what are you')) {
-                    reply = `🤖 I am **Track Circle AI**, an advanced assistant powered by Gemini. I am fully integrated into your app to help you track member locations, search live web data, calculate figures, and manage your circles and wallet!`;
-                } else {
-                    reply = `🤖 **Gemini AI:** I understand you're asking about "${query}". As your assistant, I am here to help you navigate Track Circle, analyze data, or assist with day-to-day questions. How else can I help you with this?`;
-                }
+            try {
+                const GEMINI_API_KEY = "AQ.Ab8RN6LOXMJ2idc-DYvZlAj1PRJTlip9T6SNya0loEqNvhHV7g";
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-                container.innerHTML += `<div class="flex justify-start"><div class="card-bg border border-gray-800 p-3 rounded-2xl max-w-[85%] text-gray-200 space-y-1">${reply}</div></div>`;
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                role: "user",
+                                parts: [{ text: `You are Track Circle AI, an intelligent, multi-purpose assistant built into Track Circle (a real-time location sharing, social, and messaging app). Answer this query smartly, helpfully, and professionally: ${query}` }]
+                            }
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+
+                const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't process that right now. Please try again!";
+
+                container.innerHTML += `<div class="flex justify-start"><div class="card-bg border border-gray-800 p-3 rounded-2xl max-w-[85%] text-gray-200 space-y-1">${aiReply.replace(/\n/g, '<br>')}</div></div>`;
                 container.scrollTop = container.scrollHeight;
-            }, 800);
+
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                container.innerHTML += `<div class="flex justify-start"><div class="card-bg border border-gray-800 p-3 rounded-2xl text-xs text-red-400">Connection error. Check network or API configuration.</div></div>`;
+                container.scrollTop = container.scrollHeight;
+            }
         }
 
         // REAL-MONEY GIFTING & PAYMENT GATEWAY ARCHITECTURE
@@ -586,7 +595,7 @@
             if(!memberships || memberships.length === 0) { container.innerHTML = '<p class="text-xs text-gray-500 text-center">No circles yet.</p>'; return; }
             container.innerHTML = '';
             memberships.forEach(m => {
-                container.innerHTML += `<div class="card-bg border border-gray-800 p-4 rounded-2xl flex items-center justify-between"><div><h4 class="font-bold text-sm text-white">${m.circles.name}</h4><p class="text-xs text-gray-400">Code: ${m.circles.invite_code}</p></div><button onclick="openChat('${m.circles.id}', '${m.circles.name}')" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">Open Chat</button></div>`;
+                container.innerHTML += `<div class="card-bg border border-gray-800 p-4 rounded-2xl flex items-center justify-between"><div><h4 class="font-bold text-sm text-white">${m.circles.name}</h4><p class="text-xs text-gray-400">Code: ${m.circles.invite_code}</p></div><button onclick="openChat('${m.circles.id}', '${m.circles.name}')" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 text-xs font-bold rounded-xl">Open Chat</button></div>`;
             });
         }
 
