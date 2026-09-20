@@ -8,151 +8,232 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0B0E14; color: #FFFFFF; }
-        .bg-dark { background-color: #0B0E14; }
         .card-bg { background-color: #12161F; }
-        .accent-mint { color: #19E6A0; }
-        .bg-mint { background-color: #19E6A0; }
         .border-mint { border-color: #19E6A0; }
+        .text-mint { color: #19E6A0; }
+        .bg-mint { background-color: #19E6A0; }
+        /* Hide scrollbars for story rings */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-0 sm:p-4">
 
-    <div class="w-full max-w-md h-screen sm:h-[88vh] sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col bg-[#0B0E14] sm:border border-gray-800 relative">
+    <div class="w-full max-w-md h-screen sm:h-[90vh] sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col bg-[#0B0E14] sm:border border-gray-800 relative">
 
         <!-- 1. SPLASH SCREEN -->
-        <div id="screen-splash" class="absolute inset-0 z-20 flex flex-col justify-between p-6 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80');">
+        <div id="screen-splash" class="absolute inset-0 z-30 flex flex-col justify-between p-6 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80');">
             <div class="absolute inset-0 bg-gradient-to-t from-[#0B0E14] via-[#0B0E14]/80 to-transparent"></div>
-            
             <div class="relative z-10 flex items-center space-x-3 pt-4">
-                <div class="w-10 h-10 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center shadow-lg">
-                    <span class="text-[#19E6A0] font-bold text-lg">📍</span>
-                </div>
+                <div class="w-10 h-10 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center">📍</div>
                 <span class="font-bold tracking-wider text-sm uppercase text-gray-200">Track Circle</span>
             </div>
-
             <div class="relative z-10 space-y-6 pb-6">
                 <div class="space-y-2">
-                    <h1 class="text-4xl font-bold tracking-tight leading-tight">Stay Connected.<br>Stay Close.</h1>
-                    <p class="text-gray-300 text-sm">Real-time location, private circles, and instant messaging designed for people who matter.</p>
+                    <h1 class="text-4xl font-bold tracking-tight">Stay Connected.<br>Stay Close.</h1>
+                    <p class="text-gray-300 text-sm">Real-time location, private circles, and social sharing.</p>
                 </div>
-
-                <div class="grid grid-cols-3 gap-2 py-2 text-center text-xs text-gray-300">
-                    <div class="p-2 rounded-xl bg-gray-900/60 border border-gray-800">📍 Real-Time</div>
-                    <div class="p-2 rounded-xl bg-gray-900/60 border border-gray-800">💬 Chat & Media</div>
-                    <div class="p-2 rounded-xl bg-gray-900/60 border border-gray-800">✨ Social Feeds</div>
-                </div>
-
-                <button onclick="showScreen('screen-signin')" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-2xl shadow-lg hover:bg-[#15cf8c] transition duration-200 flex items-center justify-center space-x-2">
-                    <span>Get Started</span>
-                    <span>→</span>
+                <button onclick="goToApp()" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-2xl shadow-lg flex items-center justify-center space-x-2">
+                    <span>Get Started</span><span>→</span>
                 </button>
             </div>
         </div>
 
-        <!-- 2. SIGN IN SCREEN -->
-        <div id="screen-signin" class="hidden absolute inset-0 z-10 flex flex-col justify-between p-6 bg-[#0B0E14] overflow-y-auto">
-            <div class="space-y-6 pt-4">
-                <div class="flex justify-between items-center">
-                    <button onclick="showScreen('screen-splash')" class="text-gray-400 hover:text-white text-xl">←</button>
-                    <span class="text-xs text-gray-400 cursor-pointer hover:text-[#19E6A0]">Need help?</span>
+        <!-- MAIN APP CONTAINER (With Bottom Nav) -->
+        <div id="screen-app" class="hidden absolute inset-0 z-20 flex flex-col bg-[#0B0E14] overflow-hidden">
+            
+            <!-- TOP HEADER AREA -->
+            <div class="px-6 pt-6 pb-3 flex justify-between items-center border-b border-gray-800/60 card-bg">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-[#19E6A0]" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
+                    <div>
+                        <p class="text-xs text-gray-400">Good morning,</p>
+                        <h3 class="font-bold text-sm text-white">Ezekiel 👋</h3>
+                    </div>
                 </div>
-
-                <div class="text-center space-y-2 pt-2">
-                    <div class="w-14 h-14 mx-auto rounded-2xl bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center text-2xl shadow-lg">📍</div>
-                    <h2 class="text-2xl font-bold text-white">Welcome Back</h2>
-                    <p class="text-gray-400 text-xs">Sign in to continue to your account</p>
-                </div>
-
-                <div class="space-y-4 pt-2">
-                    <div class="space-y-1">
-                        <label class="text-xs text-gray-400">Email or Username</label>
-                        <input type="text" placeholder="e.g. ezekiel_01" class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-sm focus:border-[#19E6A0] outline-none">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-xs text-gray-400">Password</label>
-                        <input type="password" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-sm focus:border-[#19E6A0] outline-none">
-                    </div>
-
-                    <div class="flex items-center justify-between text-xs text-gray-400 pt-1">
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" checked class="accent-[#19E6A0]">
-                            <span>Remember me</span>
-                        </label>
-                        <a href="#" class="text-[#19E6A0] hover:underline">Forgot password?</a>
-                    </div>
-
-                    <button onclick="alert('Signed in successfully!')" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-xl shadow-lg hover:bg-[#15cf8c] transition duration-200 mt-2">
-                        Sign In →
-                    </button>
-
-                    <div class="relative flex py-2 items-center">
-                        <div class="flex-grow border-t border-gray-800"></div>
-                        <span class="flex-shrink mx-4 text-gray-500 text-xs uppercase">or</span>
-                        <div class="flex-grow border-t border-gray-800"></div>
-                    </div>
-
-                    <button class="w-full py-3.5 card-bg border border-gray-800 rounded-xl text-white font-medium text-sm flex items-center justify-center space-x-2 hover:bg-gray-800">
-                        <span>Google</span>
-                        <span class="text-xs text-gray-400">Continue with Google</span>
-                    </button>
-                </div>
+                <button class="w-10 h-10 rounded-xl card-bg border border-gray-800 flex items-center justify-center text-gray-300 relative">
+                    🔔
+                    <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#19E6A0]"></span>
+                </button>
             </div>
 
-            <div class="text-center pb-4 text-xs text-gray-400">
-                Don't have an account? <button onclick="showScreen('screen-signup')" class="text-[#19E6A0] font-semibold hover:underline">Sign Up</button>
-            </div>
-        </div>
+            <!-- SCROLLABLE CONTENT AREA -->
+            <div class="flex-1 overflow-y-auto pb-24">
 
-        <!-- 3. SIGN UP SCREEN -->
-        <div id="screen-signup" class="hidden absolute inset-0 z-10 flex flex-col justify-between p-6 bg-[#0B0E14] overflow-y-auto">
-            <div class="space-y-5 pt-4">
-                <div class="flex justify-between items-center">
-                    <button onclick="showScreen('screen-signin')" class="text-gray-400 hover:text-white text-xl">←</button>
-                    <span class="text-xs text-gray-400">Step 1 of 1</span>
+                <!-- TAB 1: HOME DASHBOARD -->
+                <div id="tab-home" class="p-6 space-y-5">
+                    <!-- Location Status Banner -->
+                    <div class="card-bg border border-gray-800 p-4 rounded-2xl space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#19E6A0] animate-pulse"></span>
+                                <span class="text-xs font-semibold text-gray-200">Location Sharing: ON</span>
+                            </div>
+                            <span class="text-xs px-2.5 py-1 rounded-full bg-[#19E6A0]/20 text-[#19E6A0] font-medium">Active</span>
+                        </div>
+                        <p class="text-xs text-gray-400">Your location is currently visible to your active Circle.</p>
+                    </div>
+
+                    <!-- Active Circle Card -->
+                    <div class="card-bg border border-gray-800 p-4 rounded-2xl flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center text-xl">👥</div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Family Trip</h4>
+                                <p class="text-xs text-gray-400">4 members • 2 online</p>
+                            </div>
+                        </div>
+                        <button class="px-4 py-2 rounded-xl bg-[#19E6A0]/20 text-[#19E6A0] text-xs font-bold hover:bg-[#19E6A0] hover:text-gray-950 transition">View</button>
+                    </div>
+
+                    <!-- Mini Map Card Preview -->
+                    <div class="card-bg border border-gray-800 rounded-2xl overflow-hidden">
+                        <div class="h-44 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=600&q=80');">
+                            <div class="absolute inset-0 bg-black/40"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="px-3 py-1.5 rounded-full bg-[#0B0E14]/90 border border-[#19E6A0] text-xs text-[#19E6A0] font-semibold shadow-lg">
+                                    📍 Live Proximity Map active
+                                 </div>
+                            </div>
+                        </div>
+                        <div class="p-4 flex justify-between items-center text-xs">
+                            <span class="text-gray-400">Tomi nearby • 80m</span>
+                            <span class="text-[#19E6A0] font-semibold cursor-pointer">Open Full Map →</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="text-center space-y-1">
-                    <h2 class="text-2xl font-bold text-white">Create Your Account</h2>
-                    <p class="text-gray-400 text-xs">Join Track Circle and start connecting</p>
+                <!-- TAB 2: MAP -->
+                <div id="tab-map" class="hidden p-6 space-y-4">
+                    <h2 class="text-lg font-bold">Live Circle Map</h2>
+                    <div class="h-[60vh] rounded-2xl bg-cover bg-center border border-gray-800 relative flex items-center justify-center" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80');">
+                        <div class="absolute bottom-4 left-4 right-4 card-bg border border-gray-800 p-3 rounded-xl flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 rounded-full bg-[#19E6A0]"></div>
+                                <div><p class="text-xs font-bold">Tomi</p><p class="text-[10px] text-gray-400">120m away • Online</p></div>
+                            </div>
+                            <button class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 font-bold rounded-lg text-xs">Message</button>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="space-y-3">
-                    <div class="space-y-1">
-                        <label class="text-xs text-gray-400">Full Name</label>
-                        <input type="text" placeholder="Ezekiel Ayoola" class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-sm focus:border-[#19E6A0] outline-none">
+                <!-- TAB 3: CIRCLES -->
+                <div id="tab-circles" class="hidden p-6 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold">My Circles</h2>
+                        <button class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 text-xs font-bold rounded-xl">+ Create</button>
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-xs text-gray-400">Email Address</label>
-                        <input type="email" placeholder="ezekiel@gmail.com" class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-sm focus:border-[#19E6A0] outline-none">
+                    <div class="space-y-3">
+                        <div class="card-bg border border-gray-800 p-4 rounded-2xl flex items-center justify-between">
+                            <div><h4 class="font-bold text-sm">Family Trip</h4><p class="text-xs text-gray-400">4 members • 2 online</p></div>
+                            <span class="text-xs text-[#19E6A0] bg-[#19E6A0]/20 px-2.5 py-1 rounded-full font-semibold">Live</span>
+                        </div>
+                        <div class="card-bg border border-gray-800 p-4 rounded-2xl flex items-center justify-between">
+                            <div><h4 class="font-bold text-sm">School Group</h4><p class="text-xs text-gray-400">6 members • 4 online</p></div>
+                            <span class="text-xs text-gray-400">Active</span>
+                        </div>
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-xs text-gray-400">Username</label>
-                        <input type="text" placeholder="ezekiel_01" class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-sm focus:border-[#19E6A0] outline-none">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-xs text-gray-400">Password</label>
-                        <input type="password" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-sm focus:border-[#19E6A0] outline-none">
-                    </div>
-
-                    <button onclick="alert('Account created successfully!')" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-xl shadow-lg hover:bg-[#15cf8c] transition duration-200 mt-2">
-                        Create Account →
-                    </button>
                 </div>
+
+                <!-- TAB 4: MESSAGES & TIKTOK/INSTAGRAM STATUS FEED -->
+                <div id="tab-messages" class="hidden p-4 space-y-4">
+                    <!-- Status Stories Bar (TikTok / IG Vibes) -->
+                    <div class="overflow-x-auto flex space-x-3 pb-2">
+                        <div class="flex flex-col items-center space-y-1 cursor-pointer">
+                            <div class="w-14 h-14 rounded-full border-2 border-dashed border-[#19E6A0] flex items-center justify-center bg-[#19E6A0]/10 text-lg">➕</div>
+                            <span class="text-[10px] text-gray-300">Add Status</span>
+                        </div>
+                        <div class="flex flex-col items-center space-y-1">
+                            <div class="w-14 h-14 rounded-full p-0.5 border-2 border-[#19E6A0] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
+                            <span class="text-[10px] text-gray-300">Tomi</span>
+                        </div>
+                        <div class="flex flex-col items-center space-y-1">
+                            <div class="w-14 h-14 rounded-full p-0.5 border-2 border-[#19E6A0] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80');"></div>
+                            <span class="text-[10px] text-gray-300">Sarah</span>
+                        </div>
+                    </div>
+
+                    <!-- Social / Status Feed Cards -->
+                    <div class="space-y-4">
+                        <div class="card-bg border border-gray-800 rounded-2xl overflow-hidden space-y-3 pb-3">
+                            <div class="p-4 pb-0 flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 rounded-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
+                                    <div><p class="text-xs font-bold">Tomi</p><p class="text-[10px] text-gray-400">3h ago</p></div>
+                                </div>
+                                <span class="text-gray-400">•••</span>
+                            </div>
+                            <div class="h-64 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=600&q=80');"></div>
+                            <div class="px-4 space-y-1">
+                                <p class="text-xs text-gray-200">A beautiful evening in the city ✨</p>
+                                <div class="flex justify-between items-center text-xs text-gray-400 pt-2">
+                                    <span>👁 12 views</span>
+                                    <button class="text-[#19E6A0] font-medium">❤️ Like & Reply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: PROFILE -->
+                <div id="tab-profile" class="hidden p-6 space-y-4 text-center">
+                    <div class="w-20 h-20 mx-auto rounded-full bg-cover bg-center border-2 border-[#19E6A0]" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
+                    <div>
+                        <h3 class="font-bold text-lg text-white">Ezekiel Ayoola</h3>
+                        <p class="text-xs text-gray-400">@ezekiel_01</p>
+                    </div>
+                    <button onclick="goToSplash()" class="w-full py-3 bg-red-500/20 text-red-400 font-bold rounded-xl text-xs">Log Out</button>
+                </div>
+
             </div>
 
-            <div class="text-center pb-2 text-xs text-gray-400">
-                Already have an account? <button onclick="showScreen('screen-signin')" class="text-[#19E6A0] font-semibold hover:underline">Sign In</button>
+            <!-- PERMANENT BOTTOM NAVIGATION BAR -->
+            <div class="absolute bottom-0 left-0 right-0 h-16 card-bg border-t border-gray-800 flex justify-around items-center px-2 z-30">
+                <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-[#19E6A0]">
+                    <span class="text-lg">🏠</span><span class="text-[10px] font-medium">Home</span>
+                </button>
+                <button onclick="switchTab('map')" id="nav-map" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <span class="text-lg">📍</span><span class="text-[10px] font-medium">Map</span>
+                </button>
+                <button onclick="switchTab('circles')" id="nav-circles" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <span class="text-lg">👥</span><span class="text-[10px] font-medium">Circles</span>
+                </button>
+                <button onclick="switchTab('messages')" id="nav-messages" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <span class="text-lg">💬</span><span class="text-[10px] font-medium">Messages</span>
+                </button>
+                <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <span class="text-lg">👤</span><span class="text-[10px] font-medium">Profile</span>
+                </button>
             </div>
+
         </div>
 
     </div>
 
     <script>
-        function showScreen(screenId) {
+        function goToApp() {
             document.getElementById('screen-splash').classList.add('hidden');
-            document.getElementById('screen-signin').classList.add('hidden');
-            document.getElementById('screen-signup').classList.add('hidden');
-            document.getElementById(screenId).classList.remove('hidden');
+            document.getElementById('screen-app').classList.remove('hidden');
+        }
+        function goToSplash() {
+            document.getElementById('screen-app').classList.add('hidden');
+            document.getElementById('screen-splash').classList.remove('hidden');
+        }
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.getElementById('tab-home').classList.add('hidden');
+            document.getElementById('tab-map').classList.add('hidden');
+            document.getElementById('tab-circles').classList.add('hidden');
+            document.getElementById('tab-messages').classList.add('hidden');
+            document.getElementById('tab-profile').classList.add('hidden');
+
+            // Reset all nav icons color
+            ['home', 'map', 'circles', 'messages', 'profile'].forEach(t => {
+                document.getElementById('nav-' + t).className = "flex flex-col items-center text-gray-400 hover:text-white";
+            });
+
+            // Show selected tab & highlight nav
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            document.getElementById('nav-' + tabName).className = "flex flex-col items-center text-[#19E6A0]";
         }
     </script>
 </body>
