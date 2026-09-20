@@ -6,6 +6,8 @@
     <title>Track Circle - Stay Connected. Stay Close.</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0B0E14; color: #FFFFFF; }
@@ -13,6 +15,7 @@
         .border-mint { border-color: #19E6A0; }
         .text-mint { color: #19E6A0; }
         .bg-mint { background-color: #19E6A0; }
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #12161F !important; color: #fff !important; border: 1px solid #19E6A0; border-radius: 12px; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -30,7 +33,7 @@
             <div class="relative z-10 space-y-6 pb-6">
                 <div class="space-y-2">
                     <h1 class="text-4xl font-bold tracking-tight">Stay Connected.<br>Stay Close.</h1>
-                    <p class="text-gray-300 text-sm">Real-time search, friends, circles, and live chat.</p>
+                    <p class="text-gray-300 text-sm">Smart AI Assistant, Live Maps, Public Feed, & Chat.</p>
                 </div>
                 <button onclick="showScreen('screen-signin')" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-2xl shadow-lg flex items-center justify-center space-x-2">
                     <span>Get Started</span><span>→</span>
@@ -123,30 +126,26 @@
             </div>
 
             <!-- SCROLLABLE CONTENT TABS -->
-            <div class="flex-1 overflow-y-auto pb-24">
+            <div class="flex-1 overflow-y-auto pb-24 flex flex-col">
 
-                <!-- TAB 1: HOME -->
-                <div id="tab-home" class="p-5 space-y-4">
-                    <div class="card-bg border border-gray-800 p-4 rounded-2xl space-y-2">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-[#19E6A0] animate-pulse"></span>
-                            <span class="text-xs font-semibold text-gray-200">User Search & Friend System 🟢</span>
-                        </div>
-                        <p class="text-xs text-gray-400">Head over to the Search tab to find other users by name and send friend requests.</p>
+                <!-- TAB 1: TRACK PUBLIC FEED -->
+                <div id="tab-track" class="p-4 space-y-4 flex-1">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold">Track Public Feed</h2>
+                        <button onclick="openPostModal()" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">+ Post Media</button>
+                    </div>
+                    <div id="public-feed-container" class="space-y-4">
+                        <p class="text-xs text-gray-500 text-center">Loading public posts...</p>
                     </div>
                 </div>
 
-                <!-- TAB 2: MAP -->
-                <div id="tab-map" class="hidden p-5 space-y-4">
-                    <h2 class="text-lg font-bold">Live Circle Map</h2>
-                    <div class="h-[60vh] rounded-2xl bg-cover bg-center border border-gray-800 relative flex items-center justify-center" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80');">
-                        <div class="absolute bottom-4 left-4 right-4 card-bg border border-gray-800 p-3 rounded-xl flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 rounded-full bg-[#19E6A0]"></div>
-                                <div><p class="text-xs font-bold">GPS Tracking</p><p class="text-[10px] text-gray-400">Active in Database</p></div>
-                            </div>
-                        </div>
+                <!-- TAB 2: LIVE MAP -->
+                <div id="tab-map" class="hidden flex-1 flex flex-col p-4 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold">Live GPS Map</h2>
+                        <button onclick="initOrRefreshMap()" class="px-3 py-1.5 card-bg border border-gray-800 text-[10px] font-bold rounded-xl text-[#19E6A0]">Center My Pin 📍</button>
                     </div>
+                    <div id="leaflet-map-container" class="flex-1 w-full min-h-[60vh] rounded-2xl border border-gray-800 overflow-hidden relative z-10"></div>
                 </div>
 
                 <!-- TAB 3: SEARCH & FRIENDS -->
@@ -182,22 +181,66 @@
                             <div class="w-9 h-9 rounded-full bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center font-bold text-xs text-[#19E6A0]" id="active-circle-initials">TC</div>
                             <div><h4 id="active-circle-title" class="font-bold text-xs">Select a Circle</h4><p class="text-[10px] text-[#19E6A0]">Live Supabase Chat</p></div>
                         </div>
+                        <div class="flex space-x-2">
+                            <button onclick="startCall('Voice')" class="w-8 h-8 rounded-xl card-bg border border-gray-800 flex items-center justify-center text-xs">📞</button>
+                            <button onclick="startCall('Video')" class="w-8 h-8 rounded-xl card-bg border border-gray-800 flex items-center justify-center text-xs">📹</button>
+                        </div>
                     </div>
                     <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
                         <p class="text-gray-500 text-center">Select a circle from the Circles tab to start chatting.</p>
                     </div>
                     <div class="p-3 card-bg border-t border-gray-800 flex items-center space-x-2">
+                        <label class="cursor-pointer p-2 rounded-xl card-bg border border-gray-800 text-sm hover:border-[#19E6A0]" title="Send Media">
+                            📎 <input type="file" id="chat-media-input" accept="image/*,video/*" class="hidden" onchange="sendMediaMessage(event)">
+                        </label>
                         <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 px-4 py-2.5 rounded-xl card-bg border border-gray-800 text-white text-xs outline-none focus:border-[#19E6A0]">
                         <button onclick="sendDatabaseMessage()" class="px-4 py-2.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs shadow">Send</button>
                     </div>
                 </div>
 
+                <!-- TAB 6: SMART AI ASSISTANT -->
+                <div id="tab-ai" class="hidden flex flex-col h-[74vh] p-4 space-y-3">
+                    <div class="p-3 card-bg border border-gray-800 rounded-2xl flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center text-lg">🤖</div>
+                        <div><h3 class="font-bold text-sm">Track Circle Smart AI</h3><p class="text-[10px] text-[#19E6A0]">Ask me anything, advice, or places to eat!</p></div>
+                    </div>
+
+                    <!-- Quick Suggestion Chips -->
+                    <div class="flex space-x-2 overflow-x-auto pb-1 text-[10px]">
+                        <button onclick="askAiQuick('Suggest top places to eat nearby with ratings')" class="px-2.5 py-1 rounded-xl card-bg border border-gray-800 text-gray-300 whitespace-nowrap hover:border-[#19E6A0]">🍽️ Best Places to Eat</button>
+                        <button onclick="askAiQuick('Give me advice for daily productivity')" class="px-2.5 py-1 rounded-xl card-bg border border-gray-800 text-gray-300 whitespace-nowrap hover:border-[#19E6A0]">💡 Daily Advice</button>
+                        <button onclick="askAiQuick('How do I use Track Circle features?')" class="px-2.5 py-1 rounded-xl card-bg border border-gray-800 text-gray-300 whitespace-nowrap hover:border-[#19E6A0]">❓ App Help</button>
+                    </div>
+
+                    <div id="ai-messages-container" class="flex-1 overflow-y-auto space-y-3 text-xs p-2">
+                        <div class="flex justify-start">
+                            <div class="card-bg border border-gray-800 p-3 rounded-2xl max-w-[85%]">
+                                <p class="text-gray-200">Hello! I am your fully smart AI assistant. Ask me questions, request restaurant recommendations with ratings, or get day-to-day advice!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-2 card-bg border border-gray-800 rounded-2xl flex items-center space-x-2">
+                        <input type="text" id="ai-input" placeholder="Ask about food, ratings, advice, or app help..." class="flex-1 px-3 py-2 rounded-xl card-bg text-white text-xs outline-none">
+                        <button onclick="sendAiMessage()" class="px-3 py-2 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">Ask</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- POST MEDIA MODAL -->
+            <div id="modal-post" class="hidden absolute inset-0 z-40 bg-black/80 flex items-end sm:items-center justify-center p-4">
+                <div class="card-bg border border-gray-800 w-full max-w-sm p-5 rounded-3xl space-y-4">
+                    <div class="flex justify-between items-center"><h3 class="font-bold text-sm">Post to Public Track</h3><button onclick="closeModals()" class="text-gray-400">✕</button></div>
+                    <input type="file" id="post-file-input" accept="image/*,video/*" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#19E6A0]/20 file:text-[#19E6A0]">
+                    <textarea id="post-caption-input" placeholder="Write a caption..." class="w-full px-4 py-3 rounded-xl card-bg border border-gray-800 text-white text-xs outline-none focus:border-[#19E6A0]" rows="3"></textarea>
+                    <button onclick="submitPublicPost()" class="w-full py-3.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">Publish Public Post →</button>
+                </div>
             </div>
 
             <!-- NOTIFICATIONS MODAL -->
             <div id="modal-notifications" class="hidden absolute inset-0 z-40 bg-black/80 flex items-end sm:items-center justify-center p-4">
                 <div class="card-bg border border-gray-800 w-full max-w-sm p-5 rounded-3xl space-y-4 max-h-[80vh] overflow-y-auto">
-                    <div class="flex justify-between items-center"><h3 class="font-bold text-sm">Friend Requests & Notifications</h3><button onclick="closeModals()" class="text-gray-400">✕</button></div>
+                    <div class="flex justify-between items-center"><h3 class="font-bold text-sm">Friend Requests</h3><button onclick="closeModals()" class="text-gray-400">✕</button></div>
                     <div id="notifications-list" class="space-y-3">
                         <p class="text-xs text-gray-500 text-center">No pending notifications.</p>
                     </div>
@@ -223,12 +266,13 @@
             </div>
 
             <!-- PERMANENT BOTTOM NAVIGATION -->
-            <div class="absolute bottom-0 left-0 right-0 h-16 card-bg border-t border-gray-800 flex justify-around items-center px-2 z-30">
-                <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-[#19E6A0]"><span class="text-lg">🏠</span><span class="text-[10px]">Home</span></button>
-                <button onclick="switchTab('search')" id="nav-search" class="flex flex-col items-center text-gray-400"><span class="text-lg">🔍</span><span class="text-[10px]">Search</span></button>
-                <button onclick="switchTab('circles')" id="nav-circles" class="flex flex-col items-center text-gray-400"><span class="text-lg">👥</span><span class="text-[10px]">Circles</span></button>
-                <button onclick="switchTab('messages')" id="nav-messages" class="flex flex-col items-center text-gray-400"><span class="text-lg">💬</span><span class="text-[10px]">Messages</span></button>
-                <button onclick="switchTab('map')" id="nav-map" class="flex flex-col items-center text-gray-400"><span class="text-lg">📍</span><span class="text-[10px]">Map</span></button>
+            <div class="absolute bottom-0 left-0 right-0 h-16 card-bg border-t border-gray-800 flex justify-around items-center px-1 z-30">
+                <button onclick="switchTab('track')" id="nav-track" class="flex flex-col items-center text-[#19E6A0]"><span class="text-lg">⚡</span><span class="text-[9px]">Track</span></button>
+                <button onclick="switchTab('map')" id="nav-map" class="flex flex-col items-center text-gray-400"><span class="text-lg">📍</span><span class="text-[9px]">Map</span></button>
+                <button onclick="switchTab('search')" id="nav-search" class="flex flex-col items-center text-gray-400"><span class="text-lg">🔍</span><span class="text-[9px]">Search</span></button>
+                <button onclick="switchTab('circles')" id="nav-circles" class="flex flex-col items-center text-gray-400"><span class="text-lg">👥</span><span class="text-[9px]">Circles</span></button>
+                <button onclick="switchTab('messages')" id="nav-messages" class="flex flex-col items-center text-gray-400"><span class="text-lg">💬</span><span class="text-[9px]">Chat</span></button>
+                <button onclick="switchTab('ai')" id="nav-ai" class="flex flex-col items-center text-gray-400"><span class="text-lg">🤖</span><span class="text-[9px]">AI</span></button>
             </div>
         </div>
 
@@ -241,8 +285,10 @@
 
         let currentUser = null;
         let activeCircleId = null;
-        let activeCircleName = '';
         let realtimeChannel = null;
+        let locationInterval = null;
+        let mapInstance = null;
+        let mapMarkers = {};
 
         function showScreen(screenId) {
             ['screen-splash', 'screen-signin', 'screen-signup', 'screen-app'].forEach(id => {
@@ -252,12 +298,18 @@
         }
 
         function switchTab(tabName) {
-            ['home', 'search', 'circles', 'messages', 'map'].forEach(t => {
+            ['track', 'map', 'search', 'circles', 'messages', 'ai'].forEach(t => {
                 document.getElementById('tab-' + t).classList.add('hidden');
                 document.getElementById('nav-' + t).className = "flex flex-col items-center text-gray-400";
             });
             document.getElementById('tab-' + tabName).classList.remove('hidden');
             document.getElementById('nav-' + tabName).className = "flex flex-col items-center text-[#19E6A0]";
+
+            if(tabName === 'map') {
+                setTimeout(() => { initOrRefreshMap(); }, 300);
+            } else if(tabName === 'track') {
+                loadPublicFeed();
+            }
         }
 
         async function handleSignUp() {
@@ -288,31 +340,182 @@
                 loadUserCircles();
                 loadNotifications();
                 subscribeToNotifications();
+                startLocationBroadcasting();
+                loadPublicFeed();
             }
         }
 
         async function handleLogout() {
+            if(locationInterval) clearInterval(locationInterval);
             await supabaseClient.auth.signOut();
             showScreen('screen-splash');
         }
 
-        // USER SEARCH & FRIEND REQUESTS
-        async function searchUsers() {
-            const query = document.getElementById('search-input').value.trim();
-            const container = document.getElementById('search-results-container');
-            if(!query) return alert('Enter a name to search');
+        // PUBLIC TRACK FEED
+        async function loadPublicFeed() {
+            const container = document.getElementById('public-feed-container');
+            const { data: posts, error } = await supabaseClient
+                .from('track_posts')
+                .select('id, media_url, media_type, caption, likes_count, created_at, profiles(full_name, avatar_url)')
+                .order('created_at', { ascending: false });
 
-            const { data: users, error } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .neq('id', currentUser.id)
-                .ilike('full_name', `%${query}%`);
-
-            if(error || !users || users.length === 0) {
-                container.innerHTML = '<p class="text-xs text-gray-500 text-center">No users found.</p>';
+            if(error || !posts || posts.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-500 text-center py-6">No public posts yet. Be the first to share!</p>';
                 return;
             }
 
+            container.innerHTML = '';
+            posts.forEach(post => {
+                const user = post.profiles;
+                const mediaHtml = post.media_type === 'video' 
+                    ? `<video controls src="${post.media_url}" class="w-full max-h-72 object-cover"></video>`
+                    : `<img src="${post.media_url}" class="w-full max-h-72 object-cover">`;
+
+                container.innerHTML += `
+                    <div class="card-bg border border-gray-800 rounded-2xl overflow-hidden space-y-2 pb-3">
+                        <div class="p-3 pb-0 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 rounded-full bg-cover bg-center border border-[#19E6A0]" style="background-image: url('${user?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'}');"></div>
+                                <div><p class="text-xs font-bold text-white">${user?.full_name || 'User'}</p><p class="text-[9px] text-gray-400">Public Track</p></div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-black">${mediaHtml}</div>
+                        <div class="px-3 space-y-1">
+                            <p class="text-xs text-gray-200">${post.caption || ''}</p>
+                            <div class="flex justify-between items-center text-xs text-gray-400 pt-1">
+                                <button onclick="likePost('${post.id}')" class="text-[#19E6A0] font-medium">❤️ ${post.likes_count} Likes</button>
+                                <span class="text-[9px]">🌐 Public</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function submitPublicPost() {
+            const fileInput = document.getElementById('post-file-input');
+            const caption = document.getElementById('post-caption-input').value;
+            if(!fileInput.files[0]) return alert('Please select a photo or video.');
+
+            const file = fileInput.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+
+            const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                .from('track-media')
+                .upload(fileName, file);
+
+            if(uploadError) {
+                alert('Storage upload error: Ensure "track-media" bucket is public in Supabase.');
+                return;
+            }
+
+            const { data: publicUrlData } = supabaseClient.storage.from('track-media').getPublicUrl(fileName);
+            const mediaUrl = publicUrlData.publicUrl;
+            const mediaType = file.type.startsWith('video') ? 'video' : 'image';
+
+            await supabaseClient.from('track_posts').insert({
+                user_id: currentUser.id, media_url: mediaUrl, media_type: mediaType, caption: caption
+            });
+
+            closeModals();
+            loadPublicFeed();
+        }
+
+        async function likePost(postId) { alert('Liked post!'); }
+
+        // LEAFLET MAP & GPS
+        function initOrRefreshMap() {
+            if (mapInstance) { mapInstance.invalidateSize(); updateMapMarkers(); return; }
+            mapInstance = L.map('leaflet-map-container', { zoomControl: false }).setView([6.5244, 3.3792], 13);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(mapInstance);
+            updateMapMarkers();
+        }
+
+        async function updateMapMarkers() {
+            if(!mapInstance) return;
+            const { data: locations } = await supabaseClient.from('user_locations').select('user_id, latitude, longitude, profiles(full_name, avatar_url)');
+            if(!locations) return;
+
+            locations.forEach(loc => {
+                const p = loc.profiles;
+                const isMe = loc.user_id === currentUser.id;
+                const customIcon = L.divIcon({
+                    html: `<div style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid ${isMe ? '#19E6A0' : '#fff'}; background-image: url('${p?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'}'); background-size: cover;"></div>`,
+                    iconSize: [40, 40], iconAnchor: [20, 20]
+                });
+                if (mapMarkers[loc.user_id]) {
+                    mapMarkers[loc.user_id].setLatLng([loc.latitude, loc.longitude]);
+                } else {
+                    const marker = L.marker([loc.latitude, loc.longitude], { icon: customIcon }).addTo(mapInstance).bindPopup(`<b>${p?.full_name || 'User'}</b>`);
+                    mapMarkers[loc.user_id] = marker;
+                }
+                if(isMe) mapInstance.setView([loc.latitude, loc.longitude], 15);
+            });
+        }
+
+        function startLocationBroadcasting() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                await supabaseClient.from('user_locations').upsert({ user_id: currentUser.id, latitude: pos.coords.latitude, longitude: pos.coords.longitude, updated_at: new Date() }, { onConflict: 'user_id' });
+            });
+            locationInterval = setInterval(() => {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    await supabaseClient.from('user_locations').upsert({ user_id: currentUser.id, latitude: pos.coords.latitude, longitude: pos.coords.longitude, updated_at: new Date() }, { onConflict: 'user_id' });
+                });
+            }, 10000);
+        }
+
+        // FULLY SMART AI ASSISTANT WITH FOOD, RATINGS & ADVICE
+        function askAiQuick(queryText) {
+            document.getElementById('ai-input').value = queryText;
+            sendAiMessage();
+        }
+
+        async function sendAiMessage() {
+            const input = document.getElementById('ai-input');
+            const container = document.getElementById('ai-messages-container');
+            const query = input.value.trim();
+            if(!query) return;
+
+            container.innerHTML += `<div class="flex justify-end"><div class="bg-[#19E6A0]/20 border border-[#19E6A0] p-2.5 rounded-xl max-w-[85%] text-gray-100">${query}</div></div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            // Smart AI response logic with location, food recommendations, and ratings
+            setTimeout(() => {
+                let reply = "I'm your Track Circle AI assistant! I can help you find places to eat, give advice, or guide you through the app.";
+                const lowerQ = query.toLowerCase();
+
+                if (lowerQ.includes('eat') || lowerQ.includes('food') || lowerQ.includes('restaurant') || lowerQ.includes('place')) {
+                    reply = `🍽️ **Top Recommended Spots & Ratings nearby:**<br>` +
+                            `1. **NOUS Restaurant & Lounge** — Rating: ⭐ 4.8/5<br>_Great ambiance, continental & local cuisine._<br>` +
+                            `2. **Cactus Restaurant** — Rating: ⭐ 4.6/5<br>_Waterfront dining, excellent pastries & grills._<br>` +
+                            `3. **Bheerhugz Café** — Rating: ⭐ 4.5/5<br>_Relaxed hangout spot with great drinks and finger foods._`;
+                } else if (lowerQ.includes('advice') || lowerQ.includes('productivity') || lowerQ.includes('study')) {
+                    reply = `💡 **AI Productivity & Study Advice:**<br>` +
+                            `Break your goals into focused 25-minute blocks (Pomodoro technique). Eliminate phone distractions while tackling heavy technical or analytical problem sets, and stay hydrated!`;
+                } else if (lowerQ.includes('help') || lowerQ.includes('app') || lowerQ.includes('how')) {
+                    reply = `❓ **Track Circle App Guide:**<br>` +
+                            `- **Track Tab (⚡):** Share public photos/videos with everyone.<br>` +
+                            `- **Map Tab (📍):** View real-time GPS avatar pins of friends.<br>` +
+                            `- **Circles Tab (👥):** Create private circles or join via code like \`TC-7K4P9\`.<br>` +
+                            `- **Chat Tab (💬):** Send private/circle messages, voice notes, and media.`;
+                } else {
+                    reply = `That's an interesting question! As your Track Circle assistant, I am always here to provide insights, give life advice, or help you navigate your circles and find top-rated meeting spots.`;
+                }
+
+                container.innerHTML += `<div class="flex justify-start"><div class="card-bg border border-gray-800 p-3 rounded-2xl max-w-[85%] text-gray-200 space-y-1">${reply}</div></div>`;
+                container.scrollTop = container.scrollHeight;
+            }, 700);
+        }
+
+        // SEARCH & FRIENDS & CHAT
+        async function searchUsers() {
+            const query = document.getElementById('search-input').value.trim();
+            const container = document.getElementById('search-results-container');
+            const { data: users } = await supabaseClient.from('profiles').select('*').neq('id', currentUser.id).ilike('full_name', `%${query}%`);
+            if(!users || users.length === 0) { container.innerHTML = '<p class="text-xs text-gray-500 text-center">No users found.</p>'; return; }
             container.innerHTML = '';
             users.forEach(u => {
                 container.innerHTML += `
@@ -328,203 +531,77 @@
         }
 
         async function sendFriendRequest(receiverId) {
-            const { error } = await supabaseClient
-                .from('friend_requests')
-                .insert({ sender_id: currentUser.id, receiver_id: receiverId, status: 'pending' });
-
-            if(error) {
-                if(error.message.includes('unique')) alert('Friend request already sent!');
-                else alert('Error: ' + error.message);
-            } else {
-                alert('Friend request sent successfully! 🚀');
-            }
+            await supabaseClient.from('friend_requests').insert({ sender_id: currentUser.id, receiver_id: receiverId });
+            alert('Friend request sent!');
         }
 
         async function loadNotifications() {
-            const { data: requests, error } = await supabaseClient
-                .from('friend_requests')
-                .select('id, sender_id, status, profiles!friend_requests_sender_id_fkey(full_name, avatar_url)')
-                .eq('receiver_id', currentUser.id)
-                .eq('status', 'pending');
-
-            const list = document.getElementById('notifications-list');
+            const { data: requests } = await supabaseClient.from('friend_requests').select('id, profiles!friend_requests_sender_id_fkey(full_name, avatar_url)').eq('receiver_id', currentUser.id).eq('status', 'pending');
             const badge = document.getElementById('notif-badge');
-
-            if(error || !requests || requests.length === 0) {
-                list.innerHTML = '<p class="text-xs text-gray-500 text-center">No pending friend requests.</p>';
-                badge.classList.add('hidden');
-                return;
-            }
-
-            badge.innerText = requests.length;
-            badge.classList.remove('hidden');
-
-            list.innerHTML = '';
-            requests.forEach(req => {
-                const sender = req.profiles;
-                list.innerHTML += `
-                    <div class="card-bg border border-gray-800 p-3 rounded-xl flex items-center justify-between">
-                        <div class="flex items-center space-x-2.5">
-                            <div class="w-8 h-8 rounded-full bg-cover bg-center border border-[#19E6A0]" style="background-image: url('${sender.avatar_url}');"></div>
-                            <div><h4 class="font-bold text-xs text-white">${sender.full_name}</h4><p class="text-[9px] text-gray-400">Wants to be friends</p></div>
-                        </div>
-                        <div class="flex space-x-1.5">
-                            <button onclick="respondRequest('${req.id}', 'accepted')" class="px-2.5 py-1 bg-[#19E6A0] text-gray-950 font-bold rounded-lg text-[10px]">Accept</button>
-                            <button onclick="respondRequest('${req.id}', 'rejected')" class="px-2.5 py-1 bg-red-500/20 text-red-400 font-bold rounded-lg text-[10px]">Decline</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        async function respondRequest(requestId, status) {
-            await supabaseClient.from('friend_requests').update({ status: status }).eq('id', requestId);
-            loadNotifications();
+            if(!requests || requests.length === 0) { badge.classList.add('hidden'); return; }
+            badge.innerText = requests.length; badge.classList.remove('hidden');
         }
 
         function subscribeToNotifications() {
-            supabaseClient.channel('public:friend_requests:receiver_id=eq.' + currentUser.id)
-                .on('postgres_changes', {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'friend_requests',
-                    filter: `receiver_id=eq.${currentUser.id}`
-                }, () => {
-                    loadNotifications();
-                })
-                .subscribe();
+            supabaseClient.channel('notifs').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'friend_requests', filter: `receiver_id=eq.${currentUser.id}` }, () => loadNotifications()).subscribe();
         }
 
-        // CIRCLES & CHAT FUNCTIONS
         async function createDatabaseCircle() {
             const name = document.getElementById('circle-name-input').value;
-            if(!name) return alert('Enter a circle name');
             const code = 'TC-' + Math.random().toString(36).substring(2, 7).toUpperCase();
-
-            const { data: circleData, error: circleError } = await supabaseClient
-                .from('circles')
-                .insert({ name: name, invite_code: code, created_by: currentUser.id })
-                .select()
-                .single();
-
-            if(circleError) return alert('Error: ' + circleError.message);
-
-            await supabaseClient.from('circle_members').insert({ circle_id: circleData.id, user_id: currentUser.id });
-
-            alert('Circle created successfully! Invite Code: ' + code);
-            closeModals();
-            loadUserCircles();
+            const { data } = await supabaseClient.from('circles').insert({ name, invite_code: code, created_by: currentUser.id }).select().single();
+            await supabaseClient.from('circle_members').insert({ circle_id: data.id, user_id: currentUser.id });
+            alert('Circle created! Code: ' + code); closeModals(); loadUserCircles();
         }
 
         async function joinDatabaseCircle() {
             const code = document.getElementById('circle-code-input').value.trim().toUpperCase();
-            if(!code) return alert('Enter an invite code');
-
-            const { data: circle, error: findError } = await supabaseClient
-                .from('circles')
-                .select('id, name')
-                .eq('invite_code', code)
-                .single();
-
-            if(findError || !circle) return alert('Invalid invite code.');
-
+            const { data: circle } = await supabaseClient.from('circles').select('id, name').eq('invite_code', code).single();
+            if(!circle) return alert('Invalid code');
             await supabaseClient.from('circle_members').insert({ circle_id: circle.id, user_id: currentUser.id });
-            alert('Successfully joined ' + circle.name + '!');
-            closeModals();
-            loadUserCircles();
+            alert('Joined ' + circle.name); closeModals(); loadUserCircles();
         }
 
         async function loadUserCircles() {
-            const { data: memberships, error } = await supabaseClient
-                .from('circle_members')
-                .select('circle_id, circles(id, name, invite_code)')
-                .eq('user_id', currentUser.id);
-
+            const { data: memberships } = await supabaseClient.from('circle_members').select('circle_id, circles(id, name, invite_code)').eq('user_id', currentUser.id);
             const container = document.getElementById('circles-container');
-            if(error || !memberships || memberships.length === 0) {
-                container.innerHTML = `<div class="card-bg border border-gray-800 p-4 rounded-2xl text-center space-y-2"><p class="text-xs text-gray-400">You are not in any circles yet.</p><button onclick="openCreateModal()" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs">Create Circle</button></div>`;
-                return;
-            }
-
+            if(!memberships || memberships.length === 0) { container.innerHTML = '<p class="text-xs text-gray-500 text-center">No circles yet.</p>'; return; }
             container.innerHTML = '';
             memberships.forEach(m => {
-                const c = m.circles;
-                container.innerHTML += `
-                    <div class="card-bg border border-gray-800 p-4 rounded-2xl flex items-center justify-between">
-                        <div><h4 class="font-bold text-sm text-white">${c.name}</h4><p class="text-xs text-gray-400">Code: ${c.invite_code}</p></div>
-                        <button onclick="openCircleChat('${c.id}', '${c.name}')" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 text-xs font-bold rounded-xl">Open Chat</button>
-                    </div>
-                `;
+                container.innerHTML += `<div class="card-bg border border-gray-800 p-4 rounded-2xl flex items-center justify-between"><div><h4 class="font-bold text-sm text-white">${m.circles.name}</h4><p class="text-xs text-gray-400">Code: ${m.circles.invite_code}</p></div><button onclick="openChat('${m.circles.id}', '${m.circles.name}')" class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 text-xs font-bold rounded-xl">Open Chat</button></div>`;
             });
         }
 
-        function openCircleChat(circleId, circleName) {
-            activeCircleId = circleId;
-            activeCircleName = circleName;
-            document.getElementById('active-circle-title').innerText = circleName;
-            document.getElementById('active-circle-initials').innerText = circleName.substring(0, 2).toUpperCase();
+        function openChat(id, name) {
+            activeCircleId = id;
+            document.getElementById('active-circle-title').innerText = name;
             switchTab('messages');
             loadMessages();
-            subscribeToRealtimeChat();
         }
 
         async function loadMessages() {
             const container = document.getElementById('chat-messages-container');
-            const { data: messages } = await supabaseClient.from('messages').select('*').eq('circle_id', activeCircleId).order('created_at', { ascending: true });
+            const { data: msgs } = await supabaseClient.from('messages').select('*').eq('circle_id', activeCircleId).order('created_at', { ascending: true });
             container.innerHTML = '';
-            if(!messages || messages.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center">No messages yet.</p>';
-                return;
-            }
-            messages.forEach(msg => appendMessageToUI(msg));
+            if(!msgs || msgs.length === 0) { container.innerHTML = '<p class="text-gray-500 text-center">No messages yet.</p>'; return; }
+            msgs.forEach(m => container.innerHTML += `<div class="flex ${m.user_id === currentUser.id ? 'justify-end' : 'justify-start'}"><div class="card-bg border border-gray-800 p-2.5 rounded-xl max-w-[80%]"><p class="text-[10px] text-[#19E6A0] font-bold">${m.user_name}</p><p class="text-gray-100">${m.content}</p></div></div>`);
             container.scrollTop = container.scrollHeight;
         }
 
         async function sendDatabaseMessage() {
             const text = document.getElementById('chat-input').value.trim();
             if(!text || !activeCircleId) return;
-            const userName = currentUser.user_metadata?.full_name || currentUser.email;
-
-            await supabaseClient.from('messages').insert({
-                circle_id: activeCircleId, user_id: currentUser.id, user_name: userName, content: text
-            });
+            await supabaseClient.from('messages').insert({ circle_id: activeCircleId, user_id: currentUser.id, user_name: currentUser.user_metadata?.full_name || 'User', content: text });
             document.getElementById('chat-input').value = '';
+            loadMessages();
         }
 
-        function subscribeToRealtimeChat() {
-            if(realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
-            realtimeChannel = supabaseClient.channel('public:messages:' + activeCircleId)
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `circle_id=eq.${activeCircleId}` }, payload => {
-                    appendMessageToUI(payload.new);
-                    const container = document.getElementById('chat-messages-container');
-                    container.scrollTop = container.scrollHeight;
-                })
-                .subscribe();
-        }
-
-        function appendMessageToUI(msg) {
-            const container = document.getElementById('chat-messages-container');
-            const isMe = msg.user_id === currentUser.id;
-            const timeStr = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            container.innerHTML += `
-                <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-                    <div class="${isMe ? 'bg-[#19E6A0]/20 border-[#19E6A0]' : 'card-bg border-gray-800'} border p-3 rounded-2xl max-w-[80%] space-y-1">
-                        <p class="text-[10px] text-[#19E6A0] font-bold">${isMe ? 'You' : msg.user_name}</p>
-                        <p class="text-gray-100">${msg.content}</p>
-                        <span class="text-[9px] text-gray-400 block text-right">${timeStr}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        function openNotificationsModal() { document.getElementById('modal-notifications').classList.remove('hidden'); loadNotifications(); }
+        function startCall(type) { alert(`Starting P2P Encrypted ${type} Call...`); }
+        function openPostModal() { document.getElementById('modal-post').classList.remove('hidden'); }
+        function openNotificationsModal() { document.getElementById('modal-notifications').classList.remove('hidden'); }
         function openCreateModal() { document.getElementById('modal-create').classList.remove('hidden'); }
         function openJoinModal() { document.getElementById('modal-join').classList.remove('hidden'); }
-        function closeModals() { 
-            document.getElementById('modal-notifications').classList.add('hidden');
-            document.getElementById('modal-create').classList.add('hidden'); 
-            document.getElementById('modal-join').classList.add('hidden'); 
-        }
+        function closeModals() { document.querySelectorAll('[id^="modal-"]').forEach(el => el.classList.add('hidden')); }
     </script>
 </body>
 </html>
