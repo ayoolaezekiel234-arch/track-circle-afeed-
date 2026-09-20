@@ -24,13 +24,13 @@
         <div id="screen-splash" class="absolute inset-0 z-30 flex flex-col justify-between p-6 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80');">
             <div class="absolute inset-0 bg-gradient-to-t from-[#0B0E14] via-[#0B0E14]/80 to-transparent"></div>
             <div class="relative z-10 flex items-center space-x-3 pt-4">
-                <div class="w-10 h-10 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center">📍</div>
+                <div class="w-10 h-10 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center text-[#19E6A0] font-bold">📍</div>
                 <span class="font-bold tracking-wider text-sm uppercase text-gray-200">Track Circle</span>
             </div>
             <div class="relative z-10 space-y-6 pb-6">
                 <div class="space-y-2">
                     <h1 class="text-4xl font-bold tracking-tight">Stay Connected.<br>Stay Close.</h1>
-                    <p class="text-gray-300 text-sm">Real-time location, private circles, and social sharing.</p>
+                    <p class="text-gray-300 text-sm">Real-time location, media sharing, and live calls.</p>
                 </div>
                 <button onclick="showScreen('screen-signin')" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-2xl shadow-lg flex items-center justify-center space-x-2">
                     <span>Get Started</span><span>→</span>
@@ -61,17 +61,6 @@
                     </div>
                     <button onclick="handleSignIn()" class="w-full py-3.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl shadow-lg hover:bg-[#15cf8c] transition">
                         Sign In →
-                    </button>
-                    
-                    <div class="relative flex py-1 items-center">
-                        <div class="flex-grow border-t border-gray-800"></div>
-                        <span class="flex-shrink mx-4 text-gray-500 text-xs uppercase">or</span>
-                        <div class="flex-grow border-t border-gray-800"></div>
-                    </div>
-
-                    <button onclick="handleGoogleLogin()" class="w-full py-3 card-bg border border-gray-800 rounded-xl text-white font-medium text-xs flex items-center justify-center space-x-2 hover:bg-gray-800">
-                        <span>🌐</span>
-                        <span>Continue with Google</span>
                     </button>
                 </div>
             </div>
@@ -107,17 +96,6 @@
                     <button onclick="handleSignUp()" class="w-full py-3.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl shadow-lg hover:bg-[#15cf8c] transition">
                         Create Account →
                     </button>
-
-                    <div class="relative flex py-1 items-center">
-                        <div class="flex-grow border-t border-gray-800"></div>
-                        <span class="flex-shrink mx-4 text-gray-500 text-xs uppercase">or</span>
-                        <div class="flex-grow border-t border-gray-800"></div>
-                    </div>
-
-                    <button onclick="handleGoogleLogin()" class="w-full py-3 card-bg border border-gray-800 rounded-xl text-white font-medium text-xs flex items-center justify-center space-x-2 hover:bg-gray-800">
-                        <span>🌐</span>
-                        <span>Continue with Google</span>
-                    </button>
                 </div>
             </div>
             <div class="text-center pb-2 text-xs text-gray-400">
@@ -127,47 +105,62 @@
 
         <!-- 4. MAIN APP DASHBOARD CONTAINER -->
         <div id="screen-app" class="hidden absolute inset-0 z-20 flex flex-col bg-[#0B0E14] overflow-hidden">
-            <div class="px-6 pt-6 pb-3 flex justify-between items-center border-b border-gray-800/60 card-bg">
+            <!-- Top Header -->
+            <div class="px-6 pt-5 pb-3 flex justify-between items-center border-b border-gray-800/60 card-bg">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-[#19E6A0]" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
                     <div>
-                        <p class="text-xs text-gray-400">Logged in as,</p>
+                        <p class="text-[10px] text-gray-400">Good morning,</p>
                         <h3 id="user-display-name" class="font-bold text-sm text-white">Ezekiel 👋</h3>
                     </div>
                 </div>
-                <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-500/20 text-red-400 text-xs font-bold rounded-xl">Logout</button>
+                <button onclick="handleLogout()" class="px-2.5 py-1.5 bg-red-500/20 text-red-400 text-[10px] font-bold rounded-xl">Logout</button>
             </div>
 
             <!-- SCROLLABLE CONTENT TABS -->
             <div class="flex-1 overflow-y-auto pb-24">
 
-                <!-- TAB 1: HOME -->
-                <div id="tab-home" class="p-6 space-y-4">
+                <!-- TAB 1: HOME DASHBOARD -->
+                <div id="tab-home" class="p-5 space-y-4">
                     <div class="card-bg border border-gray-800 p-4 rounded-2xl space-y-2">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-[#19E6A0] animate-pulse"></span>
-                            <span class="text-xs font-semibold text-gray-200">Supabase Backend Connected 🟢</span>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#19E6A0] animate-pulse"></span>
+                                <span class="text-xs font-semibold text-gray-200">Location Sharing: ON</span>
+                            </div>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#19E6A0]/20 text-[#19E6A0] font-medium">Active</span>
                         </div>
-                        <p class="text-xs text-gray-400">Welcome to Track Circle. Head over to the Circles tab to create or join private groups.</p>
+                        <p class="text-xs text-gray-400">Your live location is visible to your active Circle members.</p>
+                    </div>
+
+                    <div class="card-bg border border-gray-800 p-4 rounded-2xl flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-11 h-11 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center text-lg">👥</div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Family Trip</h4>
+                                <p class="text-xs text-gray-400">4 members • 2 online</p>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('circles')" class="px-3 py-1.5 rounded-xl bg-[#19E6A0]/20 text-[#19E6A0] text-xs font-bold">View</button>
                     </div>
                 </div>
 
                 <!-- TAB 2: MAP -->
-                <div id="tab-map" class="hidden p-6 space-y-4">
-                    <h2 class="text-lg font-bold">Live Proximity Map</h2>
+                <div id="tab-map" class="hidden p-5 space-y-4">
+                    <h2 class="text-lg font-bold">Live Circle Map</h2>
                     <div class="h-[60vh] rounded-2xl bg-cover bg-center border border-gray-800 relative flex items-center justify-center" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80');">
                         <div class="absolute bottom-4 left-4 right-4 card-bg border border-gray-800 p-3 rounded-xl flex items-center justify-between">
                             <div class="flex items-center space-x-2">
                                 <div class="w-8 h-8 rounded-full bg-[#19E6A0]"></div>
                                 <div><p class="text-xs font-bold">Tomi</p><p class="text-[10px] text-gray-400">120m away • Online</p></div>
                             </div>
-                            <button class="px-3 py-1.5 bg-[#19E6A0] text-gray-950 font-bold rounded-lg text-xs">Ping</button>
+                            <button class="px-3 py-1 bg-[#19E6A0] text-gray-950 font-bold rounded-lg text-xs">Ping</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- TAB 3: CIRCLES -->
-                <div id="tab-circles" class="hidden p-6 space-y-4">
+                <div id="tab-circles" class="hidden p-5 space-y-4">
                     <div class="flex justify-between items-center">
                         <h2 class="text-lg font-bold">My Circles</h2>
                         <div class="flex space-x-2">
@@ -183,10 +176,46 @@
                     </div>
                 </div>
 
-                <!-- TAB 4: MESSAGES -->
-                <div id="tab-messages" class="hidden p-6 space-y-4">
-                    <h2 class="text-lg font-bold">Messages & Status</h2>
-                    <p class="text-xs text-gray-400">Select a Circle to start group chat or status updates.</p>
+                <!-- TAB 4: WHATSAPP-STYLE CHAT & MEDIA -->
+                <div id="tab-messages" class="hidden flex flex-col h-[74vh]">
+                    <!-- Chat Header with Call Buttons -->
+                    <div class="p-3 card-bg border-b border-gray-800 flex justify-between items-center">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-9 h-9 rounded-full bg-[#19E6A0]/20 border border-[#19E6A0] flex items-center justify-center font-bold text-xs text-[#19E6A0]">FT</div>
+                            <div><h4 class="font-bold text-xs">Family Trip Chat</h4><p class="text-[10px] text-[#19E6A0]">Online (4)</p></div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="startVoiceCall()" class="w-8 h-8 rounded-xl card-bg border border-gray-800 flex items-center justify-center text-xs" title="Voice Call">📞</button>
+                            <button onclick="startVideoCall()" class="w-8 h-8 rounded-xl card-bg border border-gray-800 flex items-center justify-center text-xs" title="Video Call">📹</button>
+                        </div>
+                    </div>
+
+                    <!-- Messages Scroll Area -->
+                    <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+                        <div class="flex justify-start">
+                            <div class="card-bg border border-gray-800 p-3 rounded-2xl max-w-[80%] space-y-1">
+                                <p class="text-[10px] text-[#19E6A0] font-bold">Tomi</p>
+                                <p class="text-gray-200">Hey everyone! Heading to the estate gate now.</p>
+                                <span class="text-[9px] text-gray-500 block text-right">08:48 AM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp-Style Media & Text Input Bar -->
+                    <div class="p-3 card-bg border-t border-gray-800 space-y-2">
+                        <div id="media-preview-box" class="hidden flex items-center justify-between bg-gray-900 p-2 rounded-xl text-xs">
+                            <span id="media-preview-text" class="text-gray-300 truncate">Media attached</span>
+                            <button onclick="clearMedia()" class="text-red-400 font-bold">✕</button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <label class="cursor-pointer p-2 rounded-xl card-bg border border-gray-800 text-sm hover:border-[#19E6A0]" title="Send Photo/Video">
+                                📎 <input type="file" id="media-file-input" accept="image/*,video/*" class="hidden" onchange="handleFileSelected(event)">
+                            </label>
+                            <button id="mic-btn" onclick="toggleVoiceRecording()" class="p-2 rounded-xl card-bg border border-gray-800 text-sm hover:border-[#19E6A0]" title="Record Voice Note">🎙️</button>
+                            <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 px-4 py-2.5 rounded-xl card-bg border border-gray-800 text-white text-xs outline-none focus:border-[#19E6A0]">
+                            <button onclick="sendChatMessage()" class="px-4 py-2.5 bg-[#19E6A0] text-gray-950 font-bold rounded-xl text-xs shadow">Send</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- TAB 5: PROFILE -->
@@ -195,6 +224,16 @@
                     <div><h3 id="profile-name" class="font-bold text-lg">Ezekiel Ayoola</h3><p class="text-xs text-gray-400">Active Member</p></div>
                 </div>
 
+            </div>
+
+            <!-- CALL OVERLAY MODAL -->
+            <div id="modal-call" class="hidden absolute inset-0 z-50 bg-black/90 flex flex-col items-center justify-between p-8 text-center">
+                <div class="space-y-2 pt-10">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-cover bg-center border-4 border-[#19E6A0] animate-pulse" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
+                    <h3 id="call-title" class="font-bold text-lg text-white">Calling Family Trip...</h3>
+                    <p class="text-xs text-[#19E6A0]">Encrypted P2P Connection</p>
+                </div>
+                <button onclick="endCall()" class="px-6 py-3.5 bg-red-600 text-white font-bold rounded-2xl text-sm shadow-lg">End Call ✕</button>
             </div>
 
             <!-- CREATE CIRCLE MODAL -->
@@ -231,6 +270,11 @@
         const SUPABASE_URL = 'https://dnrualdlokvekuhcwkyl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRucnVhbGRsb2t2ZWt1aGN3a3lsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3MTc5ODQsImV4cCI6MjEwNDI5Mzk4NH0.gqwmmBj6R8HjBFlQd0LRZDP59jueUS8pf2psF9etkAs';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let attachedMediaFile = null;
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
 
         function showScreen(screenId) {
             ['screen-splash', 'screen-signin', 'screen-signup', 'screen-app'].forEach(id => {
@@ -276,16 +320,96 @@
             }
         }
 
-        async function handleGoogleLogin() {
-            const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'google'
-            });
-            if (error) alert('Google Login Error: ' + error.message);
-        }
-
         async function handleLogout() {
             await supabaseClient.auth.signOut();
             showScreen('screen-splash');
+        }
+
+        // WhatsApp Chat Features
+        function handleFileSelected(event) {
+            const file = event.target.files[0];
+            if(file) {
+                attachedMediaFile = file;
+                document.getElementById('media-preview-box').classList.remove('hidden');
+                document.getElementById('media-preview-text').innerText = 'Attached: ' + file.name;
+            }
+        }
+
+        function clearMedia() {
+            attachedMediaFile = null;
+            document.getElementById('media-preview-box').classList.add('hidden');
+            document.getElementById('media-file-input').value = '';
+        }
+
+        async function toggleVoiceRecording() {
+            const micBtn = document.getElementById('mic-btn');
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        attachedMediaFile = new File([audioBlob], "voice_note.webm", { type: 'audio/webm' });
+                        document.getElementById('media-preview-box').classList.remove('hidden');
+                        document.getElementById('media-preview-text').innerText = '🎙️ Voice Note recorded successfully';
+                    };
+                    mediaRecorder.start();
+                    isRecording = true;
+                    micBtn.classList.add('bg-red-500/20', 'border-red-500', 'text-red-400');
+                    micBtn.innerText = '⏹️';
+                } catch (err) {
+                    alert('Microphone permission denied or unavailable.');
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                micBtn.classList.remove('bg-red-500/20', 'border-red-500', 'text-red-400');
+                micBtn.innerText = '🎙️';
+            }
+        }
+
+        async function sendChatMessage() {
+            const text = document.getElementById('chat-input').value;
+            if(!text && !attachedMediaFile) return;
+
+            const container = document.getElementById('chat-messages-container');
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            let htmlContent = `<div class="flex justify-end"><div class="bg-[#19E6A0]/20 border border-[#19E6A0] p-3 rounded-2xl max-w-[80%] space-y-1">`;
+            htmlContent += `<p class="text-[10px] text-[#19E6A0] font-bold">You</p>`;
+            if(text) htmlContent += `<p class="text-gray-100">${text}</p>`;
+            if(attachedMediaFile) {
+                if(attachedMediaFile.type.startsWith('image/')) {
+                    htmlContent += `<img src="${URL.createObjectURL(attachedMediaFile)}" class="rounded-xl mt-1 max-h-40 object-cover">`;
+                } else if(attachedMediaFile.type.startsWith('audio/')) {
+                    htmlContent += `<audio controls src="${URL.createObjectURL(attachedMediaFile)}" class="mt-1 w-full h-8"></audio>`;
+                } else {
+                    htmlContent += `<p class="text-[10px] text-gray-400">[File attached: ${attachedMediaFile.name}]</p>`;
+                }
+            }
+            htmlContent += `<span class="text-[9px] text-gray-400 block text-right">${timeStr}</span></div></div>`;
+
+            container.innerHTML += htmlContent;
+            document.getElementById('chat-input').value = '';
+            clearMedia();
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Live Call Features
+        function startVoiceCall() {
+            document.getElementById('call-title').innerText = "Voice Call - Family Trip";
+            document.getElementById('modal-call').classList.remove('hidden');
+        }
+
+        function startVideoCall() {
+            document.getElementById('call-title').innerText = "Video Call - Family Trip";
+            document.getElementById('modal-call').classList.remove('hidden');
+        }
+
+        function endCall() {
+            document.getElementById('modal-call').classList.add('hidden');
         }
 
         function openCreateModal() { document.getElementById('modal-create').classList.remove('hidden'); }
