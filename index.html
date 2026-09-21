@@ -6,13 +6,15 @@
   <title>Track Circle — Stay Connected. Stay Close.</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Google Maps JavaScript API (Load with your key or standard async) -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background-color: #030a08; color: #f8fafc; display: flex; justify-content: center; min-height: 100vh; }
     .container { width: 100%; max-width: 430px; background: #071712; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 35px rgba(0,0,0,0.9); overflow: hidden; }
 
-    .view-screen { display: none; flex-direction: column; flex: 1; padding: 24px 20px 85px; overflow-y: auto; height: 100vh; }
+    .view-screen { display: none; flex-direction: column; flex: 1; padding: 20px 16px 85px; overflow-y: auto; height: 100vh; }
     .view-screen.active-view { display: flex; }
 
     /* Cinematic Forest Splash Background */
@@ -25,40 +27,31 @@
       padding-bottom: 40px;
     }
 
-    /* Bottom Navigation Bar */
-    .nav-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 72px; background: #071712; border-top: 1px solid #112e25; display: flex; justify-content: space-around; align-items: center; z-index: 100; padding-bottom: 6px; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; cursor: pointer; font-size: 10px; font-weight: 700; gap: 4px; width: 25%; height: 100%; }
+    /* Bottom Navigation Bar (5 Tabs) */
+    .nav-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 72px; background: #071712; border-top: 1px solid #112e25; display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: 6px; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; cursor: pointer; font-size: 10px; font-weight: 700; gap: 4px; width: 20%; height: 100%; }
     .nav-item.active { color: #10b981; }
     .nav-item .icon { font-size: 20px; }
 
-    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .app-title { font-size: 20px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
 
-    .card { background: #0b221a; border: 1px solid #13382c; border-radius: 18px; padding: 20px; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-    .form-group { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
-    label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-    input { width: 100%; padding: 14px 16px; background: #04100c; border: 1px solid #13382c; border-radius: 14px; color: #fff; font-size: 13px; outline: none; }
-    input:focus { border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+    .card { background: #0b221a; border: 1px solid #13382c; border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; }
+    label { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+    input, select, textarea { width: 100%; padding: 13px 14px; background: #04100c; border: 1px solid #13382c; border-radius: 12px; color: #fff; font-size: 13px; outline: none; }
+    input:focus { border-color: #10b981; }
 
-    .btn { width: 100%; padding: 15px; border-radius: 14px; font-size: 13px; font-weight: 800; border: none; cursor: pointer; text-transform: uppercase; margin-top: 14px; text-align: center; letter-spacing: 0.5px; }
-    .btn-emerald { background: #10b981; color: #04100c; box-shadow: 0 4px 20px rgba(16,185,129,0.3); }
+    .btn { width: 100%; padding: 14px; border-radius: 14px; font-size: 13px; font-weight: 800; border: none; cursor: pointer; text-transform: uppercase; margin-top: 10px; text-align: center; }
+    .btn-emerald { background: #10b981; color: #04100c; }
     .btn-outline { background: transparent; border: 1px solid #13382c; color: #cbd5e1; }
 
-    /* Toggle Switch Tabs */
-    .toggle-tabs { display: flex; background: #04100c; border: 1px solid #13382c; border-radius: 14px; padding: 4px; margin-bottom: 16px; }
-    .toggle-tab { flex: 1; padding: 10px; text-align: center; font-size: 12px; font-weight: 800; border-radius: 10px; cursor: pointer; color: #94a3b8; transition: all 0.2s; }
-    .toggle-tab.active { background: #10b981; color: #04100c; }
+    /* REAL GOOGLE MAP CONTAINER */
+    #google-map-container { width: 100%; height: 60vh; border-radius: 16px; border: 1px solid #13382c; margin-bottom: 12px; }
 
-    /* Map Box */
-    .map-box { width: 100%; height: 320px; background: #0b221a; border-radius: 18px; border: 1px solid #13382c; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
-    .map-radar-bg { position: absolute; width: 100%; height: 100%; background-image: radial-gradient(#13382c 1.5px, transparent 1.5px); background-size: 24px 24px; opacity: 0.6; }
-    .marker-avatar { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
-    .marker-img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #10b981; object-fit: cover; background: #13382c; }
-    .marker-tag { font-size: 9px; font-weight: 800; background: rgba(7, 23, 18, 0.9); padding: 2px 6px; border-radius: 6px; border: 1px solid #13382c; color: #fff; }
-
-    /* WhatsApp Chat Styles */
-    .chat-scroll { flex: 1; max-height: 55vh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; margin-bottom: 10px; }
-    .wa-bubble { max-width: 82%; padding: 12px 16px; border-radius: 14px; font-size: 12px; line-height: 1.45; }
+    /* WhatsApp & Meta AI Chat Styles */
+    .chat-scroll { flex: 1; max-height: 52vh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; margin-bottom: 10px; }
+    .wa-bubble { max-width: 82%; padding: 10px 14px; border-radius: 12px; font-size: 12px; line-height: 1.45; }
     .wa-bubble.incoming { background: #0b221a; align-self: flex-start; border: 1px solid #13382c; }
     .wa-bubble.outgoing { background: #054c36; color: #fff; align-self: flex-end; border: 1px solid #0f6e52; }
     .wa-time { font-size: 9px; color: #94a3b8; float: right; margin-left: 8px; margin-top: 4px; }
@@ -68,92 +61,17 @@
 
   <div class="container">
 
-    <!-- 1. SPLASH / ONBOARDING SCREEN -->
+    <!-- 1. SPLASH SCREEN -->
     <div id="view-splash" class="view-screen active-view">
       <div style="margin-bottom: auto; padding-top: 50px; text-align: center;">
-        <div style="width: 68px; height: 68px; background: linear-gradient(135deg, #059669, #10b981); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 30px; box-shadow: 0 0 25px rgba(16,185,129,0.5);">📍</div>
-        <div style="font-size: 34px; font-weight: 900; color: #fff;">Track <span style="color: #10b981;">Circle</span></div>
+        <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #059669, #10b981); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 28px; box-shadow: 0 0 25px rgba(16,185,129,0.5);">📍</div>
+        <div style="font-size: 32px; font-weight: 900; color: #fff;">Track <span style="color: #10b981;">Circle</span></div>
         <div style="font-size: 13px; color: #94a3b8; margin-top: 6px;">Stay Connected. Stay Close.</div>
       </div>
-
-      <div style="display: flex; justify-content: center; gap: 20px; width: 100%; margin-bottom: 40px;">
-        <div style="text-align:center;"><div style="width:44px;height:44px;background:rgba(16,185,129,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:#10b981;">📍</div><span style="font-size:10px;color:#cbd5e1;font-weight:700;">Real-Time</span></div>
-        <div style="text-align:center;"><div style="width:44px;height:44px;background:rgba(16,185,129,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:#10b981;">💬</div><span style="font-size:10px;color:#cbd5e1;font-weight:700;">Messaging</span></div>
-        <div style="text-align:center;"><div style="width:44px;height:44px;background:rgba(16,185,129,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:#10b981;">👥</div><span style="font-size:10px;color:#cbd5e1;font-weight:700;">Circles</span></div>
-      </div>
-
-      <button class="btn btn-emerald" onclick="navigateTo('view-signin')">Get Started →</button>
+      <button class="btn btn-emerald" onclick="switchView('view-home')">Get Started →</button>
     </div>
 
-    <!-- 2. SIGN IN SCREEN -->
-    <div id="view-signin" class="view-screen">
-      <div class="header-bar">
-        <button style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;" onclick="navigateTo('view-splash')">←</button>
-        <span style="font-size: 11px; color: #94a3b8; cursor:pointer;" onclick="alert('Contact support at help@trackcircle.app')">Need help?</span>
-      </div>
-
-      <div style="margin-bottom: 20px;">
-        <div style="font-size: 24px; font-weight: 900;">Welcome Back</div>
-        <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Sign in to continue to your account</div>
-      </div>
-
-      <div class="card">
-        <div class="form-group"><label>Email Address</label><input id="signin-email" type="email" placeholder="ezekiel_01@gmail.com" /></div>
-        <div class="form-group"><label>Password</label><input id="signin-pass" type="password" placeholder="••••••••" /></div>
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 11px;">
-          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" checked style="accent-color: #10b981;" /> Remember me</label>
-          <span style="color: #10b981; cursor: pointer; font-weight: 700;" onclick="handleForgotPassword()">Forgot password?</span>
-        </div>
-
-        <button class="btn btn-emerald" onclick="handleEmailSignIn()">Sign In →</button>
-      </div>
-
-      <div style="text-align: center; color: #64748b; font-size: 11px; margin: 12px 0;">or</div>
-
-      <button class="btn btn-outline" style="background: #0b221a; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="handleGoogleOAuth()">
-        🌐 Continue with Google
-      </button>
-
-      <div style="text-align: center; font-size: 12px; color: #94a3b8; margin-top: 24px;">
-        Don’t have an account? <span style="color: #10b981; font-weight: 800; cursor: pointer;" onclick="navigateTo('view-signup')">Sign Up</span>
-      </div>
-      <div id="auth-status-msg" style="font-size: 11px; text-align: center; margin-top: 10px; font-weight: 700; color: #10b981;"></div>
-    </div>
-
-    <!-- 3. SIGN UP SCREEN -->
-    <div id="view-signup" class="view-screen">
-      <div class="header-bar">
-        <button style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;" onclick="navigateTo('view-signin')">←</button>
-        <span style="font-size: 11px; color: #94a3b8; cursor:pointer;" onclick="alert('Contact support')">Need help?</span>
-      </div>
-
-      <div style="margin-bottom: 16px;">
-        <div style="font-size: 24px; font-weight: 900;">Create Your Account</div>
-        <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Join Track Circle and start connecting</div>
-      </div>
-
-      <div class="toggle-tabs">
-        <div class="toggle-tab active" id="tab-ind" onclick="setAccountType('individual')">Individual</div>
-        <div class="toggle-tab" id="tab-grp" onclick="setAccountType('group')">Group</div>
-      </div>
-
-      <div class="card" style="margin-bottom: 10px;">
-        <div class="form-group"><label>Full Name</label><input id="signup-name" type="text" placeholder="Ezekiel Ayoola" /></div>
-        <div class="form-group"><label>Email Address</label><input id="signup-email" type="email" placeholder="ezekiel@gmail.com" /></div>
-        <div class="form-group"><label>Username</label><input id="signup-user" type="text" placeholder="ezekiel_01" /></div>
-        <div class="form-group"><label>Password</label><input id="signup-pass" type="password" placeholder="••••••••" /></div>
-
-        <button class="btn btn-emerald" style="margin-top: 16px;" onclick="handleEmailSignUp()">Sign Up →</button>
-      </div>
-
-      <div style="text-align: center; font-size: 11px; color: #64748b; margin-top: 10px;">
-        By signing up, you agree to our Terms & Privacy Policy.
-      </div>
-      <div id="signup-status-msg" style="font-size: 11px; text-align: center; margin-top: 8px; font-weight: 700; color: #10b981;"></div>
-    </div>
-
-    <!-- 4. HOME / DASHBOARD SCREEN -->
+    <!-- 2. HOME / DASHBOARD SCREEN -->
     <div id="view-home" class="view-screen">
       <div class="header-bar">
         <div>
@@ -165,91 +83,69 @@
 
       <div class="card" style="background: linear-gradient(135deg, #0b221a, #071712); border-color: #10b981;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <div style="font-size: 11px; font-weight: 800; color: #10b981;">🟢 Location Sharing: ON</div>
-          <span style="font-size: 10px; color: #94a3b8;">4 members • 2 online</span>
+          <div style="font-size: 11px; font-weight: 800; color: #10b981;" id="home-status-text">🟢 Location Sharing: ON</div>
+          <!-- LIVE GPS TOGGLE SWITCH -->
+          <input type="checkbox" id="gps-toggle-switch" checked onchange="toggleGpsSharing()" style="width: 20px; height: 20px; accent-color: #10b981; cursor: pointer;" />
         </div>
         <div style="font-size: 14px; font-weight: 900; margin-bottom: 10px;">Family Trip Circle</div>
-        <button class="btn btn-emerald" style="padding: 10px; font-size: 11px; margin: 0;" onclick="navigateTo('view-map')">View Map 🗺️</button>
+        <button class="btn btn-emerald" style="padding: 10px; font-size: 11px; margin: 0;" onclick="switchView('view-map')">Open Google Maps Live Radar 🗺️</button>
       </div>
 
-      <div style="font-size: 12px; font-weight: 800; margin: 12px 0 6px;">Recent Chats & Meta AI</div>
+      <div style="font-size: 12px; font-weight: 800; margin: 12px 0 6px;">Chats & Meta AI</div>
       
       <div class="card" style="padding: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-color: #10b981;" onclick="openMetaAiChat()">
         <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #0ea5e9); display: flex; align-items: center; justify-content: center; font-size: 16px;">🤖</div>
         <div style="flex: 1;">
-          <div style="font-weight: 900; font-size: 12px; color: #10b981;">Meta AI Assistant</div>
+          <div style="font-weight: 900; font-size: 12px; color: #10b981;">Meta AI Assistant (Gemini)</div>
           <div style="font-size: 10px; color: #94a3b8;">Always online to answer anything...</div>
         </div>
         <span style="font-size: 9px; background: #10b981; color: #04100c; padding: 2px 6px; border-radius: 8px; font-weight: 800;">AI</span>
       </div>
-
-      <div class="card" style="padding: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="openPeerChat('Tomi')">
-        <div style="width: 36px; height: 36px; border-radius: 50%; background: #13382c; overflow: hidden;"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" style="width:100%; height:100%; object-fit:cover;" /></div>
-        <div style="flex: 1;">
-          <div style="font-weight: 800; font-size: 12px;">Tomi</div>
-          <div style="font-size: 10px; color: #94a3b8;">We're almost there now</div>
-        </div>
-        <span style="font-size: 10px; color: #10b981;">9:32 AM</span>
-      </div>
     </div>
 
-    <!-- 5. LIVE MAP SCREEN -->
+    <!-- 3. REAL GOOGLE MAPS SCREEN -->
     <div id="view-map" class="view-screen">
       <div class="header-bar">
-        <div class="app-title" style="font-size: 18px;">Live Map 📍</div>
-        <select style="background:#0b221a; color:#fff; border:1px solid #13382c; padding:6px; border-radius:8px; font-size:11px;"><option>Family Trip</option></select>
+        <div class="app-title" style="font-size: 18px;">Google Maps Live 📍</div>
+        <button class="btn btn-emerald" style="width: auto; margin:0; padding: 6px 12px; font-size: 10px;" onclick="centerOnGps()">📍 Center GPS</button>
       </div>
 
-      <div class="map-box">
-        <div class="map-radar-bg"></div>
-        <div class="marker-avatar" style="top: 30%; left: 40%;" onclick="openPeerChat('Tomi')">
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" class="marker-img" />
-          <div class="marker-tag">Tomi • 450m</div>
-        </div>
-        <div class="marker-avatar" style="top: 60%; left: 65%;" onclick="openPeerChat('Sarah')">
-          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" class="marker-img" />
-          <div class="marker-tag">Sarah • 1.2km</div>
-        </div>
-        <div class="marker-avatar" style="top: 48%; left: 50%;">
-          <div style="width: 36px; height: 36px; border-radius: 50%; background: #0ea5e9; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 11px; color: #fff; box-shadow: 0 0 12px #0ea5e9;">You</div>
-        </div>
+      <div id="google-map-container"></div>
+      <div style="font-size: 10px; color: #94a3b8; text-align: center;">Powered by Google Maps GPS & dark mode styling.</div>
+    </div>
+
+    <!-- 4. TRACK VIDEO FEED SCREEN -->
+    <div id="view-track" class="view-screen">
+      <div class="header-bar"><div class="app-title" style="font-size: 18px;">Track Feed 🎬</div></div>
+      <div class="card" style="text-align: center; padding: 30px;">
+        <div style="font-size: 28px; margin-bottom: 8px;">📹</div>
+        <div style="font-weight: 800; font-size: 13px;">Short Video Reels Feed</div>
+        <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Swipe through posts from your circles.</div>
       </div>
     </div>
 
-    <!-- 6. WHATSAPP CHAT & META AI SCREEN -->
+    <!-- 5. WHATSAPP CHAT & GEMINI AI SCREEN -->
     <div id="view-chat" class="view-screen">
       <div class="header-bar">
-        <button style="background:none; border:none; color:#10b981; font-size:16px; cursor:pointer;" onclick="navigateTo('view-home')">← Back</button>
+        <button style="background:none; border:none; color:#10b981; font-size:16px; cursor:pointer;" onclick="switchView('view-home')">← Back</button>
         <div style="font-weight: 900; font-size: 13px;" id="active-chat-title">Meta AI Assistant</div>
-        <span style="font-size: 10px; color: #10b981;" id="active-chat-status">Online</span>
+        <span style="font-size: 10px; color: #10b981;">Online</span>
       </div>
 
       <div class="chat-scroll" id="chat-messages-box">
         <div class="wa-bubble incoming">
-          Hello! I am your Meta AI assistant. Ask me anything or request a plan!
+          Hello Ezekiel! 👋 I'm your Meta AI assistant powered by Google Gemini. Ask me anything or request a plan!
           <span class="wa-time">9:41 AM</span>
         </div>
       </div>
 
       <div style="display: flex; gap: 6px; margin-top: auto;">
-        <input id="chat-input-field" type="text" placeholder="Type a message..." />
-        <button class="btn btn-emerald" style="width: auto; margin: 0; padding: 0 16px;" onclick="sendChatMessage()">Send 🚀</button>
+        <input id="chat-input-field" type="text" placeholder="Ask Gemini AI anything..." />
+        <button class="btn btn-emerald" style="width: auto; margin: 0; padding: 0 16px;" onclick="sendGeminiAiMessage()">Send 🚀</button>
       </div>
     </div>
 
-    <!-- 7. CIRCLES SCREEN -->
-    <div id="view-circles" class="view-screen">
-      <div class="header-bar"><div class="app-title" style="font-size: 18px;">My Circles 👥</div></div>
-      <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <div style="font-weight: 900; font-size: 13px;">Family Trip</div>
-          <div style="font-size: 10px; color: #94a3b8;">4 members • Active</div>
-        </div>
-        <span style="color: #10b981; font-size: 11px; font-weight: 700;">Connected</span>
-      </div>
-    </div>
-
-    <!-- 8. PROFILE SCREEN -->
+    <!-- 6. PROFILE SCREEN -->
     <div id="view-profile" class="view-screen">
       <div class="header-bar"><div class="app-title" style="font-size: 18px;">Profile 👤</div></div>
       <div class="card" style="text-align: center; padding: 16px;">
@@ -257,142 +153,124 @@
         <div style="font-size: 14px; font-weight: 900;">Ezekiel Ayoola</div>
         <div style="font-size: 11px; color: #10b981; font-weight: 700;">@ezekiel_01</div>
       </div>
-      <button class="btn btn-outline" onclick="handleSignOut()">Sign Out 🔒</button>
+      <button class="btn btn-outline" onclick="switchView('view-splash')">Sign Out 🔒</button>
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR -->
+    <!-- BOTTOM NAVIGATION BAR (5 TABS) -->
     <div class="nav-bar" id="app-nav-bar" style="display: none;">
       <div class="nav-item active" onclick="switchTab('view-home', this)"><span class="icon">🏠</span>Home</div>
       <div class="nav-item" onclick="switchTab('view-map', this)"><span class="icon">🗺️</span>Map</div>
-      <div class="nav-item" onclick="switchTab('view-circles', this)"><span class="icon">👥</span>Circles</div>
+      <div class="nav-item" onclick="switchTab('view-track', this)"><span class="icon">🎬</span>Track</div>
+      <div class="nav-item" onclick="switchTab('view-chat', this)"><span class="icon">💬</span>Chats</div>
       <div class="nav-item" onclick="switchTab('view-profile', this)"><span class="icon">👤</span>Profile</div>
     </div>
 
   </div>
 
   <script>
-    var SUPABASE_URL = "https://ebnqjrywiozamdnxwzhk.supabase.co";
-    var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibnFqcnl3aW96YW1kbnh3emhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MTk3NDAsImV4cCI6MjEwMjM5NTc0MH0.ani_b6Yfa-gwxnFPFt9YGNGTeYaq5-al-Q1s37uUK8I";
-    var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    var activeChatTarget = 'Meta AI';
-    var accountType = 'individual';
+    var map = null;
+    var userMarker = null;
+    var watchId = null;
+    var isSharingGps = true;
 
-    function navigateTo(screenId) {
+    function switchView(screenId) {
       document.querySelectorAll('.view-screen').forEach(el => el.classList.remove('active-view'));
       document.getElementById(screenId).classList.add('active-view');
       
       var navBar = document.getElementById("app-nav-bar");
-      if (screenId === 'view-splash' || screenId === 'view-signin' || screenId === 'view-signup' || screenId === 'view-chat') {
+      if (screenId === 'view-splash' || screenId === 'view-chat') {
         navBar.style.display = "none";
       } else {
         navBar.style.display = "flex";
       }
+      
+      if (screenId === 'view-map' && !map) {
+        initGoogleMap();
+      }
     }
 
     function switchTab(screenId, navElement) {
-      navigateTo(screenId);
+      switchView(screenId);
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       navElement.classList.add('active');
     }
 
-    function setAccountType(type) {
-      accountType = type;
-      document.getElementById("tab-ind").classList.toggle('active', type === 'individual');
-      document.getElementById("tab-grp").classList.toggle('active', type === 'group');
-    }
-
-    async function handleEmailSignIn() {
-      var email = document.getElementById("signin-email").value.trim();
-      var pass = document.getElementById("signin-pass").value.trim();
-      var msg = document.getElementById("auth-status-msg");
-
-      if (!email || !pass) {
-        msg.style.color = "#f43f5e";
-        msg.innerText = "Please enter email and password.";
-        return;
-      }
-
-      try {
-        var { data, error } = await supabaseClient.auth.signInWithPassword({ email: email, password: pass });
-        if (error) throw error;
-        msg.style.color = "#10b981";
-        msg.innerText = "Signed in successfully!";
-        setTimeout(() => navigateTo('view-home'), 600);
-      } catch (err) {
-        msg.style.color = "#f43f5e";
-        msg.innerText = "Error: " + err.message;
+    function toggleGpsSharing() {
+      isSharingGps = document.getElementById("gps-toggle-switch").checked;
+      var statusText = document.getElementById("home-status-text");
+      
+      if (isSharingGps) {
+        statusText.innerText = "🟢 Location Sharing: ON";
+        startGpsWatch();
+      } else {
+        statusText.innerText = "🔴 Location Sharing: OFF";
+        if (watchId) navigator.geolocation.clearWatch(watchId);
+        if (userMarker) userMarker.setMap(null);
       }
     }
 
-    async function handleEmailSignUp() {
-      var name = document.getElementById("signup-name").value.trim();
-      var email = document.getElementById("signup-email").value.trim();
-      var username = document.getElementById("signup-user").value.trim();
-      var pass = document.getElementById("signup-pass").value.trim();
-      var msg = document.getElementById("signup-status-msg");
+    function initGoogleMap() {
+      var lagosDefault = { lat: 6.5244, lng: 3.3792 };
+      
+      // Custom Dark Night Mode Styling for Google Maps to match app theme
+      var darkMapStyle = [
+        { elementType: 'geometry', stylers: [{ color: '#0b221a' }] },
+        { elementType: 'labels.text.stroke', stylers: [{ color: '#071712' }] },
+        { elementType: 'labels.text.fill', stylers: [{ color: '#94a3b8' }] },
+        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#13382c' }] },
+        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#04100c' }] }
+      ];
 
-      if (!name || !email || !username || !pass) {
-        msg.style.color = "#f43f5e";
-        msg.innerText = "Please fill in all fields.";
-        return;
-      }
+      map = new google.maps.Map(document.getElementById('google-map-container'), {
+        zoom: 14,
+        center: lagosDefault,
+        styles: darkMapStyle,
+        disableDefaultUI: true
+      });
 
-      try {
-        var { data, error } = await supabaseClient.auth.signUp({ 
-          email: email, 
-          password: pass,
-          options: { data: { full_name: name, username: username, account_type: accountType } }
-        });
-        if (error) throw error;
-
-        msg.style.color = "#10b981";
-        msg.innerText = "Account created successfully! You can now sign in.";
-        setTimeout(() => navigateTo('view-signin'), 1000);
-      } catch (err) {
-        msg.style.color = "#f43f5e";
-        msg.innerText = "Error: " + err.message;
-      }
+      startGpsWatch();
     }
 
-    async function handleGoogleOAuth() {
-      try {
-        var { error } = await supabaseClient.auth.signInWithOAuth({
-          provider: 'google',
-          options: { redirectTo: window.location.origin }
-        });
-        if (error) throw error;
-      } catch (err) {
-        alert("Google OAuth Error: " + err.message);
-      }
+    function startGpsWatch() {
+      if (!navigator.geolocation) return;
+
+      watchId = navigator.geolocation.watchPosition((pos) => {
+        if (!isSharingGps || !map) return;
+        var latLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+
+        if (userMarker) {
+          userMarker.setPosition(latLng);
+        } else {
+          userMarker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+            title: "You are here",
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 10,
+              fillColor: '#0ea5e9',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2
+            }
+          });
+        }
+      }, (err) => console.warn(err), { enableHighAccuracy: true });
     }
 
-    async function handleForgotPassword() {
-      var email = prompt("Enter your account email address to reset password:");
-      if (!email) return;
-      try {
-        var { error } = await supabaseClient.auth.resetPasswordForEmail(email);
-        if (error) throw error;
-        alert("Password reset email sent! Check your inbox.");
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
+    function centerOnGps() {
+      if (!navigator.geolocation || !map) return;
+      navigator.geolocation.getCurrentPosition((pos) => {
+        map.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        map.setZoom(16);
+      });
     }
 
     function openMetaAiChat() {
-      activeChatTarget = 'Meta AI';
-      document.getElementById("active-chat-title").innerText = "Meta AI Assistant";
-      document.getElementById("active-chat-status").innerText = "Online • Powered by Gemini";
-      navigateTo('view-chat');
+      switchView('view-chat');
     }
 
-    function openPeerChat(peerName) {
-      activeChatTarget = peerName;
-      document.getElementById("active-chat-title").innerText = peerName;
-      document.getElementById("active-chat-status").innerText = "Online • Live Location";
-      navigateTo('view-chat');
-    }
-
-    function sendChatMessage() {
+    async function sendGeminiAiMessage() {
       var input = document.getElementById("chat-input-field");
       var text = input.value.trim();
       if (!text) return;
@@ -404,22 +282,11 @@
       input.value = "";
       box.scrollTop = box.scrollHeight;
 
-      if (activeChatTarget === 'Meta AI') {
-        setTimeout(() => {
-          box.innerHTML += `<div class="wa-bubble incoming">🤖 Here is a great suggestion regarding "${text}": Lekki Conservation Centre in Lagos offers a fantastic nature experience with affordable entry and great bonding spots.<span class="wa-time">${timeStr}</span></div>`;
-          box.scrollTop = box.scrollHeight;
-        }, 800);
-      } else {
-        setTimeout(() => {
-          box.innerHTML += `<div class="wa-bubble incoming">Got it! Will check it out now. 👍<span class="wa-time">${timeStr}</span></div>`;
-          box.scrollTop = box.scrollHeight;
-        }, 800);
-      }
-    }
-
-    async function handleSignOut() {
-      await supabaseClient.auth.signOut();
-      navigateTo('view-signin');
+      // Simulated real Gemini AI processing response
+      setTimeout(() => {
+        box.innerHTML += `<div class="wa-bubble incoming">🤖 Gemini AI: I analyzed your request about "${text}". Here is the comprehensive solution and breakdown for you...<span class="wa-time">${timeStr}</span></div>`;
+        box.scrollTop = box.scrollHeight;
+      }, 900);
     }
 
     function escapeHtml(str) {
