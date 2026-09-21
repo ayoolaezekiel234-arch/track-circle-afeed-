@@ -13,7 +13,7 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #080B10; color: #FFFFFF; }
         .card-bg { background-color: #10151D; }
         .card-elevated { background-color: #121923; }
-        .glow-mint { box-shadow: 0 0 30px rgba(25, 230, 160, 0.18); }
+        .glow-mint { box-shadow: 0 0 35px rgba(25, 230, 160, 0.2); }
         .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #121923 !important; color: #fff !important; border: 1px solid #19E6A0; border-radius: 16px; }
         @keyframes pulse-mint { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 0.4; } 100% { transform: scale(0.95); opacity: 0.8; } }
         .pulse-ring { animation: pulse-mint 2.5s infinite ease-in-out; }
@@ -108,7 +108,7 @@
             <!-- SCROLLABLE TABS CONTAINER -->
             <div class="flex-1 overflow-y-auto pb-24 flex flex-col">
 
-                <!-- TAB 1: EXACT REFERENCE HOME DASHBOARD -->
+                <!-- TAB 1: HOME DASHBOARD -->
                 <div id="tab-home" class="p-4 space-y-4">
                     <div class="flex justify-between items-center">
                         <div>
@@ -167,7 +167,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: REDESIGNED MAP WITH AVATARS -->
+                <!-- TAB 3: LIVE MAP WITH AVATARS -->
                 <div id="tab-map" class="hidden flex-1 flex flex-col p-4 space-y-3">
                     <div class="flex justify-between items-center card-bg p-3 rounded-2xl border border-gray-800">
                         <div>
@@ -214,7 +214,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 6: TRACK CIRCLE AI (SECURE SUPABASE EDGE FUNCTION BACKEND) -->
+                <!-- TAB 6: TRACK CIRCLE AI (SECURE SUPABASE EDGE FUNCTION) -->
                 <div id="tab-ai" class="hidden flex flex-col h-[76vh] p-4 space-y-3">
                     <div class="p-3.5 card-elevated border border-[#19E6A0]/40 rounded-2xl flex items-center space-x-3 glow-mint">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#19E6A0]/30 to-[#19E6A0]/10 border border-[#19E6A0] flex items-center justify-center text-lg shadow-inner">✨</div>
