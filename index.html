@@ -10,10 +10,10 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #05070A; color: #FFFFFF; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030406; color: #FFFFFF; }
         .card-bg { background-color: #10151D; }
         .card-elevated { background-color: #121923; }
-        .glow-mint { box-shadow: 0 0 35px rgba(25, 230, 160, 0.25); }
+        .glow-mint { box-shadow: 0 0 35px rgba(25, 230, 160, 0.3); }
         .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #121923 !important; color: #fff !important; border: 1px solid #19E6A0; border-radius: 16px; }
         @keyframes pulse-mint { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.18); opacity: 0.3; } 100% { transform: scale(0.95); opacity: 0.8; } }
         .pulse-ring { animation: pulse-mint 2.5s infinite ease-in-out; }
@@ -24,19 +24,48 @@
 
     <div class="w-full max-w-md h-screen sm:h-[92vh] sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col bg-[#0B0E14] sm:border border-[#19E6A0]/30 relative">
 
-        <!-- 1. CINEMATIC SPLASH SCREEN -->
-        <div id="screen-splash" class="absolute inset-0 z-50 flex flex-col justify-between p-6 bg-cover bg-center" style="background-image: linear-gradient(to bottom, rgba(5,7,10,0.4), rgba(11,14,20,0.96)), url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80');">
-            <div class="flex items-center space-x-3 pt-6">
-                <div class="w-10 h-10 rounded-2xl bg-[#19E6A0]/20 border border-[#19E6A0]/50 flex items-center justify-center text-[#19E6A0] font-bold glow-mint text-lg">📍</div>
-                <span class="font-bold tracking-widest text-xs uppercase text-gray-200">Track Circle</span>
-            </div>
-            <div class="space-y-6 pb-8 text-center">
-                <div class="space-y-2">
-                    <h1 class="text-4xl font-extrabold tracking-tight">Stay Connected.<br><span class="text-[#19E6A0]">Stay Close.</span></h1>
-                    <p class="text-gray-400 text-xs px-4">Real-time GPS mapping, circles, Gemini AI, and Spotlight feed.</p>
+        <!-- 1. EXACT REFERENCE SPLASH SCREEN -->
+        <div id="screen-splash" class="absolute inset-0 z-50 flex flex-col justify-between p-6 bg-cover bg-center" style="background-image: linear-gradient(to bottom, rgba(5,7,10,0.35), rgba(8,11,16,0.95)), url('https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=900&q=80');">
+            <!-- Top Logo Header -->
+            <div class="flex items-center justify-center pt-8">
+                <div class="flex items-center space-x-2">
+                    <div class="w-9 h-9 rounded-xl bg-[#19E6A0]/20 border border-[#19E6A0]/50 flex items-center justify-center text-[#19E6A0] font-bold">📍</div>
+                    <span class="font-extrabold tracking-wider text-base text-white">Track Circle</span>
                 </div>
-                <button onclick="showScreen('screen-signin')" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-bold rounded-2xl shadow-lg glow-mint active:scale-95 transition">Get Started</button>
-                <button onclick="showScreen('screen-signin')" class="text-xs text-gray-400 hover:text-white transition">I Already Have an Account</button>
+            </div>
+
+            <!-- Center Branding & Feature Pills -->
+            <div class="space-y-8 text-center pb-4">
+                <div class="space-y-2">
+                    <h1 class="text-3xl font-extrabold tracking-tight">Stay Connected.<br><span class="text-[#19E6A0]">Stay Close.</span></h1>
+                    <p class="text-gray-400 text-xs px-4">Real-time GPS mapping, circles, and secure messaging.</p>
+                </div>
+
+                <!-- Three Feature Pills -->
+                <div class="grid grid-cols-3 gap-2 px-1">
+                    <div class="card-bg border border-gray-800/80 p-3 rounded-2xl flex flex-col items-center justify-center space-y-1.5 shadow-lg">
+                        <span class="text-[#19E6A0] text-sm">📍</span>
+                        <span class="text-[9px] text-gray-300 font-medium text-center leading-tight">Real-Time Location</span>
+                    </div>
+                    <div class="card-bg border border-gray-800/80 p-3 rounded-2xl flex flex-col items-center justify-center space-y-1.5 shadow-lg">
+                        <span class="text-[#19E6A0] text-sm">💬</span>
+                        <span class="text-[9px] text-gray-300 font-medium text-center leading-tight">Group & Private Messaging</span>
+                    </div>
+                    <div class="card-bg border border-gray-800/80 p-3 rounded-2xl flex flex-col items-center justify-center space-y-1.5 shadow-lg">
+                        <span class="text-[#19E6A0] text-sm">👥</span>
+                        <span class="text-[9px] text-gray-300 font-medium text-center leading-tight">Create & Join Circles</span>
+                    </div>
+                </div>
+
+                <!-- Pagination Dots -->
+                <div class="flex justify-center space-x-1.5 pt-1">
+                    <div class="w-6 h-1.5 rounded-full bg-[#19E6A0]"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-gray-600"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-gray-600"></div>
+                </div>
+
+                <!-- Get Started CTA -->
+                <button onclick="showScreen('screen-signin')" class="w-full py-4 bg-[#19E6A0] text-gray-950 font-extrabold rounded-2xl shadow-lg glow-mint active:scale-95 transition text-sm">Get Started →</button>
             </div>
         </div>
 
@@ -140,7 +169,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: TRACK (SPOTLIGHT / TIKTOK FEED) -->
+                <!-- TAB 2: TRACK FEED -->
                 <div id="tab-track" class="hidden flex-1 flex flex-col h-[74vh] bg-black relative">
                     <div class="absolute top-3 left-0 right-0 z-20 flex justify-center space-x-6 text-xs font-bold">
                         <button onclick="switchFeedTab('foryou')" id="feed-tab-foryou" class="text-[#19E6A0] border-b-2 border-[#19E6A0] pb-1">For You</button>
@@ -239,7 +268,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 7: PROFILE & USER DIRECTORY SEARCH -->
+                <!-- TAB 7: PROFILE & DIRECTORY SEARCH -->
                 <div id="tab-profile" class="hidden p-5 space-y-4">
                     <div class="text-center space-y-2">
                         <div class="w-20 h-20 mx-auto rounded-full bg-cover bg-center border-2 border-[#19E6A0] glow-mint" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80');"></div>
@@ -247,7 +276,6 @@
                         <p id="profile-email" class="text-xs text-gray-400">@elizabeth • Lagos, Nigeria</p>
                     </div>
 
-                    <!-- Search Signed-in Users Directory -->
                     <div class="card-bg border border-gray-800 p-4 rounded-2xl space-y-3">
                         <h4 class="font-bold text-xs text-[#19E6A0]">🔍 Search Signed-In Users</h4>
                         <input type="text" id="user-search-input" placeholder="Search by name or email..." oninput="searchUsersDirectory()" class="w-full px-3.5 py-2.5 rounded-xl card-elevated border border-gray-800 text-white text-xs outline-none focus:border-[#19E6A0]">
@@ -278,12 +306,12 @@
 
             </div>
 
-            <!-- MODALS FOR GIFTS, POSTS, CIRCLES -->
+            <!-- MODALS -->
             <div id="modal-gift" class="hidden absolute inset-0 z-60 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
                 <div class="card-elevated border border-[#19E6A0]/50 w-full max-w-sm p-6 rounded-3xl space-y-4 text-center glow-mint">
                     <div id="gift-modal-icon" class="text-4xl">🌹</div>
                     <div>
-                        <h3 id="gift-modal-title" class="font-bold text-base text-white">Send a Rose</h3>
+                        <h3 id="gift-modal-title" class="font-bold text-base text-white">Send a Gift</h3>
                         <p id="gift-modal-price" class="text-lg font-extrabold text-[#19E6A0] mt-1">₦500</p>
                     </div>
                     <div class="card-bg p-3 rounded-2xl border border-gray-800 text-left space-y-1">
@@ -350,7 +378,7 @@
         let mapInstance = null;
         let mapMarkers = {};
         let aiConversationHistory = [];
-        let selectedGiftData = { name: 'Rose', price: 500, emoji: '🌹' };
+        let selectedGiftData = { name: 'Rose', price: 500 };
 
         function showScreen(screenId) {
             ['screen-splash', 'screen-signin', 'screen-signup', 'screen-app'].forEach(id => {
@@ -467,7 +495,7 @@
         async function loadPublicFeed() {
             const container = document.getElementById('public-feed-container');
             const { data: posts } = await supabaseClient.from('track_posts').select('id, media_url, media_type, caption, likes_count, profiles(full_name, avatar_url)').order('created_at', { ascending: false });
-            if(!posts || posts.length === 0) return; // Keep default snapshot feed if empty
+            if(!posts || posts.length === 0) return;
             container.innerHTML = '';
             posts.forEach(p => {
                 container.innerHTML += `
@@ -585,6 +613,7 @@
             } catch (err) {
                 document.getElementById(loadingId).remove();
                 container.innerHTML += `<div class="p-3 card-bg border border-red-500/40 text-red-400 rounded-xl text-xs">AI error: Ensure Supabase function 'track-circle-ai' is deployed with GEMINI_API_KEY.</div>`;
+                container.scrollTop = container.scrollHeight;
             }
         }
 
