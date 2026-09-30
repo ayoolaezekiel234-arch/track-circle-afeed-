@@ -1,297 +1,1713 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Track Circle — Stay Connected. Stay Close.</title>
-  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Google Maps JavaScript API (Load with your key or standard async) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080B10">
+<title>Track Circle</title>
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: #030a08; color: #f8fafc; display: flex; justify-content: center; min-height: 100vh; }
-    .container { width: 100%; max-width: 430px; background: #071712; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 35px rgba(0,0,0,0.9); overflow: hidden; }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    .view-screen { display: none; flex-direction: column; flex: 1; padding: 20px 16px 85px; overflow-y: auto; height: 100vh; }
-    .view-screen.active-view { display: flex; }
+<style>
+:root{
+  --bg:#080B10;
+  --surface:#101720;
+  --surface2:#151E27;
+  --mint:#19E6A0;
+  --white:#F5F8F7;
+  --text:#E8EFEC;
+  --muted:#84909B;
+  --danger:#ff5367;
+  --border:rgba(255,255,255,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--white);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+button,input,textarea{font:inherit}
+button{border:0;cursor:pointer}
+input,textarea{outline:0}
+.app{height:100dvh;position:relative;background:var(--bg)}
+.hidden{display:none!important}
 
-    /* Cinematic Forest Splash Background */
-    #view-splash {
-      background: linear-gradient(180deg, rgba(3, 10, 8, 0.3) 0%, rgba(5, 17, 13, 0.8) 50%, #071712 100%), 
-                  url('https://images.unsplash.com/photo-1511497584788-87676119707a?w=900') center/cover no-repeat;
-      justify-content: flex-end;
-      align-items: center;
-      text-align: center;
-      padding-bottom: 40px;
-    }
+.splash{
+ position:absolute;inset:0;z-index:999;
+ display:flex;align-items:center;justify-content:center;
+ background:#080B10;
+ transition:.5s;
+}
+.splash.hide{opacity:0;pointer-events:none}
+.splashLogo{
+ width:85px;height:85px;border:3px solid var(--mint);
+ border-radius:28px;display:grid;place-items:center;
+ box-shadow:0 0 50px rgba(25,230,160,.18);
+}
+.splashLogo:after{
+ content:"";width:36px;height:36px;border:3px solid var(--mint);
+ border-radius:50%;box-shadow:0 0 15px rgba(25,230,160,.5);
+}
+.splash h1{margin-top:20px;text-align:center;font-size:27px;letter-spacing:2px}
+.splash h1 span{color:var(--mint)}
+.splash p{text-align:center;color:var(--muted);margin-top:7px;font-size:12px}
 
-    /* Bottom Navigation Bar (5 Tabs) */
-    .nav-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 72px; background: #071712; border-top: 1px solid #112e25; display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: 6px; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; cursor: pointer; font-size: 10px; font-weight: 700; gap: 4px; width: 20%; height: 100%; }
-    .nav-item.active { color: #10b981; }
-    .nav-item .icon { font-size: 20px; }
+.auth{
+ position:absolute;inset:0;z-index:800;background:var(--bg);
+ padding:30px 20px;overflow:auto;
+ display:flex;align-items:center;justify-content:center;
+}
+.authBox{width:100%;max-width:430px}
+.authLogo{width:58px;height:58px;border:2px solid var(--mint);border-radius:19px;display:grid;place-items:center;margin-bottom:22px}
+.authLogo:after{content:"";width:24px;height:24px;border:2px solid var(--mint);border-radius:50%}
+.auth h1{font-size:29px}
+.auth h1 span{color:var(--mint)}
+.auth p{color:var(--muted);font-size:13px;margin-top:7px;line-height:1.5}
+.authTabs{display:flex;background:var(--surface);padding:4px;border-radius:15px;margin:25px 0 15px}
+.authTabs button{flex:1;padding:11px;border-radius:11px;background:none;color:var(--muted)}
+.authTabs button.active{background:rgba(25,230,160,.1);color:var(--mint)}
+.field{margin-bottom:10px}
+.field input,.field textarea{
+ width:100%;padding:15px;border-radius:15px;
+ background:var(--surface);border:1px solid var(--border);
+ color:var(--white);
+}
+.primary{
+ width:100%;padding:14px;border-radius:15px;
+ background:var(--mint);color:#03130d;font-weight:900;
+}
+.authSwitch{text-align:center;margin-top:15px;color:var(--muted);font-size:12px}
+.authSwitch button{background:none;color:var(--mint)}
 
-    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .app-title { font-size: 20px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
+.main{height:100%;display:flex;flex-direction:column}
+.content{
+ flex:1;min-height:0;overflow:auto;
+ padding:calc(env(safe-area-inset-top) + 18px) 16px 105px;
+}
+.content::-webkit-scrollbar{display:none}
+.page{display:none;animation:in .2s ease}
+.page.active{display:block}
+@keyframes in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 
-    .card { background: #0b221a; border: 1px solid #13382c; border-radius: 16px; padding: 16px; margin-bottom: 12px; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; }
-    label { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
-    input, select, textarea { width: 100%; padding: 13px 14px; background: #04100c; border: 1px solid #13382c; border-radius: 12px; color: #fff; font-size: 13px; outline: none; }
-    input:focus { border-color: #10b981; }
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.brand{font-size:15px;font-weight:900;letter-spacing:1px}
+.brand span{color:var(--mint)}
+.headerRight{display:flex;gap:8px}
+.iconBtn{
+ width:40px;height:40px;border-radius:14px;
+ background:var(--surface);color:var(--white);
+ border:1px solid var(--border)
+}
 
-    .btn { width: 100%; padding: 14px; border-radius: 14px; font-size: 13px; font-weight: 800; border: none; cursor: pointer; text-transform: uppercase; margin-top: 10px; text-align: center; }
-    .btn-emerald { background: #10b981; color: #04100c; }
-    .btn-outline { background: transparent; border: 1px solid #13382c; color: #cbd5e1; }
+.greeting small{color:var(--muted);font-size:12px}
+.greeting h1{font-size:27px;margin-top:5px}
+.card{
+ background:var(--surface);border:1px solid var(--border);
+ border-radius:22px;padding:17px;margin-top:17px
+}
+.location{
+ display:flex;justify-content:space-between;align-items:center;
+ padding:18px;border-radius:22px;margin-top:18px;
+ background:linear-gradient(145deg,rgba(25,230,160,.1),var(--surface));
+ border:1px solid rgba(25,230,160,.13)
+}
+.locLeft{display:flex;gap:12px;align-items:center}
+.locIcon{
+ width:45px;height:45px;border-radius:15px;
+ display:grid;place-items:center;background:rgba(25,230,160,.1);
+ color:var(--mint);font-size:20px
+}
+.statusDot{width:9px;height:9px;border-radius:50%;background:var(--mint);box-shadow:0 0 13px var(--mint)}
+.muted{color:var(--muted);font-size:11px}
+.title{font-size:14px;font-weight:800}
+.section{margin-top:24px}
+.sectionHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.sectionHead h2{font-size:17px}
+.sectionHead button{background:none;color:var(--mint);font-size:12px}
+.quickGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.quick{
+ background:var(--surface);border:1px solid var(--border);
+ border-radius:17px;color:var(--white);padding:13px 3px
+}
+.quickIcon{
+ width:34px;height:34px;margin:auto auto 7px;border-radius:11px;
+ background:rgba(25,230,160,.09);color:var(--mint);
+ display:grid;place-items:center;font-weight:900
+}
+.quick span{font-size:10px;color:var(--muted)}
+.circleTop{display:flex;justify-content:space-between}
+.circleName{font-weight:800;font-size:16px}
+.onlineText{font-size:10px;color:var(--mint)}
+.avatars{display:flex;margin-top:15px}
+.avatar{
+ width:36px;height:36px;border-radius:50%;margin-left:-7px;
+ border:2px solid var(--surface);display:grid;place-items:center;
+ background:#26343b;font-size:11px;font-weight:800
+}
+.avatar:first-child{margin-left:0}
+.avatar.more{background:rgba(25,230,160,.1);color:var(--mint)}
+.aiCard{
+ padding:20px;border-radius:22px;margin-top:17px;
+ border:1px solid rgba(25,230,160,.14);
+ background:radial-gradient(circle at 100% 0%,rgba(25,230,160,.13),transparent 40%),var(--surface)
+}
+.aiIcon{
+ width:45px;height:45px;border-radius:15px;
+ display:grid;place-items:center;background:rgba(25,230,160,.1);
+ color:var(--mint);font-weight:900;margin-bottom:12px
+}
+.aiCard h3{font-size:17px}
+.aiCard p{color:var(--muted);font-size:12px;line-height:1.5;margin-top:7px}
+.smallBtn{
+ margin-top:14px;padding:11px 15px;border-radius:13px;
+ background:var(--mint);color:#03130d;font-size:12px;font-weight:900
+}
 
-    /* REAL GOOGLE MAP CONTAINER */
-    #google-map-container { width: 100%; height: 60vh; border-radius: 16px; border: 1px solid #13382c; margin-bottom: 12px; }
+.map{
+ height:430px;border-radius:23px;overflow:hidden;position:relative;
+ background:
+ linear-gradient(rgba(20,35,35,.7),rgba(8,16,19,.9)),
+ repeating-linear-gradient(35deg,#162125 0,#162125 18px,#111a1e 19px,#111a1e 20px);
+ border:1px solid var(--border)
+}
+.map:before,.map:after{
+ content:"";position:absolute;background:#35474a;opacity:.65
+}
+.map:before{width:130%;height:7px;top:45%;left:-15%;transform:rotate(25deg)}
+.map:after{width:7px;height:130%;left:53%;top:-15%;transform:rotate(18deg)}
+.mapCenter{
+ position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+ width:20px;height:20px;border-radius:50%;background:#4ca8ff;
+ border:4px solid white;box-shadow:0 0 0 13px rgba(76,168,255,.12),0 0 30px #4ca8ff
+}
+.mapMember{
+ position:absolute;width:45px;height:45px;border-radius:50%;
+ background:#1b292f;border:3px solid var(--mint);
+ display:grid;place-items:center;font-weight:800;font-size:11px;
+ box-shadow:0 4px 20px #0008
+}
+.m1{top:22%;left:22%}.m2{top:34%;right:16%}.m3{bottom:20%;left:30%}
+.mapTop{
+ position:absolute;top:12px;left:12px;padding:8px 11px;
+ border-radius:12px;background:#080b10cc;font-size:11px
+}
+.mapButtons{position:absolute;right:12px;bottom:12px;display:flex;flex-direction:column;gap:7px}
+.mapButtons button{
+ width:42px;height:42px;border-radius:13px;background:#080b10dd;
+ color:white;border:1px solid var(--border)
+}
 
-    /* WhatsApp & Meta AI Chat Styles */
-    .chat-scroll { flex: 1; max-height: 52vh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; margin-bottom: 10px; }
-    .wa-bubble { max-width: 82%; padding: 10px 14px; border-radius: 12px; font-size: 12px; line-height: 1.45; }
-    .wa-bubble.incoming { background: #0b221a; align-self: flex-start; border: 1px solid #13382c; }
-    .wa-bubble.outgoing { background: #054c36; color: #fff; align-self: flex-end; border: 1px solid #0f6e52; }
-    .wa-time { font-size: 9px; color: #94a3b8; float: right; margin-left: 8px; margin-top: 4px; }
-  </style>
+.feedTabs{display:flex;padding:4px;background:var(--surface);border-radius:14px;margin-bottom:13px}
+.feedTabs button{flex:1;background:none;color:var(--muted);padding:10px;border-radius:10px;font-size:12px}
+.feedTabs button.active{background:rgba(25,230,160,.1);color:var(--mint)}
+.post{
+ background:var(--surface);border:1px solid var(--border);
+ border-radius:21px;margin-bottom:13px;overflow:hidden
+}
+.postHead{display:flex;align-items:center;padding:14px;gap:10px}
+.postAvatar{width:40px;height:40px;border-radius:50%;background:#26343b;display:grid;place-items:center;color:var(--mint);font-weight:800}
+.postName{font-size:13px;font-weight:800}
+.postDate{font-size:9px;color:var(--muted)}
+.postBody{padding:0 14px 13px;font-size:13px;line-height:1.5}
+.postActions{display:flex;border-top:1px solid var(--border)}
+.postActions button{flex:1;background:none;color:var(--muted);padding:12px;font-size:11px}
+.postActions button.liked{color:var(--danger)}
+.comments{padding:0 14px 12px}
+.comment{font-size:11px;color:var(--muted);margin-top:5px}
+.comment b{color:var(--white)}
+
+.createPost{
+ background:var(--surface);border:1px solid var(--border);
+ padding:14px;border-radius:18px;margin-bottom:14px
+}
+.createPost textarea{
+ width:100%;min-height:80px;background:none;border:0;color:white;resize:none
+}
+.createRow{display:flex;justify-content:flex-end}
+.createRow button{padding:10px 16px;border-radius:12px;background:var(--mint);font-weight:800}
+
+.aiHeader{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.aiRound{
+ width:45px;height:45px;border:2px solid var(--mint);border-radius:50%;
+ display:grid;place-items:center;color:var(--mint);font-weight:900
+}
+.aiIntro{text-align:center;margin:18px 0}
+.aiIntro p{color:var(--muted);font-size:12px;margin-top:5px}
+.suggestions{display:flex;gap:7px;overflow:auto;margin-bottom:15px}
+.suggestions button{
+ white-space:nowrap;padding:9px 12px;border-radius:13px;
+ background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:11px
+}
+.messages{min-height:300px}
+.aiMsg{
+ max-width:86%;padding:12px 14px;border-radius:17px;
+ background:var(--surface);border:1px solid var(--border);
+ font-size:13px;line-height:1.5;margin-bottom:9px
+}
+.aiMsg.user{margin-left:auto;background:var(--mint);color:#03130d;border:0}
+.aiInput{position:sticky;bottom:0;display:flex;gap:8px;padding-top:8px;background:linear-gradient(transparent,var(--bg) 25%)}
+.aiInput input{
+ flex:1;padding:14px;border-radius:16px;background:var(--surface);
+ border:1px solid var(--border);color:white
+}
+.aiInput button{width:51px;border-radius:16px;background:var(--mint);font-size:20px}
+
+.chatSearch{
+ width:100%;padding:13px;border-radius:15px;background:var(--surface);
+ border:1px solid var(--border);color:white;margin-bottom:12px
+}
+.chatRow{
+ display:flex;align-items:center;gap:12px;padding:13px 3px;border-bottom:1px solid var(--border)
+}
+.chatAvatar{
+ width:48px;height:48px;border-radius:50%;background:#26343b;
+ display:grid;place-items:center;color:var(--mint);font-weight:800
+}
+.chatInfo{flex:1}
+.chatName{font-size:13px;font-weight:800}
+.chatPreview{font-size:11px;color:var(--muted);margin-top:4px}
+
+.profile{text-align:center}
+.profilePhoto{
+ width:94px;height:94px;border-radius:50%;margin:auto;
+ border:3px solid var(--mint);display:grid;place-items:center;
+ background:#1e3036;font-size:25px;font-weight:900
+}
+.profile h2{margin-top:12px}
+.profile .handle{color:var(--muted);font-size:12px;margin-top:3px}
+.stats{display:flex;justify-content:center;gap:30px;margin:18px}
+.stat strong{display:block}.stat span{font-size:10px;color:var(--muted)}
+.profileBtns{display:flex;gap:8px}
+.profileBtns button{flex:1;padding:12px;border-radius:13px;background:var(--surface);color:white;border:1px solid var(--border)}
+.profileBtns button.primary{background:var(--mint);color:#03130d}
+
+.nav{
+ position:absolute;z-index:50;bottom:calc(env(safe-area-inset-bottom) + 9px);
+ left:9px;right:9px;height:72px;padding:6px;
+ display:grid;grid-template-columns:repeat(6,1fr);
+ background:#101720f2;backdrop-filter:blur(20px);
+ border:1px solid var(--border);border-radius:24px
+}
+.nav button{
+ background:none;color:var(--muted);border-radius:17px;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px
+}
+.nav button.active{background:rgba(25,230,160,.09);color:var(--mint)}
+.navIcon{font-size:18px}.navLabel{font-size:8px}
+
+.modal{
+ position:absolute;inset:0;z-index:200;display:none;
+ align-items:flex-end;background:#0009;backdrop-filter:blur(5px)
+}
+.modal.show{display:flex}
+.modalCard{
+ width:100%;background:var(--surface);border-radius:27px 27px 0 0;
+ padding:22px 18px calc(env(safe-area-inset-bottom) + 22px)
+}
+.modalHead{display:flex;justify-content:space-between;margin-bottom:18px}
+.close{width:35px;height:35px;border-radius:11px;background:var(--surface2);color:white}
+.modalCard input,.modalCard textarea{
+ width:100%;padding:14px;margin-bottom:9px;border-radius:14px;
+ background:var(--bg);border:1px solid var(--border);color:white
+}
+.modalCard button.action{width:100%;padding:14px;border-radius:14px;background:var(--mint);font-weight:900}
+
+.toast{
+ position:absolute;z-index:9999;left:50%;bottom:94px;
+ transform:translate(-50%,20px);opacity:0;pointer-events:none;
+ padding:12px 16px;border-radius:14px;background:#18222b;
+ border:1px solid var(--border);font-size:11px;transition:.25s
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(min-width:700px){
+ .content{max-width:620px;width:100%;margin:auto}
+ .nav{width:600px;left:50%;right:auto;transform:translateX(-50%)}
+}
+</style>
 </head>
+
 <body>
 
-  <div class="container">
+<div class="app">
 
-    <!-- 1. SPLASH SCREEN -->
-    <div id="view-splash" class="view-screen active-view">
-      <div style="margin-bottom: auto; padding-top: 50px; text-align: center;">
-        <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #059669, #10b981); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 28px; box-shadow: 0 0 25px rgba(16,185,129,0.5);">📍</div>
-        <div style="font-size: 32px; font-weight: 900; color: #fff;">Track <span style="color: #10b981;">Circle</span></div>
-        <div style="font-size: 13px; color: #94a3b8; margin-top: 6px;">Stay Connected. Stay Close.</div>
-      </div>
-      <button class="btn btn-emerald" onclick="switchView('view-home')">Get Started →</button>
-    </div>
-
-    <!-- 2. HOME / DASHBOARD SCREEN -->
-    <div id="view-home" class="view-screen">
-      <div class="header-bar">
-        <div>
-          <div style="font-size: 11px; color: #94a3b8;">Good morning,</div>
-          <div style="font-size: 16px; font-weight: 900;">Ezekiel 👋</div>
-        </div>
-        <div style="width: 36px; height: 36px; border-radius: 50%; background: #13382c; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px;">EA</div>
-      </div>
-
-      <div class="card" style="background: linear-gradient(135deg, #0b221a, #071712); border-color: #10b981;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <div style="font-size: 11px; font-weight: 800; color: #10b981;" id="home-status-text">🟢 Location Sharing: ON</div>
-          <!-- LIVE GPS TOGGLE SWITCH -->
-          <input type="checkbox" id="gps-toggle-switch" checked onchange="toggleGpsSharing()" style="width: 20px; height: 20px; accent-color: #10b981; cursor: pointer;" />
-        </div>
-        <div style="font-size: 14px; font-weight: 900; margin-bottom: 10px;">Family Trip Circle</div>
-        <button class="btn btn-emerald" style="padding: 10px; font-size: 11px; margin: 0;" onclick="switchView('view-map')">Open Google Maps Live Radar 🗺️</button>
-      </div>
-
-      <div style="font-size: 12px; font-weight: 800; margin: 12px 0 6px;">Chats & Meta AI</div>
-      
-      <div class="card" style="padding: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-color: #10b981;" onclick="openMetaAiChat()">
-        <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #0ea5e9); display: flex; align-items: center; justify-content: center; font-size: 16px;">🤖</div>
-        <div style="flex: 1;">
-          <div style="font-weight: 900; font-size: 12px; color: #10b981;">Meta AI Assistant (Gemini)</div>
-          <div style="font-size: 10px; color: #94a3b8;">Always online to answer anything...</div>
-        </div>
-        <span style="font-size: 9px; background: #10b981; color: #04100c; padding: 2px 6px; border-radius: 8px; font-weight: 800;">AI</span>
-      </div>
-    </div>
-
-    <!-- 3. REAL GOOGLE MAPS SCREEN -->
-    <div id="view-map" class="view-screen">
-      <div class="header-bar">
-        <div class="app-title" style="font-size: 18px;">Google Maps Live 📍</div>
-        <button class="btn btn-emerald" style="width: auto; margin:0; padding: 6px 12px; font-size: 10px;" onclick="centerOnGps()">📍 Center GPS</button>
-      </div>
-
-      <div id="google-map-container"></div>
-      <div style="font-size: 10px; color: #94a3b8; text-align: center;">Powered by Google Maps GPS & dark mode styling.</div>
-    </div>
-
-    <!-- 4. TRACK VIDEO FEED SCREEN -->
-    <div id="view-track" class="view-screen">
-      <div class="header-bar"><div class="app-title" style="font-size: 18px;">Track Feed 🎬</div></div>
-      <div class="card" style="text-align: center; padding: 30px;">
-        <div style="font-size: 28px; margin-bottom: 8px;">📹</div>
-        <div style="font-weight: 800; font-size: 13px;">Short Video Reels Feed</div>
-        <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Swipe through posts from your circles.</div>
-      </div>
-    </div>
-
-    <!-- 5. WHATSAPP CHAT & GEMINI AI SCREEN -->
-    <div id="view-chat" class="view-screen">
-      <div class="header-bar">
-        <button style="background:none; border:none; color:#10b981; font-size:16px; cursor:pointer;" onclick="switchView('view-home')">← Back</button>
-        <div style="font-weight: 900; font-size: 13px;" id="active-chat-title">Meta AI Assistant</div>
-        <span style="font-size: 10px; color: #10b981;">Online</span>
-      </div>
-
-      <div class="chat-scroll" id="chat-messages-box">
-        <div class="wa-bubble incoming">
-          Hello Ezekiel! 👋 I'm your Meta AI assistant powered by Google Gemini. Ask me anything or request a plan!
-          <span class="wa-time">9:41 AM</span>
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 6px; margin-top: auto;">
-        <input id="chat-input-field" type="text" placeholder="Ask Gemini AI anything..." />
-        <button class="btn btn-emerald" style="width: auto; margin: 0; padding: 0 16px;" onclick="sendGeminiAiMessage()">Send 🚀</button>
-      </div>
-    </div>
-
-    <!-- 6. PROFILE SCREEN -->
-    <div id="view-profile" class="view-screen">
-      <div class="header-bar"><div class="app-title" style="font-size: 18px;">Profile 👤</div></div>
-      <div class="card" style="text-align: center; padding: 16px;">
-        <div style="width: 56px; height: 56px; border-radius: 50%; background: #10b981; color: #04100c; font-size: 20px; font-weight: 900; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;">EA</div>
-        <div style="font-size: 14px; font-weight: 900;">Ezekiel Ayoola</div>
-        <div style="font-size: 11px; color: #10b981; font-weight: 700;">@ezekiel_01</div>
-      </div>
-      <button class="btn btn-outline" onclick="switchView('view-splash')">Sign Out 🔒</button>
-    </div>
-
-    <!-- BOTTOM NAVIGATION BAR (5 TABS) -->
-    <div class="nav-bar" id="app-nav-bar" style="display: none;">
-      <div class="nav-item active" onclick="switchTab('view-home', this)"><span class="icon">🏠</span>Home</div>
-      <div class="nav-item" onclick="switchTab('view-map', this)"><span class="icon">🗺️</span>Map</div>
-      <div class="nav-item" onclick="switchTab('view-track', this)"><span class="icon">🎬</span>Track</div>
-      <div class="nav-item" onclick="switchTab('view-chat', this)"><span class="icon">💬</span>Chats</div>
-      <div class="nav-item" onclick="switchTab('view-profile', this)"><span class="icon">👤</span>Profile</div>
-    </div>
-
+<div class="splash" id="splash">
+  <div>
+    <div class="splashLogo"></div>
+    <h1>TRACK <span>CIRCLE</span></h1>
+    <p>Stay Connected. Stay Close.</p>
   </div>
+</div>
 
-  <script>
-    var map = null;
-    var userMarker = null;
-    var watchId = null;
-    var isSharingGps = true;
+<div class="auth hidden" id="auth">
+  <div class="authBox">
+    <div class="authLogo"></div>
+    <h1>TRACK <span>CIRCLE</span></h1>
+    <p>Stay connected. Stay close.</p>
 
-    function switchView(screenId) {
-      document.querySelectorAll('.view-screen').forEach(el => el.classList.remove('active-view'));
-      document.getElementById(screenId).classList.add('active-view');
-      
-      var navBar = document.getElementById("app-nav-bar");
-      if (screenId === 'view-splash' || screenId === 'view-chat') {
-        navBar.style.display = "none";
-      } else {
-        navBar.style.display = "flex";
-      }
-      
-      if (screenId === 'view-map' && !map) {
-        initGoogleMap();
-      }
+    <div class="authTabs">
+      <button id="loginTab" class="active" onclick="authMode('login')">Sign in</button>
+      <button id="signupTab" onclick="authMode('signup')">Create account</button>
+    </div>
+
+    <div id="nameField" class="field hidden">
+      <input id="authName" placeholder="Your name">
+    </div>
+
+    <div class="field">
+      <input id="authEmail" type="email" placeholder="Email address">
+    </div>
+
+    <div class="field">
+      <input id="authPassword" type="password" placeholder="Password">
+    </div>
+
+    <button class="primary" id="authButton" onclick="submitAuth()">Sign in</button>
+
+    <div class="authSwitch">
+      <span id="switchText">Don't have an account?</span>
+      <button onclick="toggleAuth()">Create one</button>
+    </div>
+  </div>
+</div>
+
+<div class="main hidden" id="main">
+
+<main class="content">
+
+<section class="page active" id="home">
+
+<div class="header">
+  <div class="brand">TRACK <span>CIRCLE</span></div>
+  <div class="headerRight">
+    <button class="iconBtn" onclick="go('feed')">⌕</button>
+    <button class="iconBtn" onclick="showToast('Notifications will appear here')">♢</button>
+  </div>
+</div>
+
+<div class="greeting">
+  <small id="greeting">Welcome back</small>
+  <h1>Stay connected.</h1>
+</div>
+
+<div class="location">
+  <div class="locLeft">
+    <div class="locIcon">⌖</div>
+    <div>
+      <div class="title">Location sharing</div>
+      <div class="muted" id="locationText">Tap Location to enable GPS</div>
+    </div>
+  </div>
+  <div class="statusDot" id="locationDot"></div>
+</div>
+
+<div class="section">
+<div class="sectionHead"><h2>Quick actions</h2></div>
+<div class="quickGrid">
+
+<button class="quick" onclick="requestLocation()">
+<div class="quickIcon">⌖</div><span>Location</span>
+</button>
+
+<button class="quick" onclick="openModal('circleModal')">
+<div class="quickIcon">+</div><span>Circle</span>
+</button>
+
+<button class="quick" onclick="go('ai')">
+<div class="quickIcon">AI</div><span>AI</span>
+</button>
+
+<button class="quick" onclick="go('feed');document.getElementById('postText').focus()">
+<div class="quickIcon">✦</div><span>Post</span>
+</button>
+
+</div>
+</div>
+
+<div class="section">
+<div class="sectionHead">
+<h2>Your circles</h2>
+<button onclick="go('circles')">View all</button>
+</div>
+
+<div class="card" id="homeCircles">
+<div class="circleTop">
+<div>
+<div class="circleName">Your Circle</div>
+<div class="muted">Create or join a circle</div>
+</div>
+<div class="onlineText">● LIVE</div>
+</div>
+<div class="avatars">
+<div class="avatar">TC</div>
+<div class="avatar more">+</div>
+</div>
+</div>
+</div>
+
+<div class="aiCard">
+<div class="aiIcon">AI</div>
+<h3>Track Circle AI</h3>
+<p>Your built-in AI assistant. Ask questions, get help, plan trips, learn, write and chat naturally.</p>
+<button class="smallBtn onclick" onclick="go('ai')">Open AI</button>
+</div>
+
+</section>
+
+<section class="page" id="mapPage">
+
+<div class="header">
+<div>
+<div class="muted">LIVE LOCATION</div>
+<h1 style="font-size:24px;margin-top:3px">Live Map</h1>
+</div>
+<button class="iconBtn" onclick="requestLocation()">⌖</button>
+</div>
+
+<div class="map" id="map">
+<div class="mapTop">📍 Track Circle Map</div>
+<div class="mapCenter" id="mapCenter"></div>
+<div class="mapMember m1">A</div>
+<div class="mapMember m2">B</div>
+<div class="mapMember m3">C</div>
+<div class="mapButtons">
+<button onclick="requestLocation()">⌖</button>
+<button onclick="showToast('Map zoom')">+</button>
+<button onclick="showToast('Map zoom')">−</button>
+</div>
+</div>
+
+<div class="card">
+<div class="title">Location privacy</div>
+<div class="muted" style="margin-top:6px">Your exact location is only shared according to your active circle settings.</div>
+</div>
+
+</section>
+
+<section class="page" id="circles">
+
+<div class="header">
+<div>
+<div class="muted">YOUR COMMUNITY</div>
+<h1 style="font-size:24px;margin-top:3px">Circles</h1>
+</div>
+<button class="iconBtn" onclick="openModal('circleModal')">+</button>
+</div>
+
+<div id="circleList"></div>
+
+<div class="card">
+<div class="title">Join a circle</div>
+<div class="muted" style="margin:6px 0 12px">Use an invitation code from another Track Circle member.</div>
+<input id="joinCode" placeholder="TC-XXXXXX" style="width:100%;padding:13px;border-radius:13px;background:var(--bg);border:1px solid var(--border);color:white">
+<button class="smallBtn" onclick="joinCircle()">Join Circle</button>
+</div>
+
+</section>
+
+<section class="page" id="feed">
+
+<div class="header">
+<div>
+<div class="muted">SOCIAL</div>
+<h1 style="font-size:24px;margin-top:3px">Circle Feed</h1>
+</div>
+</div>
+
+<div class="feedTabs">
+<button class="active">For You</button>
+<button>Following</button>
+<button>Circles</button>
+</div>
+
+<div class="createPost">
+<textarea id="postText" placeholder="What's happening?"></textarea>
+<div class="createRow">
+<button onclick="createPost()">Post</button>
+</div>
+</div>
+
+<div id="feedList">
+<div class="card">Loading posts...</div>
+</div>
+
+</section>
+
+<section class="page" id="messages">
+
+<div class="header">
+<div>
+<div class="muted">PRIVATE & GROUP</div>
+<h1 style="font-size:24px;margin-top:3px">Messages</h1>
+</div>
+<button class="iconBtn" onclick="showToast('New conversation')">+</button>
+</div>
+
+<input class="chatSearch" placeholder="Search people or conversations..." id="chatSearch" oninput="filterChats()">
+
+<div id="chatList">
+<div class="chatRow">
+<div class="chatAvatar">TC</div>
+<div class="chatInfo">
+<div class="chatName">Track Circle</div>
+<div class="chatPreview">Your conversations will appear here.</div>
+</div>
+</div>
+</div>
+
+</section>
+
+<section class="page" id="ai">
+
+<div class="aiHeader">
+<div class="aiRound">AI</div>
+<div>
+<div style="font-weight:900">Track Circle AI</div>
+<div class="muted">Your assistant</div>
+</div>
+</div>
+
+<div class="aiIntro">
+<div class="aiRound" style="margin:auto">✦</div>
+<h2 style="margin-top:10px">How can I help?</h2>
+<p>Ask me anything.</p>
+</div>
+
+<div class="suggestions">
+<button onclick="askSuggestion('What can you help me with?')">What can you do?</button>
+<button onclick="askSuggestion('Help me plan a trip')">Plan a trip</button>
+<button onclick="askSuggestion('Teach me something interesting')">Teach me</button>
+</div>
+
+<div class="messages" id="aiMessages">
+<div class="aiMsg">Hi! I'm Track Circle AI. What would you like to do?</div>
+</div>
+
+<div class="aiInput">
+<input id="aiInput" placeholder="Message Track Circle AI..." onkeydown="if(event.key==='Enter')sendAI()">
+<button onclick="sendAI()">➤</button>
+</div>
+
+</section>
+
+<section class="page" id="profile">
+
+<div class="profile">
+<div class="profilePhoto" id="profilePhoto">TC</div>
+<h2 id="profileName">Track Circle User</h2>
+<div class="handle" id="profileEmail"></div>
+
+<div class="stats">
+<div class="stat"><strong id="postCount">0</strong><span>Posts</span></div>
+<div class="stat"><strong id="circleCount">0</strong><span>Circles</span></div>
+<div class="stat"><strong>0</strong><span>Friends</span></div>
+</div>
+
+<div class="profileBtns">
+<button onclick="openModal('profileModal')">Edit profile</button>
+<button class="primary" onclick="signOut()">Sign out</button>
+</div>
+</div>
+
+<div class="card" style="margin-top:20px;text-align:left">
+<div class="title">Account</div>
+<div class="muted" style="margin-top:8px">Authenticated with Supabase</div>
+</div>
+
+</section>
+
+</main>
+
+<nav class="nav">
+
+<button class="active" data-page="home" onclick="go('home')">
+<span class="navIcon">⌂</span><span class="navLabel">Home</span>
+</button>
+
+<button data-page="mapPage" onclick="go('mapPage')">
+<span class="navIcon">⌖</span><span class="navLabel">Live Map</span>
+</button>
+
+<button data-page="circles" onclick="go('circles')">
+<span class="navIcon">◉</span><span class="navLabel">Circles</span>
+</button>
+
+<button data-page="feed" onclick="go('feed')">
+<span class="navIcon">✦</span><span class="navLabel">Feed</span>
+</button>
+
+<button data-page="messages" onclick="go('messages')">
+<span class="navIcon">☵</span><span class="navLabel">Messages</span>
+</button>
+
+<button data-page="profile" onclick="go('profile')">
+<span class="navIcon">●</span><span class="navLabel">Profile</span>
+</button>
+
+</nav>
+
+</div>
+
+<div class="modal" id="circleModal">
+<div class="modalCard">
+<div class="modalHead">
+<h2>Create Circle</h2>
+<button class="close" onclick="closeModal('circleModal')">×</button>
+</div>
+<input id="circleName" placeholder="Circle name">
+<input id="circleDescription" placeholder="Description">
+<button class="action" onclick="createCircle()">Create Circle</button>
+</div>
+</div>
+
+<div class="modal" id="profileModal">
+<div class="modalCard">
+<div class="modalHead">
+<h2>Edit Profile</h2>
+<button class="close" onclick="closeModal('profileModal')">×</button>
+</div>
+<input id="editName" placeholder="Display name">
+<input id="editUsername" placeholder="@username">
+<textarea id="editBio" placeholder="Bio"></textarea>
+<button class="action" onclick="saveProfile()">Save profile</button>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+/* =========================================================
+   TRACK CIRCLE SUPABASE CONFIGURATION
+========================================================= */
+
+const SUPABASE_URL = "https://olivaregvcejjghrjdio.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9saXZhcmVndmNlampnaHJqZGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyODE4MzUsImV4cCI6MjEwNTg1NzgzNX0.r1aukPMLnShXSFjuE47AIaGKmgwHrFuaWl8-2r8Su0Y";
+
+const sb = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+let currentUser = null;
+let authSignup = false;
+let locationWatch = null;
+let userLat = null;
+let userLng = null;
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  setTimeout(() => {
+    document.getElementById("splash").classList.add("hide");
+  }, 1100);
+
+  const {data:{session}} = await sb.auth.getSession();
+
+  if(session){
+    currentUser = session.user;
+    await enterApp();
+  }else{
+    setTimeout(() => {
+      document.getElementById("auth").classList.remove("hidden");
+    }, 1150);
+  }
+
+  sb.auth.onAuthStateChange(async (_event, session) => {
+    if(session){
+      currentUser = session.user;
+      await enterApp();
     }
+  });
+});
 
-    function switchTab(screenId, navElement) {
-      switchView(screenId);
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      navElement.classList.add('active');
-    }
+/* =========================================================
+   AUTH
+========================================================= */
 
-    function toggleGpsSharing() {
-      isSharingGps = document.getElementById("gps-toggle-switch").checked;
-      var statusText = document.getElementById("home-status-text");
-      
-      if (isSharingGps) {
-        statusText.innerText = "🟢 Location Sharing: ON";
-        startGpsWatch();
-      } else {
-        statusText.innerText = "🔴 Location Sharing: OFF";
-        if (watchId) navigator.geolocation.clearWatch(watchId);
-        if (userMarker) userMarker.setMap(null);
-      }
-    }
+function authMode(mode){
 
-    function initGoogleMap() {
-      var lagosDefault = { lat: 6.5244, lng: 3.3792 };
-      
-      // Custom Dark Night Mode Styling for Google Maps to match app theme
-      var darkMapStyle = [
-        { elementType: 'geometry', stylers: [{ color: '#0b221a' }] },
-        { elementType: 'labels.text.stroke', stylers: [{ color: '#071712' }] },
-        { elementType: 'labels.text.fill', stylers: [{ color: '#94a3b8' }] },
-        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#13382c' }] },
-        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#04100c' }] }
-      ];
+  authSignup = mode === "signup";
 
-      map = new google.maps.Map(document.getElementById('google-map-container'), {
-        zoom: 14,
-        center: lagosDefault,
-        styles: darkMapStyle,
-        disableDefaultUI: true
-      });
+  document.getElementById("loginTab")
+    .classList.toggle("active",!authSignup);
 
-      startGpsWatch();
-    }
+  document.getElementById("signupTab")
+    .classList.toggle("active",authSignup);
 
-    function startGpsWatch() {
-      if (!navigator.geolocation) return;
+  document.getElementById("nameField")
+    .classList.toggle("hidden",!authSignup);
 
-      watchId = navigator.geolocation.watchPosition((pos) => {
-        if (!isSharingGps || !map) return;
-        var latLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+  document.getElementById("authButton").textContent =
+    authSignup ? "Create account" : "Sign in";
 
-        if (userMarker) {
-          userMarker.setPosition(latLng);
-        } else {
-          userMarker = new google.maps.Marker({
-            position: latLng,
-            map: map,
-            title: "You are here",
-            icon: {
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 10,
-              fillColor: '#0ea5e9',
-              fillOpacity: 1,
-              strokeColor: '#ffffff',
-              strokeWeight: 2
-            }
-          });
+  document.getElementById("switchText").textContent =
+    authSignup ? "Already have an account?" : "Don't have an account?";
+
+  document.querySelector(".authSwitch button").textContent =
+    authSignup ? "Sign in" : "Create one";
+}
+
+function toggleAuth(){
+  authMode(authSignup ? "login" : "signup");
+}
+
+async function submitAuth(){
+
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+  const name = document.getElementById("authName").value.trim();
+
+  if(!email || !password){
+    showToast("Enter your email and password");
+    return;
+  }
+
+  if(authSignup && !name){
+    showToast("Enter your name");
+    return;
+  }
+
+  const button = document.getElementById("authButton");
+  button.disabled = true;
+  button.textContent = "Please wait...";
+
+  try{
+
+    if(authSignup){
+
+      const {data,error} = await sb.auth.signUp({
+        email,
+        password,
+        options:{
+          data:{
+            display_name:name
+          }
         }
-      }, (err) => console.warn(err), { enableHighAccuracy: true });
-    }
-
-    function centerOnGps() {
-      if (!navigator.geolocation || !map) return;
-      navigator.geolocation.getCurrentPosition((pos) => {
-        map.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        map.setZoom(16);
       });
+
+      if(error) throw error;
+
+      if(data.session){
+        currentUser = data.user;
+        await enterApp();
+      }else{
+        showToast("Account created. Check your email if confirmation is enabled.");
+        authMode("login");
+      }
+
+    }else{
+
+      const {data,error} = await sb.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if(error) throw error;
+
+      currentUser = data.user;
+      await enterApp();
     }
 
-    function openMetaAiChat() {
-      switchView('view-chat');
+  }catch(error){
+
+    console.error(error);
+    showToast(error.message || "Authentication failed");
+
+  }finally{
+
+    button.disabled = false;
+    button.textContent = authSignup ? "Create account" : "Sign in";
+  }
+}
+
+async function signOut(){
+
+  await sb.auth.signOut();
+
+  currentUser = null;
+
+  document.getElementById("main").classList.add("hidden");
+  document.getElementById("auth").classList.remove("hidden");
+
+  authMode("login");
+
+  showToast("Signed out");
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
+async function enterApp(){
+
+  document.getElementById("auth").classList.add("hidden");
+  document.getElementById("main").classList.remove("hidden");
+
+  await loadProfile();
+  await loadPosts();
+  await loadCircles();
+
+  setGreeting();
+}
+
+function setGreeting(){
+
+  const hour = new Date().getHours();
+
+  let greeting = "Good evening";
+
+  if(hour < 12) greeting = "Good morning";
+  else if(hour < 18) greeting = "Good afternoon";
+
+  const name =
+    document.getElementById("profileName").textContent ||
+    "there";
+
+  document.getElementById("greeting").textContent =
+    greeting + ", " + name.split(" ")[0];
+}
+
+function go(page){
+
+  document.querySelectorAll(".page")
+    .forEach(p => p.classList.remove("active"));
+
+  const target = document.getElementById(page);
+
+  if(!target) return;
+
+  target.classList.add("active");
+
+  document.querySelectorAll(".nav button")
+    .forEach(b => b.classList.remove("active"));
+
+  const nav = document.querySelector(
+    `.nav button[data-page="${page}"]`
+  );
+
+  if(nav) nav.classList.add("active");
+
+  if(page === "feed") loadPosts();
+  if(page === "circles") loadCircles();
+}
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+async function loadProfile(){
+
+  if(!currentUser) return;
+
+  let profile = null;
+
+  try{
+
+    const {data,error} = await sb
+      .from("profiles")
+      .select("*")
+      .eq("id",currentUser.id)
+      .maybeSingle();
+
+    if(!error) profile = data;
+
+  }catch(e){}
+
+  const metadata = currentUser.user_metadata || {};
+
+  const name =
+    profile?.display_name ||
+    metadata.display_name ||
+    currentUser.email.split("@")[0];
+
+  document.getElementById("profileName").textContent = name;
+  document.getElementById("profileEmail").textContent = currentUser.email;
+
+  document.getElementById("profilePhoto").textContent =
+    name.substring(0,2).toUpperCase();
+
+  document.getElementById("editName").value = name;
+  document.getElementById("editUsername").value =
+    profile?.username || "";
+  document.getElementById("editBio").value =
+    profile?.bio || "";
+
+  document.getElementById("postCount").textContent = "0";
+  document.getElementById("circleCount").textContent = "0";
+}
+
+async function saveProfile(){
+
+  if(!currentUser) return;
+
+  const display_name =
+    document.getElementById("editName").value.trim();
+
+  const username =
+    document.getElementById("editUsername").value.trim();
+
+  const bio =
+    document.getElementById("editBio").value.trim();
+
+  if(!display_name){
+    showToast("Enter your name");
+    return;
+  }
+
+  const payload = {
+    id:currentUser.id,
+    display_name,
+    username,
+    bio
+  };
+
+  const {error} = await sb
+    .from("profiles")
+    .upsert(payload);
+
+  if(error){
+    console.error(error);
+    showToast("Profile table is not ready yet");
+    return;
+  }
+
+  await sb.auth.updateUser({
+    data:{display_name}
+  });
+
+  await loadProfile();
+
+  closeModal("profileModal");
+
+  showToast("Profile saved");
+}
+
+/* =========================================================
+   LOCATION
+========================================================= */
+
+function requestLocation(){
+
+  if(!navigator.geolocation){
+    showToast("GPS is not supported on this device");
+    return;
+  }
+
+  document.getElementById("locationText").textContent =
+    "Requesting GPS permission...";
+
+  navigator.geolocation.getCurrentPosition(
+
+    async position => {
+
+      userLat = position.coords.latitude;
+      userLng = position.coords.longitude;
+
+      document.getElementById("locationText").textContent =
+        "Location sharing is active";
+
+      await saveLocation(userLat,userLng);
+
+      startLocationWatch();
+
+      document.getElementById("mapCenter").style.left =
+        "50%";
+
+      showToast("Location connected");
+
+    },
+
+    error => {
+
+      console.error(error);
+
+      document.getElementById("locationText").textContent =
+        "Location permission denied";
+
+      showToast("Allow location permission in your browser");
+    },
+
+    {
+      enableHighAccuracy:true,
+      timeout:15000,
+      maximumAge:5000
+    }
+  );
+}
+
+function startLocationWatch(){
+
+  if(locationWatch) return;
+
+  locationWatch = navigator.geolocation.watchPosition(
+    async position => {
+
+      userLat = position.coords.latitude;
+      userLng = position.coords.longitude;
+
+      await saveLocation(userLat,userLng);
+
+    },
+    error => console.log(error),
+    {
+      enableHighAccuracy:true,
+      maximumAge:5000,
+      timeout:15000
+    }
+  );
+}
+
+async function saveLocation(lat,lng){
+
+  if(!currentUser) return;
+
+  try{
+
+    await sb
+      .from("profiles")
+      .update({
+        latitude:lat,
+        longitude:lng,
+        location_updated_at:new Date().toISOString()
+      })
+      .eq("id",currentUser.id);
+
+  }catch(e){
+    console.log("Location database update skipped:",e);
+  }
+}
+
+/* =========================================================
+   POSTS
+========================================================= */
+
+async function createPost(){
+
+  if(!currentUser){
+    showToast("Sign in first");
+    return;
+  }
+
+  const text =
+    document.getElementById("postText").value.trim();
+
+  if(!text){
+    showToast("Write something first");
+    return;
+  }
+
+  const payload = {
+    user_id:currentUser.id,
+    content:text
+  };
+
+  const {error} = await sb
+    .from("posts")
+    .insert(payload);
+
+  if(error){
+
+    console.error(error);
+
+    showToast("Posts table is not ready yet");
+
+    return;
+  }
+
+  document.getElementById("postText").value = "";
+
+  await loadPosts();
+
+  showToast("Posted");
+}
+
+async function loadPosts(){
+
+  const container =
+    document.getElementById("feedList");
+
+  try{
+
+    const {data,error} = await sb
+      .from("posts")
+      .select(`
+        *,
+        profiles:user_id(
+          display_name,
+          username
+        )
+      `)
+      .order("created_at",{ascending:false})
+      .limit(50);
+
+    if(error) throw error;
+
+    if(!data || data.length === 0){
+
+      container.innerHTML = `
+        <div class="card">
+          <div class="title">Your feed is empty</div>
+          <div class="muted" style="margin-top:6px">
+            Be the first person to post on Track Circle.
+          </div>
+        </div>
+      `;
+
+      return;
     }
 
-    async function sendGeminiAiMessage() {
-      var input = document.getElementById("chat-input-field");
-      var text = input.value.trim();
-      if (!text) return;
+    container.innerHTML =
+      data.map(post => renderPost(post)).join("");
 
-      var box = document.getElementById("chat-messages-box");
-      var timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }catch(error){
 
-      box.innerHTML += `<div class="wa-bubble outgoing">${escapeHtml(text)}<span class="wa-time">${timeStr} ✓✓</span></div>`;
-      input.value = "";
-      box.scrollTop = box.scrollHeight;
+    console.error(error);
 
-      // Simulated real Gemini AI processing response
-      setTimeout(() => {
-        box.innerHTML += `<div class="wa-bubble incoming">🤖 Gemini AI: I analyzed your request about "${text}". Here is the comprehensive solution and breakdown for you...<span class="wa-time">${timeStr}</span></div>`;
-        box.scrollTop = box.scrollHeight;
-      }, 900);
+    container.innerHTML = `
+      <div class="card">
+        <div class="title">Posts are not connected yet</div>
+        <div class="muted" style="margin-top:6px">
+          Check that the posts table and policies were installed.
+        </div>
+      </div>
+    `;
+  }
+}
+
+function renderPost(post){
+
+  const name =
+    post.profiles?.display_name ||
+    post.profiles?.username ||
+    "Track Circle User";
+
+  const initials =
+    name.substring(0,2).toUpperCase();
+
+  const time =
+    post.created_at ?
+    new Date(post.created_at).toLocaleString() :
+    "";
+
+  const liked =
+    post.liked_by_user ? "liked" : "";
+
+  const likes =
+    Number(post.likes_count || 0);
+
+  return `
+  <article class="post">
+
+    <div class="postHead">
+
+      <div class="postAvatar">
+        ${escapeHtml(initials)}
+      </div>
+
+      <div>
+        <div class="postName">
+          ${escapeHtml(name)}
+        </div>
+
+        <div class="postDate">
+          ${escapeHtml(time)}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="postBody">
+      ${escapeHtml(post.content || "")}
+    </div>
+
+    <div class="postActions">
+
+      <button
+        class="${liked}"
+        onclick="likePost('${post.id}')">
+        ♥ ${likes}
+      </button>
+
+      <button
+        onclick="commentPost('${post.id}')">
+        ♡ Comment
+      </button>
+
+      <button
+        onclick="sharePost('${post.id}')">
+        ↗ Share
+      </button>
+
+    </div>
+
+  </article>
+  `;
+}
+
+async function likePost(postId){
+
+  if(!currentUser) return;
+
+  try{
+
+    const {data,error} = await sb
+      .from("post_likes")
+      .select("id")
+      .eq("post_id",postId)
+      .eq("user_id",currentUser.id)
+      .maybeSingle();
+
+    if(error) throw error;
+
+    if(data){
+
+      await sb
+        .from("post_likes")
+        .delete()
+        .eq("id",data.id);
+
+    }else{
+
+      await sb
+        .from("post_likes")
+        .insert({
+          post_id:postId,
+          user_id:currentUser.id
+        });
     }
 
-    function escapeHtml(str) {
-      return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+    await loadPosts();
+
+  }catch(error){
+
+    console.error(error);
+    showToast("Likes table is not ready yet");
+  }
+}
+
+async function commentPost(postId){
+
+  const text = prompt("Write your comment:");
+
+  if(!text || !text.trim()) return;
+
+  try{
+
+    const {error} = await sb
+      .from("comments")
+      .insert({
+        post_id:postId,
+        user_id:currentUser.id,
+        content:text.trim()
+      });
+
+    if(error) throw error;
+
+    showToast("Comment added");
+
+  }catch(error){
+
+    console.error(error);
+    showToast("Comments table is not ready yet");
+  }
+}
+
+async function sharePost(){
+
+  if(navigator.share){
+
+    await navigator.share({
+      title:"Track Circle",
+      text:"Check out this post on Track Circle."
+    });
+
+  }else{
+
+    showToast("Post sharing is available from your device");
+  }
+}
+
+/* =========================================================
+   CIRCLES
+========================================================= */
+
+async function createCircle(){
+
+  if(!currentUser) return;
+
+  const name =
+    document.getElementById("circleName").value.trim();
+
+  const description =
+    document.getElementById("circleDescription").value.trim();
+
+  if(!name){
+    showToast("Enter a circle name");
+    return;
+  }
+
+  const code =
+    "TC-" +
+    Math.random()
+      .toString(36)
+      .substring(2,8)
+      .toUpperCase();
+
+  try{
+
+    const {data,error} = await sb
+      .from("circles")
+      .insert({
+        name,
+        description,
+        invite_code:code,
+        owner_id:currentUser.id
+      })
+      .select()
+      .single();
+
+    if(error) throw error;
+
+    try{
+
+      await sb
+        .from("circle_members")
+        .insert({
+          circle_id:data.id,
+          user_id:currentUser.id,
+          role:"owner"
+        });
+
+    }catch(e){
+      console.log(e);
     }
-  </script>
+
+    closeModal("circleModal");
+
+    document.getElementById("circleName").value = "";
+    document.getElementById("circleDescription").value = "";
+
+    await loadCircles();
+
+    showToast("Circle created: " + code);
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast("Circles table is not ready yet");
+  }
+}
+
+async function joinCircle(){
+
+  if(!currentUser) return;
+
+  const code =
+    document.getElementById("joinCode").value.trim().toUpperCase();
+
+  if(!code){
+    showToast("Enter an invite code");
+    return;
+  }
+
+  try{
+
+    const {data,error} = await sb
+      .from("circles")
+      .select("id,name")
+      .eq("invite_code",code)
+      .maybeSingle();
+
+    if(error) throw error;
+
+    if(!data){
+      showToast("Circle not found");
+      return;
+    }
+
+    const result =
+      await sb.from("circle_members").insert({
+        circle_id:data.id,
+        user_id:currentUser.id,
+        role:"member"
+      });
+
+    if(result.error) throw result.error;
+
+    document.getElementById("joinCode").value = "";
+
+    await loadCircles();
+
+    showToast("Joined " + data.name);
+
+  }catch(error){
+
+    console.error(error);
+    showToast("Unable to join circle");
+  }
+}
+
+async function loadCircles(){
+
+  const container =
+    document.getElementById("circleList");
+
+  try{
+
+    const {data,error} = await sb
+      .from("circle_members")
+      .select(`
+        circle_id,
+        role,
+        circles:circle_id(
+          id,
+          name,
+          description,
+          invite_code
+        )
+      `)
+      .eq("user_id",currentUser.id);
+
+    if(error) throw error;
+
+    document.getElementById("circleCount").textContent =
+      data?.length || 0;
+
+    if(!data || data.length === 0){
+
+      container.innerHTML = `
+        <div class="card">
+          <div class="title">No circles yet</div>
+          <div class="muted" style="margin-top:6px">
+            Create a circle or join one with an invite code.
+          </div>
+        </div>
+      `;
+
+      return;
+    }
+
+    container.innerHTML =
+      data.map(item => {
+
+        const circle = item.circles;
+
+        return `
+        <div class="card">
+          <div class="circleTop">
+            <div>
+              <div class="circleName">
+                ${escapeHtml(circle?.name || "Circle")}
+              </div>
+              <div class="muted">
+                ${escapeHtml(circle?.description || "Track Circle")}
+              </div>
+            </div>
+
+            <div class="onlineText">
+              ● ACTIVE
+            </div>
+          </div>
+
+          <div class="muted" style="margin-top:13px">
+            Invite code:
+            <b style="color:var(--mint)">
+              ${escapeHtml(circle?.invite_code || "")}
+            </b>
+          </div>
+        </div>
+        `;
+
+      }).join("");
+
+  }catch(error){
+
+    console.error(error);
+
+    container.innerHTML = `
+      <div class="card">
+        <div class="title">Circles are not connected yet</div>
+        <div class="muted" style="margin-top:6px">
+          Check the circles and circle_members tables.
+        </div>
+      </div>
+    `;
+  }
+}
+
+/* =========================================================
+   AI
+========================================================= */
+
+function askSuggestion(text){
+
+  document.getElementById("aiInput").value = text;
+
+  sendAI();
+}
+
+async function sendAI(){
+
+  const input =
+    document.getElementById("aiInput");
+
+  const text = input.value.trim();
+
+  if(!text) return;
+
+  addAIMessage(text,true);
+
+  input.value = "";
+
+  const loading =
+    addAIMessage("Thinking…",false);
+
+  try{
+
+    const {data,error} =
+      await sb.functions.invoke(
+        "track-circle-ai",
+        {
+          body:{
+            message:text,
+            history:[]
+          }
+        }
+      );
+
+    if(error) throw error;
+
+    loading.remove();
+
+    const answer =
+      data?.reply ||
+      data?.response ||
+      data?.message ||
+      data?.text ||
+      data?.output ||
+      "I received your message.";
+
+    addAIMessage(answer,false);
+
+  }catch(error){
+
+    console.error(error);
+
+    loading.remove();
+
+    addAIMessage(
+      "I couldn't connect to Track Circle AI right now. Please check the AI Edge Function.",
+      false
+    );
+  }
+}
+
+function addAIMessage(text,user){
+
+  const box =
+    document.getElementById("aiMessages");
+
+  const msg =
+    document.createElement("div");
+
+  msg.className =
+    "aiMsg" + (user ? " user" : "");
+
+  msg.textContent = text;
+
+  box.appendChild(msg);
+
+  box.scrollTop = box.scrollHeight;
+
+  return msg;
+}
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+function openModal(id){
+  document.getElementById(id).classList.add("show");
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove("show");
+}
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+function showToast(message){
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent = message;
+
+  toast.classList.add("show");
+
+  clearTimeout(window.toastTimer);
+
+  window.toastTimer =
+    setTimeout(() => {
+      toast.classList.remove("show");
+    },2800);
+}
+
+function escapeHtml(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function filterChats(){
+
+  const query =
+    document.getElementById("chatSearch")
+      .value.toLowerCase();
+
+  document.querySelectorAll(".chatRow")
+    .forEach(row => {
+
+      row.style.display =
+        row.textContent.toLowerCase().includes(query)
+        ? "flex"
+        : "none";
+    });
+}
+
+/* =========================================================
+   REALTIME FEED REFRESH
+========================================================= */
+
+try{
+
+  sb.channel("track-circle-posts")
+    .on(
+      "postgres_changes",
+      {
+        event:"*",
+        schema:"public",
+        table:"posts"
+      },
+      () => loadPosts()
+    )
+    .subscribe();
+
+}catch(error){
+
+  console.log("Realtime unavailable",error);
+}
+</script>
+
 </body>
 </html>
