@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TRACK CIRCLE — Stay Connected. Stay Close.</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet CSS for Real Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -21,17 +21,17 @@
             theme: {
                 extend: {
                     colors: {
-                        darkBg: '#070A0F',
-                        secondaryBg: '#0B1017',
-                        cardBg: '#101720',
-                        elevatedCard: '#151D27',
+                        darkBg: '#05080E',
+                        secondaryBg: '#0A101D',
+                        cardBg: '#0E1726',
+                        elevatedCard: '#131F33',
                         mint: '#19E6A0',
                         secondaryGreen: '#0DFFB2',
                         skyCyan: '#43D9FF',
                         textPrimary: '#F5F8FA',
                         textSecondary: '#87929F',
                         danger: '#FF4D67',
-                        borderSubtle: 'rgba(255,255,255,0.07)'
+                        borderSubtle: 'rgba(25,230,160,0.15)'
                     }
                 }
             }
@@ -40,44 +40,40 @@
 
     <style>
         body {
-            background-color: #070A0F;
+            background-color: #05080E;
             color: #F5F8FA;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Cinematic Ambient Lighting & Glows */
-        .ambient-glow {
+        /* Cinematic Forest & Greeny Sky Background Glow */
+        .cinematic-bg {
             position: fixed;
-            top: -15%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100vw;
-            height: 55vh;
-            background: radial-gradient(circle, rgba(25,230,160,0.12) 0%, rgba(67,217,255,0.04) 40%, transparent 75%);
-            z-index: 0;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(5,8,14,0.6) 0%, rgba(10,30,25,0.85) 100%), 
+                        radial-gradient(circle at 50% 15%, rgba(25,230,160,0.22) 0%, transparent 60%);
+            z-index: -1;
             pointer-events: none;
         }
         .glow-mint {
-            box-shadow: 0 0 20px rgba(25,230,160,0.18);
+            box-shadow: 0 0 25px rgba(25, 230, 160, 0.25);
         }
         .glow-cyan {
-            box-shadow: 0 0 30px rgba(67,217,255,0.15);
+            box-shadow: 0 0 30px rgba(67, 217, 255, 0.2);
         }
         .glass-card {
-            background: rgba(16,23,32,0.78);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 20px;
+            background: rgba(14, 23, 38, 0.78);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(25, 230, 160, 0.15);
+            border-radius: 24px;
         }
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
         }
         ::-webkit-scrollbar-track {
-            background: #070A0F;
+            background: #05080E;
         }
         ::-webkit-scrollbar-thumb {
             background: #19E6A0;
@@ -86,47 +82,82 @@
         .map-container {
             width: 100%;
             height: 100%;
-            background: #0B1017;
-            border-radius: 18px;
+            background: #0A101D;
+            border-radius: 20px;
             z-index: 1;
         }
     </style>
 </head>
 <body class="bg-darkBg text-textPrimary antialiased flex flex-col min-h-screen relative">
 
-    <!-- Cinematic Background Ambient Glow -->
-    <div class="ambient-glow"></div>
+    <!-- Cinematic Background -->
+    <div class="cinematic-bg"></div>
 
-    <!-- TOAST NOTIFICATION CONTAINER -->
+    <!-- TOAST NOTIFICATIONS -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- AUTHENTICATION WRAPPER -->
-    <div id="auth-wrapper" class="fixed inset-0 z-40 bg-darkBg/95 backdrop-blur-xl flex flex-col justify-center items-center p-4 overflow-y-auto hidden">
-        <div class="w-full max-w-md glass-card p-8 shadow-2xl glow-mint relative z-10">
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-mint/10 border border-mint/25 text-mint text-3xl mb-4 glow-mint">
-                    <i class="fa-solid fa-earth-americas animate-pulse"></i>
-                </div>
-                <h1 class="text-2xl font-extrabold tracking-tight text-textPrimary">TRACK CIRCLE</h1>
+    <!-- WELCOME / SPLASH SCREEN VIEW -->
+    <div id="splash-screen" class="fixed inset-0 z-50 bg-darkBg flex flex-col justify-between items-center p-6 text-center">
+        <div class="w-full max-w-md flex-1 flex flex-col justify-center items-center space-y-6">
+            <div class="w-24 h-24 rounded-3xl bg-mint/15 border border-mint/40 flex items-center justify-center text-mint text-4xl glow-mint">
+                <i class="fa-solid fa-location-crosshairs animate-pulse"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-textPrimary">TRACK CIRCLE</h1>
                 <p class="text-mint text-xs font-bold uppercase tracking-widest mt-1">Stay Connected. Stay Close.</p>
+            </div>
+            <div class="grid grid-cols-3 gap-3 w-full pt-4">
+                <div class="glass-card p-3 text-center">
+                    <i class="fa-solid fa-map-location-dot text-mint text-base mb-1"></i>
+                    <p class="text-[10px] text-textSecondary font-semibold">Real-Time Location</p>
+                </div>
+                <div class="glass-card p-3 text-center">
+                    <i class="fa-solid fa-comments text-mint text-base mb-1"></i>
+                    <p class="text-[10px] text-textSecondary font-semibold">Private Messaging</p>
+                </div>
+                <div class="glass-card p-3 text-center">
+                    <i class="fa-solid fa-sparkles text-mint text-base mb-1"></i>
+                    <p class="text-[10px] text-textSecondary font-semibold">Track Circle AI</p>
+                </div>
+            </div>
+        </div>
+        <div class="w-full max-w-md pb-6 space-y-3">
+            <button onclick="showAuthMode('signup')" class="w-full bg-mint text-darkBg font-extrabold py-4 rounded-2xl hover:opacity-95 transition glow-mint cursor-pointer shadow-lg text-sm">
+                Get Started →
+            </button>
+            <button onclick="showAuthMode('login')" class="w-full glass-card text-textPrimary font-bold py-4 rounded-2xl hover:border-mint transition text-sm">
+                I Already Have an Account
+            </button>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATION WRAPPER -->
+    <div id="auth-wrapper" class="fixed inset-0 z-40 bg-darkBg/95 backdrop-blur-2xl flex flex-col justify-center items-center p-4 overflow-y-auto hidden">
+        <div class="w-full max-w-md glass-card p-8 shadow-2xl glow-mint relative z-10">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-mint/10 border border-mint/30 text-mint text-2xl mb-3 glow-mint">
+                    <i class="fa-solid fa-circle-nodes"></i>
+                </div>
+                <h1 id="auth-title" class="text-2xl font-extrabold tracking-tight text-textPrimary">Welcome Back</h1>
+                <p class="text-textSecondary text-xs mt-1">Sign in to continue to your account</p>
             </div>
 
             <!-- Login Form -->
             <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Email Address</label>
-                    <input type="email" id="login-email" required class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
+                    <input type="email" id="login-email" required class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Password</label>
-                    <input type="password" id="login-password" required class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
+                    <input type="password" id="login-password" required class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
-                <button type="submit" class="w-full bg-mint text-darkBg font-extrabold py-3.5 rounded-xl hover:opacity-95 transition glow-mint cursor-pointer">
-                    Sign In
+                <button type="submit" class="w-full bg-mint text-darkBg font-extrabold py-3.5 rounded-2xl hover:opacity-95 transition glow-mint cursor-pointer text-sm">
+                    Sign In →
                 </button>
                 <div class="text-center mt-4">
-                    <button type="button" onclick="switchAuthMode('signup')" class="text-xs text-textSecondary hover:text-mint transition">
-                        Don't have an account? <span class="text-mint font-bold">Sign up</span>
+                    <button type="button" onclick="switchAuthForm('signup')" class="text-xs text-textSecondary hover:text-mint transition">
+                        Don't have an account? <span class="text-mint font-bold">Sign Up</span>
                     </button>
                 </div>
             </form>
@@ -134,30 +165,33 @@
             <!-- Signup Form -->
             <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-4 hidden">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Display Name</label>
-                    <input type="text" id="signup-display-name" required class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Full Name / Display Name</label>
+                    <input type="text" id="signup-display-name" required placeholder="e.g. Ezekiel Ayoola" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Username</label>
-                    <input type="text" id="signup-username" required placeholder="e.g. ezekiel" class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
+                    <input type="text" id="signup-username" required placeholder="e.g. ezekiel_01" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Email Address</label>
-                    <input type="email" id="signup-email" required class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
+                    <input type="email" id="signup-email" required class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Password</label>
-                    <input type="password" id="signup-password" required class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
+                    <input type="password" id="signup-password" required class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
-                <button type="submit" class="w-full bg-mint text-darkBg font-extrabold py-3.5 rounded-xl hover:opacity-95 transition glow-mint cursor-pointer">
-                    Create Account
+                <button type="submit" class="w-full bg-mint text-darkBg font-extrabold py-3.5 rounded-2xl hover:opacity-95 transition glow-mint cursor-pointer text-sm">
+                    Create Account →
                 </button>
                 <div class="text-center mt-4">
-                    <button type="button" onclick="switchAuthMode('login')" class="text-xs text-textSecondary hover:text-mint transition">
-                        Already have an account? <span class="text-mint font-bold">Sign in</span>
+                    <button type="button" onclick="switchAuthForm('login')" class="text-xs text-textSecondary hover:text-mint transition">
+                        Already have an account? <span class="text-mint font-bold">Sign In</span>
                     </button>
                 </div>
             </form>
+            <div class="mt-4 text-center">
+                <button onclick="backToSplash()" class="text-xs text-textSecondary hover:text-white">← Back to Welcome</button>
+            </div>
         </div>
     </div>
 
@@ -167,7 +201,7 @@
         <!-- TOP HEADER -->
         <header class="flex items-center justify-between px-4 py-3.5 border-b border-borderSubtle bg-darkBg/80 backdrop-blur-xl sticky top-0 z-30">
             <div class="flex items-center gap-3">
-                <div id="header-avatar" class="w-10 h-10 rounded-xl bg-mint/20 border border-mint/40 flex items-center justify-center text-mint font-bold text-sm glow-mint">
+                <div id="header-avatar" class="w-10 h-10 rounded-2xl bg-mint/20 border border-mint/40 flex items-center justify-center text-mint font-bold text-sm glow-mint">
                     TC
                 </div>
                 <div>
@@ -178,10 +212,10 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="openAiModal()" class="w-10 h-10 rounded-xl glass-card flex items-center justify-center text-skyCyan hover:border-skyCyan transition glow-cyan" title="Track Circle AI">
+                <button onclick="openAiModal()" class="w-10 h-10 rounded-2xl glass-card flex items-center justify-center text-skyCyan hover:border-skyCyan transition glow-cyan" title="Track Circle AI">
                     <i class="fa-solid fa-sparkles"></i>
                 </button>
-                <button onclick="signOut()" class="w-10 h-10 rounded-xl glass-card flex items-center justify-center text-textSecondary hover:text-danger transition" title="Sign Out">
+                <button onclick="signOut()" class="w-10 h-10 rounded-2xl glass-card flex items-center justify-center text-textSecondary hover:text-danger transition" title="Sign Out">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </div>
@@ -192,7 +226,7 @@
             
             <!-- HOME VIEW -->
             <section id="view-home" class="p-4 space-y-6">
-                <!-- Greeting & Status Card -->
+                <!-- Greeting Card -->
                 <div class="glass-card p-6 relative overflow-hidden glow-mint">
                     <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-mint/10 rounded-full blur-3xl pointer-events-none"></div>
                     <span id="home-greeting" class="text-xs font-bold uppercase tracking-widest text-mint">Good day</span>
@@ -209,30 +243,30 @@
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
+                <!-- Quick Actions Grid -->
                 <div>
                     <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary mb-3 px-1">Quick Actions</h3>
                     <div class="grid grid-cols-4 gap-3">
                         <button onclick="switchTab('map')" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
-                            <div class="w-10 h-10 rounded-xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
+                            <div class="w-10 h-10 rounded-2xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
                                 <i class="fa-solid fa-map-location-dot text-sm"></i>
                             </div>
-                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Live Map</span>
+                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Map</span>
                         </button>
                         <button onclick="openCreateCircleModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
-                            <div class="w-10 h-10 rounded-xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
+                            <div class="w-10 h-10 rounded-2xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
                                 <i class="fa-solid fa-users-rectangle text-sm"></i>
                             </div>
-                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">New Circle</span>
+                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Create</span>
                         </button>
                         <button onclick="openJoinCircleModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
-                            <div class="w-10 h-10 rounded-xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
+                            <div class="w-10 h-10 rounded-2xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
                                 <i class="fa-solid fa-user-plus text-sm"></i>
                             </div>
                             <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Join</span>
                         </button>
                         <button onclick="openAiModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-skyCyan transition group">
-                            <div class="w-10 h-10 rounded-xl bg-skyCyan/10 text-skyCyan flex items-center justify-center group-hover:scale-110 transition">
+                            <div class="w-10 h-10 rounded-2xl bg-skyCyan/10 text-skyCyan flex items-center justify-center group-hover:scale-110 transition">
                                 <i class="fa-solid fa-robot text-sm"></i>
                             </div>
                             <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">TC AI</span>
@@ -240,7 +274,7 @@
                     </div>
                 </div>
 
-                <!-- Active Circles Preview -->
+                <!-- Circles List Preview -->
                 <div>
                     <div class="flex items-center justify-between mb-3 px-1">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary">Your Circles</h3>
@@ -253,7 +287,7 @@
                     </div>
                 </div>
 
-                <!-- Social Feed Preview -->
+                <!-- Social Feed -->
                 <div>
                     <div class="flex items-center justify-between mb-3 px-1">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary">Social Feed</h3>
@@ -261,7 +295,7 @@
                     </div>
                     <div id="home-posts-list" class="space-y-3">
                         <div class="glass-card p-4 text-center text-textSecondary text-xs">
-                            No posts available. Be the first to share something!
+                            No posts available. Share something with your circle!
                         </div>
                     </div>
                 </div>
@@ -275,7 +309,7 @@
                         <i class="fa-solid fa-crosshairs mr-1"></i> My Location
                     </button>
                 </div>
-                <div class="flex-1 rounded-2xl overflow-hidden glass-card relative p-1">
+                <div class="flex-1 rounded-3xl overflow-hidden glass-card relative p-1">
                     <div id="map" class="map-container"></div>
                 </div>
             </section>
@@ -298,10 +332,10 @@
 
             <!-- MESSAGES VIEW -->
             <section id="view-messages" class="p-4 space-y-4 hidden">
-                <h2 class="font-bold text-base text-textPrimary">Messages</h2>
+                <h2 class="font-bold text-base text-textPrimary">Messages & Chat</h2>
                 <div id="messages-list" class="space-y-2">
                     <div class="glass-card p-6 text-center text-textSecondary text-xs">
-                        No conversations yet. Connect with circle members to start chatting.
+                        No active conversations. Connect with your circle members.
                     </div>
                 </div>
             </section>
@@ -309,10 +343,10 @@
             <!-- PROFILE VIEW -->
             <section id="view-profile" class="p-4 space-y-6 hidden">
                 <div class="glass-card p-6 text-center relative glow-mint">
-                    <div class="w-20 h-20 rounded-2xl bg-mint/20 border-2 border-mint mx-auto flex items-center justify-center text-mint text-2xl font-extrabold mb-3 glow-mint" id="profile-avatar-display">
+                    <div class="w-24 h-24 rounded-3xl bg-mint/20 border-2 border-mint mx-auto flex items-center justify-center text-mint text-3xl font-extrabold mb-3 glow-mint" id="profile-avatar-display">
                         TC
                     </div>
-                    <h2 id="profile-display-name" class="font-extrabold text-lg text-textPrimary">User Name</h2>
+                    <h2 id="profile-display-name" class="font-extrabold text-xl text-textPrimary">User Name</h2>
                     <p id="profile-username" class="text-xs text-mint font-semibold mt-0.5">@username</p>
                     
                     <div class="mt-6 pt-6 border-t border-borderSubtle grid grid-cols-2 gap-4 text-center">
@@ -329,11 +363,11 @@
 
                 <div class="glass-card p-4 space-y-3">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary">Settings</h3>
-                    <button onclick="toggleLocationSharing()" class="w-full flex items-center justify-between p-3 bg-secondaryBg/80 rounded-xl text-xs hover:border hover:border-mint transition text-textPrimary">
+                    <button onclick="toggleLocationSharing()" class="w-full flex items-center justify-between p-3.5 bg-secondaryBg/80 rounded-2xl text-xs hover:border hover:border-mint transition text-textPrimary">
                         <span>Toggle Location Sharing</span>
                         <i class="fa-solid fa-location-arrow text-mint"></i>
                     </button>
-                    <button onclick="signOut()" class="w-full flex items-center justify-between p-3 bg-secondaryBg/80 rounded-xl text-xs text-danger hover:bg-danger/10 transition">
+                    <button onclick="signOut()" class="w-full flex items-center justify-between p-3.5 bg-secondaryBg/80 rounded-2xl text-xs text-danger hover:bg-danger/10 transition">
                         <span>Sign Out</span>
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
@@ -369,29 +403,29 @@
 
     <!-- TRACK CIRCLE AI MODAL -->
     <div id="ai-modal" class="fixed inset-0 z-50 bg-darkBg/95 backdrop-blur-2xl flex flex-col hidden">
-        <div class="flex items-center justify-between px-4 py-3.5 border-b border-borderSubtle glass-card">
+        <div class="flex items-center justify-between px-4 py-4 border-b border-borderSubtle glass-card">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-skyCyan/20 text-skyCyan flex items-center justify-center glow-cyan">
+                <div class="w-10 h-10 rounded-2xl bg-skyCyan/20 text-skyCyan flex items-center justify-center glow-cyan">
                     <i class="fa-solid fa-sparkles text-sm"></i>
                 </div>
                 <div>
                     <h3 class="font-extrabold text-sm text-textPrimary">Track Circle AI</h3>
-                    <p class="text-[10px] text-skyCyan font-semibold">Powered by OpenAI gpt-5.6-luna</p>
+                    <p class="text-[10px] text-skyCyan font-semibold">Powered by OpenAI & Supabase Edge Function</p>
                 </div>
             </div>
-            <button onclick="closeAiModal()" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-textSecondary hover:text-textPrimary">
+            <button onclick="closeAiModal()" class="w-10 h-10 rounded-2xl glass-card flex items-center justify-center text-textSecondary hover:text-textPrimary">
                 <i class="fa-solid fa-xmark text-base"></i>
             </button>
         </div>
-        <div id="ai-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3">
-            <div class="glass-card p-3.5 text-xs max-w-[85%] text-textPrimary">
-                Hello! I am Track Circle AI, your official intelligent assistant. How can I help you navigate your circles or location today?
+        <div id="ai-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3.5">
+            <div class="glass-card p-4 text-xs max-w-[85%] text-textPrimary">
+                Hello! I am Track Circle AI, your official assistant connected via Supabase. How can I help you coordinate your circles or location today?
             </div>
         </div>
-        <div class="p-3.5 border-t border-borderSubtle glass-card flex gap-2">
-            <input type="text" id="ai-input" placeholder="Ask Track Circle AI..." onkeydown="if(event.key==='Enter')sendAI()" class="flex-1 bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-skyCyan text-textPrimary">
-            <button onclick="sendAI()" class="bg-skyCyan text-darkBg px-4 py-3 rounded-xl font-extrabold text-xs hover:opacity-95 transition glow-cyan flex items-center justify-center">
-                <i class="fa-solid fa-paper-plane text-xs"></i>
+        <div class="p-4 border-t border-borderSubtle glass-card flex gap-2">
+            <input type="text" id="ai-input" placeholder="Ask Track Circle AI..." onkeydown="if(event.key==='Enter')sendAI()" class="flex-1 bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-xs focus:outline-none focus:border-skyCyan text-textPrimary">
+            <button onclick="sendAI()" class="bg-skyCyan text-darkBg px-5 py-3.5 rounded-2xl font-extrabold text-xs hover:opacity-95 transition glow-cyan flex items-center justify-center">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
             </button>
         </div>
     </div>
@@ -402,11 +436,11 @@
             <h3 class="font-extrabold text-base text-textPrimary">Create a Circle</h3>
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Circle Name</label>
-                <input type="text" id="new-circle-name" placeholder="e.g. Lagos Family" class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-mint text-textPrimary">
+                <input type="text" id="new-circle-name" placeholder="e.g. Lagos Family" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-mint text-textPrimary">
             </div>
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Circle Type</label>
-                <select id="new-circle-type" class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-mint text-textPrimary">
+                <select id="new-circle-type" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-mint text-textPrimary">
                     <option value="Family">Family</option>
                     <option value="Friends">Friends</option>
                     <option value="School">School</option>
@@ -416,8 +450,8 @@
                 </select>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="closeCreateCircleModal()" class="flex-1 bg-secondaryBg py-3 rounded-xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
-                <button onclick="submitCreateCircle()" class="flex-1 bg-mint text-darkBg py-3 rounded-xl text-xs font-extrabold hover:opacity-95 glow-mint">Create</button>
+                <button onclick="closeCreateCircleModal()" class="flex-1 bg-secondaryBg py-3 rounded-2xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
+                <button onclick="submitCreateCircle()" class="flex-1 bg-mint text-darkBg py-3 rounded-2xl text-xs font-extrabold hover:opacity-95 glow-mint">Create</button>
             </div>
         </div>
     </div>
@@ -428,11 +462,11 @@
             <h3 class="font-extrabold text-base text-textPrimary">Join a Circle</h3>
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Invite Code</label>
-                <input type="text" id="join-invite-code" placeholder="e.g. TC-7K4P9" class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-mint uppercase text-textPrimary">
+                <input type="text" id="join-invite-code" placeholder="e.g. TC-7K4P9" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-mint uppercase text-textPrimary">
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="closeJoinCircleModal()" class="flex-1 bg-secondaryBg py-3 rounded-xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
-                <button onclick="submitJoinCircle()" class="flex-1 bg-mint text-darkBg py-3 rounded-xl text-xs font-extrabold hover:opacity-95 glow-mint">Join</button>
+                <button onclick="closeJoinCircleModal()" class="flex-1 bg-secondaryBg py-3 rounded-2xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
+                <button onclick="submitJoinCircle()" class="flex-1 bg-mint text-darkBg py-3 rounded-2xl text-xs font-extrabold hover:opacity-95 glow-mint">Join</button>
             </div>
         </div>
     </div>
@@ -442,11 +476,11 @@
         <div class="w-full max-w-sm glass-card p-6 space-y-4 glow-mint">
             <h3 class="font-extrabold text-base text-textPrimary">Create Social Post</h3>
             <div>
-                <textarea id="post-content-input" rows="4" placeholder="What's happening in your circle?" class="w-full bg-secondaryBg border border-borderSubtle rounded-xl p-3 text-xs focus:outline-none focus:border-mint text-textPrimary resize-none"></textarea>
+                <textarea id="post-content-input" rows="4" placeholder="What's happening in your circle?" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl p-3 text-xs focus:outline-none focus:border-mint text-textPrimary resize-none"></textarea>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="closePostModal()" class="flex-1 bg-secondaryBg py-3 rounded-xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
-                <button onclick="submitPost()" class="flex-1 bg-mint text-darkBg py-3 rounded-xl text-xs font-extrabold hover:opacity-95 glow-mint">Publish</button>
+                <button onclick="closePostModal()" class="flex-1 bg-secondaryBg py-3 rounded-2xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
+                <button onclick="submitPost()" class="flex-1 bg-mint text-darkBg py-3 rounded-2xl text-xs font-extrabold hover:opacity-95 glow-mint">Publish</button>
             </div>
         </div>
     </div>
@@ -480,19 +514,19 @@
             if (window.supabase && typeof window.supabase.createClient === 'function') {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             } else {
-                console.error("Supabase script not loaded correctly.");
+                console.error("Supabase script failed to load.");
             }
         }
 
         async function initializeAuthCheck() {
             if (!supabaseClient) {
-                showAuthUI();
+                showSplash();
                 return;
             }
             try {
                 const { data: { session }, error } = await supabaseClient.auth.getSession();
                 if (error || !session) {
-                    showAuthUI();
+                    showSplash();
                 } else {
                     currentUser = session.user;
                     await loadUserProfile();
@@ -500,36 +534,53 @@
                 }
             } catch (err) {
                 console.error("Auth check failed:", err);
-                showAuthUI();
+                showSplash();
             }
         }
 
-        // UI STATE SWITCHERS
-        function showAuthUI() {
-            document.getElementById('auth-wrapper').classList.remove('hidden');
+        // VIEW NAVIGATION
+        function showSplash() {
+            document.getElementById('splash-screen').classList.remove('hidden');
+            document.getElementById('auth-wrapper').classList.add('hidden');
             document.getElementById('app-shell').classList.add('hidden');
         }
 
+        function showAuthMode(mode) {
+            document.getElementById('splash-screen').classList.add('hidden');
+            document.getElementById('auth-wrapper').classList.remove('hidden');
+            document.getElementById('app-shell').classList.add('hidden');
+            switchAuthForm(mode);
+        }
+
+        function backToSplash() {
+            showSplash();
+        }
+
+        function switchAuthForm(formType) {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const titleEl = document.getElementById('auth-title');
+
+            if (formType === 'signup') {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                titleEl.textContent = "Create Account";
+            } else {
+                signupForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                titleEl.textContent = "Welcome Back";
+            }
+        }
+
         function showMainApp() {
+            document.getElementById('splash-screen').classList.add('hidden');
             document.getElementById('auth-wrapper').classList.add('hidden');
             document.getElementById('app-shell').classList.remove('hidden');
             updateGreeting();
             loadHomeData();
         }
 
-        function switchAuthMode(mode) {
-            const loginForm = document.getElementById('login-form');
-            const signupForm = document.getElementById('signup-form');
-            if (mode === 'signup') {
-                loginForm.classList.add('hidden');
-                signupForm.classList.remove('hidden');
-            } else {
-                signupForm.classList.add('hidden');
-                loginForm.classList.remove('hidden');
-            }
-        }
-
-        // AUTH HANDLERS
+        // AUTHENTICATION ACTIONS
         async function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
@@ -560,12 +611,14 @@
                 currentUser = data.user;
 
                 if (currentUser) {
-                    await supabaseClient.from('profiles').upsert({
+                    // Write user to database profiles table immediately
+                    const { error: profileError } = await supabaseClient.from('profiles').upsert({
                         id: currentUser.id,
                         display_name: displayName,
                         username: username,
                         created_at: new Date().toISOString()
                     });
+                    if (profileError) console.warn("Profile table insert warning:", profileError.message);
                 }
                 await loadUserProfile();
                 showMainApp();
@@ -585,11 +638,11 @@
                 navigator.geolocation.clearWatch(locationWatcherId);
                 locationWatcherId = null;
             }
-            showAuthUI();
+            showSplash();
             toast("Signed out successfully", "success");
         }
 
-        // PROFILE & HOME DATA
+        // PROFILE & HOME DATA SYNCHRONIZATION
         async function loadUserProfile() {
             if (!currentUser) return;
             try {
@@ -601,15 +654,19 @@
                 
                 if (data) {
                     currentProfile = data;
-                    document.getElementById('header-username').textContent = currentProfile.display_name || currentProfile.username || "User";
-                    document.getElementById('profile-display-name').textContent = currentProfile.display_name || "User";
+                    const name = currentProfile.display_name || currentProfile.username || "User";
+                    document.getElementById('header-username').textContent = name;
+                    document.getElementById('profile-display-name').textContent = name;
                     document.getElementById('profile-username').textContent = `@${currentProfile.username || 'user'}`;
-                    const initials = (currentProfile.display_name || 'TC').substring(0, 2).toUpperCase();
+                    const initials = name.substring(0, 2).toUpperCase();
                     document.getElementById('header-avatar').textContent = initials;
                     document.getElementById('profile-avatar-display').textContent = initials;
                 }
             } catch (err) {
-                console.warn("Could not load profile:", err);
+                console.warn("Profile table fetch fallback active:", err);
+                const fallbackName = currentUser.email.split('@')[0];
+                document.getElementById('header-username').textContent = fallbackName;
+                document.getElementById('profile-display-name').textContent = fallbackName;
             }
         }
 
@@ -620,9 +677,8 @@
             else if (hour < 18) greeting = "Good afternoon";
 
             document.getElementById('home-greeting').textContent = greeting;
-            if (currentProfile && currentProfile.display_name) {
-                document.getElementById('home-display-name').textContent = `Welcome back, ${currentProfile.display_name}.`;
-            }
+            const displayName = currentProfile?.display_name || currentUser?.email?.split('@')[0] || "User";
+            document.getElementById('home-display-name').textContent = `Welcome back, ${displayName}.`;
         }
 
         async function loadHomeData() {
@@ -630,7 +686,7 @@
             loadPosts();
         }
 
-        // NAVIGATION TABS
+        // MAIN NAVIGATION TABS
         function switchTab(tabName) {
             const tabs = ['home', 'map', 'circles', 'messages', 'profile'];
             tabs.forEach(t => {
@@ -770,7 +826,7 @@
                 }
 
                 closeCreateCircleModal();
-                toast(`Circle created! Invite Code: ${inviteCode}`, "success");
+                toast(`Circle created! Code: ${inviteCode}`, "success");
                 loadCirclesPreview();
                 loadFullCircles();
             } catch (err) {
@@ -830,7 +886,7 @@
                     `).join('');
                 }
             } catch (err) {
-                console.warn("Circles preview load skipped or failed:", err);
+                console.warn("Circles preview load note:", err);
             }
         }
 
@@ -860,11 +916,11 @@
                     container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">No circles found. Create or join one.</div>`;
                 }
             } catch (err) {
-                container.innerHTML = `<div class="glass-card p-6 text-center text-danger text-xs">Could not load circles. Schema check required.</div>`;
+                container.innerHTML = `<div class="glass-card p-6 text-center text-danger text-xs">Could not load circles.</div>`;
             }
         }
 
-        // SOCIAL FEED LOGIC
+        // SOCIAL FEED
         function openPostModal() { document.getElementById('post-modal').classList.remove('hidden'); }
         function closePostModal() { document.getElementById('post-modal').classList.add('hidden'); }
 
@@ -885,7 +941,7 @@
                 toast("Post published successfully!", "success");
                 loadPosts();
             } catch (err) {
-                toast(err.message || "Failed to publish post. Check posts table schema.", "error");
+                toast(err.message || "Failed to publish post.", "error");
             }
         }
 
@@ -912,34 +968,17 @@
                     `).join('');
                 }
             } catch (err) {
-                console.warn("Posts load skipped or missing schema:", err);
+                console.warn("Posts load note:", err);
             }
         }
 
-        // MESSAGES LIST
         async function loadMessagesList() {
             const container = document.getElementById('messages-list');
             if (!supabaseClient || !currentUser) return;
-            try {
-                const { data, error } = await supabaseClient
-                    .from('messages')
-                    .select('*')
-                    .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
-                    .order('created_at', { ascending: false })
-                    .limit(10);
-
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    container.innerHTML = `<div class="glass-card p-4 text-xs text-mint font-semibold">Active message threads loaded.</div>`;
-                } else {
-                    container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">No conversations yet. Connect with circle members.</div>`;
-                }
-            } catch (err) {
-                container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">Messaging schema initializing. Ready for real-time chat.</div>`;
-            }
+            container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">Messaging interface ready for live sync.</div>`;
         }
 
-        // REAL TRACK CIRCLE AI (CONNECTS TO SUPABASE EDGE FUNCTION -> OPENAI)
+        // TRACK CIRCLE AI (CONNECTS TO SUPABASE EDGE FUNCTION -> OPENAI)
         function openAiModal() { document.getElementById('ai-modal').classList.remove('hidden'); }
         function closeAiModal() { document.getElementById('ai-modal').classList.add('hidden'); }
 
@@ -986,14 +1025,14 @@
 
                 aiHistory.push({ role: 'user', content: message });
                 aiHistory.push({ role: 'assistant', content: reply });
-                if (aiHistory.length > 10) aiHistory = aiHistory.slice(-10); // Keep last 10 messages
+                if (aiHistory.length > 10) aiHistory = aiHistory.slice(-10);
 
             } catch (err) {
                 document.getElementById(loadingId)?.remove();
                 console.error("AI Edge Function Error:", err);
                 chatContainer.innerHTML += `
                     <div class="glass-card p-3.5 text-xs max-w-[85%] text-danger border border-danger/30">
-                        Track Circle AI is temporarily unavailable. Please try again.
+                        Track Circle AI is temporarily unavailable. Please verify your Supabase Edge Function deployment.
                     </div>
                 `;
             }
@@ -1004,7 +1043,7 @@
         function toast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const el = document.createElement('div');
-            el.className = `pointer-events-auto px-4 py-3 rounded-xl text-xs font-bold shadow-2xl border backdrop-blur-xl transition duration-300 ${
+            el.className = `pointer-events-auto px-4 py-3 rounded-2xl text-xs font-bold shadow-2xl border backdrop-blur-xl transition duration-300 ${
                 type === 'error' ? 'bg-danger/90 text-textPrimary border-danger' : 'glass-card text-mint border-mint/40 glow-mint'
             }`;
             el.textContent = message;
