@@ -1,583 +1,408 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 
 <meta
- name="viewport"
- content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 >
 
 <meta
- name="theme-color"
- content="#07100d"
+  name="theme-color"
+  content="#080b10"
+>
+
+<meta
+  name="description"
+  content="Track Circle — Stay Connected. Stay Close."
 >
 
 <title>Track Circle</title>
 
-<link
- rel="stylesheet"
- href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
- integrity="sha256-p4NxAoJBhIINfQ3L8sZlRkz5qG0G0sM5xYp5Q5Yp5Y="
- crossorigin=""
->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script
- src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
- integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
- crossorigin="">
-</script>
 
 <style>
 
 :root{
-
- --bg:#050806;
- --bg2:#08110d;
- --card:#0c1712;
- --card2:#101d17;
- --green:#19e6a0;
- --green2:#72ffd0;
- --greenDark:#0b6f50;
- --white:#f5fff9;
- --muted:#8ea69c;
- --border:rgba(25,230,160,.13);
- --red:#ff5e6c;
- --yellow:#ffd76a;
- --blue:#6ab7ff;
- --shadow:0 18px 50px rgba(0,0,0,.35);
+  --bg:#080b10;
+  --bg2:#0b1017;
+  --card:#10161e;
+  --card2:#121a23;
+  --green:#19e6a0;
+  --green2:#10c989;
+  --white:#ffffff;
+  --text:#f5f7f8;
+  --muted:#8c98a5;
+  --line:rgba(255,255,255,.08);
+  --danger:#ff5263;
+  --yellow:#ffd45c;
+  --blue:#4ca7ff;
+  --shadow:0 20px 60px rgba(0,0,0,.35);
 }
 
 *{
- box-sizing:border-box;
- -webkit-tap-highlight-color:transparent;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
 }
 
 html,
 body{
- margin:0;
- padding:0;
- width:100%;
- min-height:100%;
- background:
- radial-gradient(
-  circle at 50% -10%,
-  rgba(25,230,160,.12),
-  transparent 34%
- ),
- linear-gradient(
-  180deg,
-  #07100d 0%,
-  #050806 55%,
-  #030504 100%
- );
- color:var(--white);
- font-family:
-  Inter,
-  system-ui,
-  -apple-system,
-  BlinkMacSystemFont,
-  "Segoe UI",
-  sans-serif;
+  width:100%;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 body{
- overflow:hidden;
+  overflow-x:hidden;
 }
 
 button,
 input,
 textarea,
 select{
- font:inherit;
+  font:inherit;
 }
 
 button{
- border:0;
- cursor:pointer;
+  border:0;
+  cursor:pointer;
+}
+
+input,
+textarea,
+select{
+  outline:none;
+}
+
+img{
+  max-width:100%;
+  display:block;
 }
 
 .hidden{
- display:none !important;
+  display:none !important;
 }
 
 .muted{
- color:var(--muted);
+  color:var(--muted);
 }
 
 .green{
- color:var(--green);
+  color:var(--green);
 }
 
 .red{
- color:var(--red);
-}
-
-.blue{
- color:var(--blue);
+  color:var(--danger);
 }
 
 
 /* =========================================================
-   AUTH
+   APP SHELL
    ========================================================= */
 
-#auth{
- position:fixed;
- inset:0;
- z-index:1000;
- overflow-y:auto;
- padding:24px 18px;
- display:flex;
- align-items:center;
- justify-content:center;
+#app{
+  width:100%;
+  min-height:100vh;
+  background:
+    radial-gradient(
+      circle at 15% 0%,
+      rgba(25,230,160,.10),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 100% 15%,
+      rgba(55,130,255,.08),
+      transparent 30%
+    ),
+    var(--bg);
 }
 
-.authGlow{
- position:fixed;
- width:320px;
- height:320px;
- border-radius:50%;
- background:rgba(25,230,160,.10);
- filter:blur(80px);
- top:-120px;
- left:50%;
- transform:translateX(-50%);
- pointer-events:none;
-}
-
-.authBox{
- width:min(430px,100%);
- padding:28px 22px;
- border:1px solid var(--border);
- border-radius:30px;
- background:
- linear-gradient(
-  145deg,
-  rgba(15,31,24,.96),
-  rgba(5,10,8,.98)
- );
- box-shadow:var(--shadow);
- position:relative;
- overflow:hidden;
-}
-
-.authBox:before{
- content:"";
- position:absolute;
- width:180px;
- height:180px;
- border-radius:50%;
- background:rgba(25,230,160,.09);
- filter:blur(60px);
- right:-80px;
- top:-80px;
-}
-
-.logo{
- width:68px;
- height:68px;
- border-radius:22px;
- display:flex;
- align-items:center;
- justify-content:center;
- margin-bottom:18px;
- background:
-  radial-gradient(
-   circle,
-   rgba(25,230,160,.3),
-   rgba(25,230,160,.04)
-  );
- border:1px solid rgba(25,230,160,.3);
- box-shadow:
-  0 0 35px rgba(25,230,160,.16);
- font-size:29px;
-}
-
-.logoMark{
- width:34px;
- height:34px;
- border:3px solid var(--green);
- border-radius:50%;
- position:relative;
- box-shadow:
-  0 0 16px rgba(25,230,160,.7);
-}
-
-.logoMark:after{
- content:"";
- position:absolute;
- width:9px;
- height:9px;
- background:var(--green);
- border-radius:50%;
- top:50%;
- left:50%;
- transform:translate(-50%,-50%);
- box-shadow:0 0 14px var(--green);
-}
-
-.authTitle{
- font-size:32px;
- font-weight:800;
- letter-spacing:-1px;
- margin:0;
-}
-
-.authSubtitle{
- color:var(--muted);
- margin:7px 0 24px;
- line-height:1.5;
-}
-
-.authTabs{
- display:grid;
- grid-template-columns:1fr 1fr;
- background:#07100c;
- border:1px solid var(--border);
- border-radius:14px;
- padding:4px;
- margin-bottom:18px;
-}
-
-.authTabs button{
- padding:11px;
- color:var(--muted);
- background:transparent;
- border-radius:11px;
-}
-
-.authTabs button.active{
- color:#02120b;
- background:var(--green);
- font-weight:800;
-}
-
-.field{
- margin-bottom:13px;
-}
-
-.field label{
- display:block;
- color:#bdd1c8;
- font-size:13px;
- margin-bottom:7px;
-}
-
-.field input,
-.field textarea,
-.field select{
- width:100%;
- border:1px solid var(--border);
- outline:none;
- background:#07100c;
- color:white;
- border-radius:14px;
- padding:13px 14px;
- transition:.2s;
-}
-
-.field input:focus,
-.field textarea:focus,
-.field select:focus{
- border-color:rgba(25,230,160,.55);
- box-shadow:0 0 0 3px rgba(25,230,160,.07);
-}
-
-.primaryBtn{
- width:100%;
- padding:14px;
- border-radius:14px;
- background:var(--green);
- color:#02120b;
- font-weight:850;
- box-shadow:0 8px 25px rgba(25,230,160,.15);
- transition:.2s;
-}
-
-.primaryBtn:active{
- transform:scale(.98);
-}
-
-.primaryBtn:disabled{
- opacity:.55;
- cursor:not-allowed;
-}
-
-.secondaryBtn{
- width:100%;
- padding:13px;
- border-radius:14px;
- background:#0b1711;
- color:white;
- border:1px solid var(--border);
- margin-top:10px;
-}
-
-.authError{
- min-height:20px;
- color:var(--red);
- font-size:13px;
- margin:8px 0;
-}
-
-.divider{
- display:flex;
- align-items:center;
- gap:10px;
- color:var(--muted);
- margin:18px 0;
- font-size:12px;
-}
-
-.divider:before,
-.divider:after{
- content:"";
- height:1px;
- background:var(--border);
- flex:1;
-}
-
-.oauthRow{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:9px;
-}
-
-.oauthBtn{
- padding:12px;
- border-radius:13px;
- background:#0a1510;
- color:white;
- border:1px solid var(--border);
-}
-
-
-/* =========================================================
-   APP
-   ========================================================= */
-
-#main{
- width:100%;
- height:100vh;
- display:flex;
- flex-direction:column;
- overflow:hidden;
-}
-
-.topbar{
- height:70px;
- min-height:70px;
- display:flex;
- align-items:center;
- justify-content:space-between;
- padding:0 17px;
- border-bottom:1px solid var(--border);
- background:rgba(5,8,6,.88);
- backdrop-filter:blur(18px);
- z-index:30;
-}
-
-.brand{
- display:flex;
- align-items:center;
- gap:10px;
-}
-
-.brandIcon{
- width:39px;
- height:39px;
- border-radius:13px;
- display:flex;
- align-items:center;
- justify-content:center;
- border:1px solid rgba(25,230,160,.3);
- background:rgba(25,230,160,.06);
-}
-
-.brandText{
- font-weight:850;
- letter-spacing:-.3px;
-}
-
-.brandText small{
- display:block;
- font-size:10px;
- color:var(--green);
- letter-spacing:1.5px;
- margin-top:1px;
-}
-
-.topActions{
- display:flex;
- gap:8px;
-}
-
-.iconBtn{
- width:40px;
- height:40px;
- border-radius:13px;
- background:#0b1510;
- color:white;
- border:1px solid var(--border);
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:17px;
+.appShell{
+  width:100%;
+  max-width:520px;
+  min-height:100vh;
+  margin:0 auto;
+  position:relative;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.015),
+      transparent 25%
+    );
 }
 
 .content{
- flex:1;
- overflow-y:auto;
- overflow-x:hidden;
- padding:16px 15px 105px;
- scroll-behavior:smooth;
-}
-
-.page{
- display:none;
- animation:pageIn .22s ease;
-}
-
-.page.active{
- display:block;
-}
-
-@keyframes pageIn{
- from{
-  opacity:0;
-  transform:translateY(7px);
- }
- to{
-  opacity:1;
-  transform:translateY(0);
- }
+  width:100%;
+  min-height:100vh;
+  padding:
+    20px
+    20px
+    105px
+    20px;
 }
 
 
 /* =========================================================
-   HOME
+   TOP BAR
+   ========================================================= */
+
+.topBar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:24px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.brandLogo{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(
+      circle,
+      rgba(25,230,160,.35),
+      rgba(25,230,160,.08) 55%,
+      rgba(25,230,160,.02)
+    );
+  border:1px solid rgba(25,230,160,.35);
+  box-shadow:
+    0 0 25px rgba(25,230,160,.18);
+  color:var(--green);
+  font-weight:900;
+  font-size:18px;
+}
+
+.brandText strong{
+  display:block;
+  font-size:15px;
+  letter-spacing:.4px;
+}
+
+.brandText span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:2px;
+}
+
+.profileButton{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  overflow:hidden;
+  background:var(--card);
+  border:1px solid var(--line);
+  color:var(--green);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+}
+
+.profileButton img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+
+/* =========================================================
+   PAGES
+   ========================================================= */
+
+.page{
+  display:none;
+  animation:pageIn .25s ease;
+}
+
+.page.active{
+  display:block;
+}
+
+@keyframes pageIn{
+  from{
+    opacity:0;
+    transform:translateY(6px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+
+/* =========================================================
+   HERO
    ========================================================= */
 
 .hero{
- border:1px solid var(--border);
- border-radius:25px;
- padding:21px;
- min-height:180px;
- background:
-  radial-gradient(
-   circle at 90% 10%,
-   rgba(25,230,160,.18),
-   transparent 38%
-  ),
-  linear-gradient(
-   135deg,
-   #0d2118,
-   #08100c 60%
-  );
- position:relative;
- overflow:hidden;
- box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+  min-height:210px;
+  padding:25px;
+  border-radius:28px;
+  border:1px solid rgba(25,230,160,.15);
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(25,230,160,.25),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 10% 90%,
+      rgba(40,110,255,.14),
+      transparent 30%
+    ),
+    linear-gradient(
+      145deg,
+      #101a1c,
+      #0d1219 55%,
+      #091017
+    );
+  box-shadow:var(--shadow);
+}
+
+.hero:before{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  right:-70px;
+  top:-80px;
+  border-radius:50%;
+  border:1px solid rgba(25,230,160,.15);
+  box-shadow:
+    0 0 50px rgba(25,230,160,.12);
 }
 
 .hero:after{
- content:"";
- position:absolute;
- width:170px;
- height:170px;
- border-radius:50%;
- border:1px solid rgba(25,230,160,.12);
- right:-70px;
- bottom:-80px;
- box-shadow:
-  0 0 0 20px rgba(25,230,160,.03),
-  0 0 0 40px rgba(25,230,160,.02);
+  content:"";
+  position:absolute;
+  width:110px;
+  height:110px;
+  right:25px;
+  top:35px;
+  border-radius:50%;
+  border:1px dashed rgba(25,230,160,.18);
 }
 
-.heroLabel{
- color:var(--green);
- font-size:11px;
- font-weight:800;
- letter-spacing:2px;
+.heroSmall{
+  color:var(--green);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:2px;
+  margin-bottom:9px;
 }
 
 .hero h1{
- margin:8px 0 5px;
- font-size:27px;
- letter-spacing:-.8px;
+  font-size:30px;
+  line-height:1.05;
+  letter-spacing:-1px;
+  max-width:310px;
 }
 
 .hero p{
- margin:0;
- color:var(--muted);
- font-size:13px;
- max-width:290px;
- line-height:1.5;
+  color:var(--muted);
+  margin-top:12px;
+  line-height:1.55;
+  font-size:13px;
+  max-width:330px;
 }
 
-.statusPill{
- display:inline-flex;
- align-items:center;
- gap:7px;
- margin-top:18px;
- padding:8px 11px;
- border-radius:999px;
- background:rgba(25,230,160,.08);
- border:1px solid rgba(25,230,160,.16);
- font-size:11px;
+.heroActions{
+  display:flex;
+  gap:9px;
+  margin-top:20px;
+  flex-wrap:wrap;
 }
 
-.statusDot{
- width:7px;
- height:7px;
- border-radius:50%;
- background:var(--green);
- box-shadow:0 0 10px var(--green);
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.primaryBtn{
+  min-height:44px;
+  padding:0 17px;
+  border-radius:14px;
+  background:var(--green);
+  color:#03130d;
+  font-weight:800;
+  box-shadow:
+    0 8px 25px rgba(25,230,160,.15);
+}
+
+.primaryBtn:active{
+  transform:scale(.98);
+}
+
+.secondaryBtn{
+  min-height:44px;
+  padding:0 17px;
+  border-radius:14px;
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--line);
+  color:var(--text);
+  font-weight:700;
+}
+
+.dangerBtn{
+  min-height:44px;
+  padding:0 17px;
+  border-radius:14px;
+  background:rgba(255,82,99,.1);
+  border:1px solid rgba(255,82,99,.2);
+  color:#ff8290;
+  font-weight:700;
+}
+
+
+/* =========================================================
+   SECTION
+   ========================================================= */
+
+.section{
+  margin-top:25px;
 }
 
 .sectionHead{
- display:flex;
- align-items:center;
- justify-content:space-between;
- margin:22px 2px 11px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
 }
 
 .sectionHead h2{
- margin:0;
- font-size:17px;
+  font-size:17px;
 }
 
 .sectionHead button{
- color:var(--green);
- background:none;
- font-size:12px;
-}
-
-.statsGrid{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:9px;
-}
-
-.statCard{
- padding:14px;
- background:var(--card);
- border:1px solid var(--border);
- border-radius:17px;
-}
-
-.statValue{
- font-size:20px;
- font-weight:800;
-}
-
-.statLabel{
- color:var(--muted);
- font-size:10px;
- margin-top:4px;
+  background:none;
+  color:var(--green);
+  font-size:12px;
+  font-weight:700;
 }
 
 
@@ -586,195 +411,287 @@ button{
    ========================================================= */
 
 .card{
- background:
-  linear-gradient(
-   145deg,
-   rgba(15,28,22,.95),
-   rgba(8,14,11,.95)
-  );
- border:1px solid var(--border);
- border-radius:19px;
- padding:15px;
- margin-bottom:10px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.035),
+      rgba(255,255,255,.015)
+    ),
+    var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:17px;
+  box-shadow:0 12px 40px rgba(0,0,0,.16);
 }
 
-.circleCard{
- background:
-  radial-gradient(
-   circle at 100% 0,
-   rgba(25,230,160,.08),
-   transparent 35%
-  ),
-  var(--card);
- border:1px solid var(--border);
- border-radius:19px;
- padding:15px;
- margin-bottom:10px;
-}
-
-.avatarStack{
- display:flex;
- margin-top:12px;
-}
-
-.avatarStack .avatar{
- margin-right:-7px;
- border:2px solid #09110d;
-}
-
-.avatar{
- width:38px;
- height:38px;
- min-width:38px;
- border-radius:50%;
- background:
-  linear-gradient(
-   145deg,
-   #153b2b,
-   #0c1c14
-  );
- border:1px solid rgba(25,230,160,.18);
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:12px;
- font-weight:800;
- overflow:hidden;
-}
-
-.avatar img{
- width:100%;
- height:100%;
- object-fit:cover;
+.card + .card{
+  margin-top:10px;
 }
 
 
 /* =========================================================
-   MAP
-   ========================================================= */
-
-.mapShell{
- border-radius:22px;
- overflow:hidden;
- border:1px solid var(--border);
- height:390px;
- position:relative;
- background:#08110d;
-}
-
-#map{
- width:100%;
- height:100%;
-}
-
-.mapOverlay{
- position:absolute;
- top:12px;
- left:12px;
- right:12px;
- z-index:500;
- display:flex;
- justify-content:space-between;
- pointer-events:none;
-}
-
-.mapPill{
- pointer-events:auto;
- padding:9px 12px;
- border-radius:999px;
- background:rgba(4,10,7,.86);
- backdrop-filter:blur(14px);
- border:1px solid rgba(25,230,160,.2);
- font-size:11px;
-}
-
-.mapControls{
- position:absolute;
- right:12px;
- bottom:12px;
- z-index:500;
- display:flex;
- flex-direction:column;
- gap:7px;
-}
-
-.mapControl{
- width:42px;
- height:42px;
- border-radius:13px;
- background:rgba(4,10,7,.9);
- color:white;
- border:1px solid rgba(25,230,160,.18);
-}
-
-.leaflet-control-zoom a{
- background:#08110d !important;
- color:white !important;
- border-color:rgba(25,230,160,.18) !important;
-}
-
-.leaflet-control-attribution{
- background:rgba(4,8,6,.75) !important;
- color:#71857c !important;
-}
-
-
-/* =========================================================
-   LOCATION
+   LIVE LOCATION CARD
    ========================================================= */
 
 .locationCard{
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
 }
 
-.locationInfo{
- display:flex;
- align-items:center;
- gap:11px;
+.locationLeft{
+  display:flex;
+  align-items:center;
+  gap:13px;
 }
 
 .locationIcon{
- width:43px;
- height:43px;
- border-radius:14px;
- display:flex;
- align-items:center;
- justify-content:center;
- background:rgba(25,230,160,.08);
- border:1px solid rgba(25,230,160,.16);
+  width:45px;
+  height:45px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(25,230,160,.08);
+  border:1px solid rgba(25,230,160,.16);
+  color:var(--green);
+  font-size:20px;
+}
+
+.locationText strong{
+  display:block;
+  font-size:14px;
+}
+
+.locationText span{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:11px;
 }
 
 .switch{
- width:48px;
- height:28px;
- border-radius:999px;
- background:#16221c;
- border:1px solid var(--border);
- padding:3px;
- transition:.2s;
+  width:50px;
+  height:29px;
+  padding:3px;
+  border-radius:20px;
+  background:#252c34;
+  border:1px solid var(--line);
+  transition:.2s;
 }
 
-.switch span{
- display:block;
- width:20px;
- height:20px;
- border-radius:50%;
- background:#66746d;
- transition:.2s;
+.switch i{
+  display:block;
+  width:21px;
+  height:21px;
+  border-radius:50%;
+  background:#8a949d;
+  transition:.2s;
 }
 
 .switch.on{
- background:rgba(25,230,160,.18);
- border-color:rgba(25,230,160,.4);
+  background:rgba(25,230,160,.25);
+  border-color:rgba(25,230,160,.4);
 }
 
-.switch.on span{
- transform:translateX(19px);
- background:var(--green);
- box-shadow:0 0 12px rgba(25,230,160,.7);
+.switch.on i{
+  transform:translateX(20px);
+  background:var(--green);
+  box-shadow:0 0 15px rgba(25,230,160,.5);
+}
+
+
+/* =========================================================
+   MINI MAP
+   ========================================================= */
+
+.miniMap{
+  position:relative;
+  height:190px;
+  overflow:hidden;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(16,34,37,.9),
+      rgba(8,16,23,.98)
+    );
+}
+
+.miniMap:before{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background:
+    repeating-linear-gradient(
+      30deg,
+      transparent 0 35px,
+      rgba(255,255,255,.035) 36px 37px
+    );
+  transform:rotate(-8deg);
+}
+
+.mapRoad{
+  position:absolute;
+  height:2px;
+  background:rgba(255,255,255,.08);
+  transform-origin:left center;
+}
+
+.road1{
+  width:130%;
+  left:-10%;
+  top:42%;
+  transform:rotate(14deg);
+}
+
+.road2{
+  width:100%;
+  left:8%;
+  top:65%;
+  transform:rotate(-25deg);
+}
+
+.road3{
+  width:90%;
+  left:20%;
+  top:20%;
+  transform:rotate(45deg);
+}
+
+.mapPulse{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:var(--green);
+  transform:translate(-50%,-50%);
+  box-shadow:
+    0 0 0 8px rgba(25,230,160,.12),
+    0 0 30px rgba(25,230,160,.8);
+}
+
+.mapPulse:after{
+  content:"";
+  position:absolute;
+  inset:-25px;
+  border:1px solid rgba(25,230,160,.25);
+  border-radius:50%;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%{
+    transform:scale(.6);
+    opacity:.8;
+  }
+  100%{
+    transform:scale(1.7);
+    opacity:0;
+  }
+}
+
+.mapLabel{
+  position:absolute;
+  left:14px;
+  top:14px;
+  padding:7px 10px;
+  border-radius:10px;
+  background:rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(10px);
+  font-size:10px;
+  color:var(--muted);
+}
+
+
+/* =========================================================
+   CIRCLE CARDS
+   ========================================================= */
+
+.circleCard{
+  padding:16px;
+  border-radius:19px;
+  background:var(--card);
+  border:1px solid var(--line);
+}
+
+.circleCard + .circleCard{
+  margin-top:10px;
+}
+
+.circleTop{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.circleName{
+  font-size:15px;
+  font-weight:800;
+}
+
+.circleType{
+  color:var(--muted);
+  font-size:11px;
+  margin-top:4px;
+}
+
+.liveBadge{
+  color:var(--green);
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.avatarStack{
+  display:flex;
+  margin-top:13px;
+}
+
+.avatar{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(25,230,160,.2),
+      rgba(25,230,160,.05)
+    );
+  border:2px solid var(--card);
+  color:var(--green);
+  font-size:11px;
+  font-weight:800;
+  overflow:hidden;
+  margin-left:-6px;
+}
+
+.avatar:first-child{
+  margin-left:0;
+}
+
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.inviteLine{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.inviteLine strong{
+  color:var(--white);
 }
 
 
@@ -783,102 +700,120 @@ button{
    ========================================================= */
 
 .searchBox{
- position:relative;
- margin-bottom:12px;
+  position:relative;
+  margin-bottom:13px;
 }
 
 .searchBox input{
- width:100%;
- padding:14px 15px 14px 42px;
- border-radius:15px;
- border:1px solid var(--border);
- background:#07100c;
- color:white;
- outline:none;
+  width:100%;
+  height:48px;
+  border-radius:15px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--white);
+  padding:0 15px;
 }
 
-.searchIcon{
- position:absolute;
- left:15px;
- top:50%;
- transform:translateY(-50%);
- color:var(--muted);
-}
-
-.userResult{
- display:flex;
- align-items:center;
- gap:11px;
- padding:12px 0;
- border-bottom:1px solid rgba(255,255,255,.04);
-}
-
-.userResult:last-child{
- border-bottom:0;
-}
-
-.userInfo{
- flex:1;
- min-width:0;
-}
-
-.userInfo b{
- font-size:13px;
-}
-
-.addBtn{
- padding:8px 13px;
- border-radius:10px;
- background:rgba(25,230,160,.1);
- color:var(--green);
- border:1px solid rgba(25,230,160,.18);
- font-size:12px;
+.searchBox input:focus{
+  border-color:rgba(25,230,160,.4);
+  box-shadow:0 0 0 3px rgba(25,230,160,.06);
 }
 
 
 /* =========================================================
-   CHATS
+   USER RESULT
+   ========================================================= */
+
+.userResult{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:12px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:17px;
+  margin-bottom:9px;
+}
+
+.userInfo{
+  flex:1;
+  min-width:0;
+}
+
+.userInfo b{
+  font-size:13px;
+}
+
+.userInfo .muted{
+  font-size:11px;
+  margin-top:3px;
+}
+
+.addBtn{
+  min-height:35px;
+  padding:0 13px;
+  border-radius:11px;
+  background:rgba(25,230,160,.1);
+  border:1px solid rgba(25,230,160,.2);
+  color:var(--green);
+  font-weight:800;
+  font-size:11px;
+}
+
+
+/* =========================================================
+   CHAT
    ========================================================= */
 
 .chat{
- display:flex;
- align-items:center;
- gap:12px;
- padding:13px 3px;
- border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border-radius:17px;
+  background:var(--card);
+  border:1px solid var(--line);
+  margin-bottom:9px;
 }
 
 .chatAvatar{
- width:45px;
- height:45px;
- min-width:45px;
- border-radius:50%;
- display:flex;
- align-items:center;
- justify-content:center;
- background:#123323;
- color:var(--green);
- border:1px solid rgba(25,230,160,.18);
- font-weight:800;
+  width:45px;
+  height:45px;
+  flex-shrink:0;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(25,230,160,.09);
+  border:1px solid rgba(25,230,160,.18);
+  color:var(--green);
+  font-weight:900;
+  overflow:hidden;
+}
+
+.chatAvatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 .chatInfo{
- flex:1;
- min-width:0;
+  flex:1;
+  min-width:0;
 }
 
 .chatName{
- font-weight:750;
- font-size:14px;
+  font-size:13px;
+  font-weight:800;
 }
 
 .chatPreview{
- color:var(--muted);
- font-size:12px;
- margin-top:4px;
- white-space:nowrap;
- overflow:hidden;
- text-overflow:ellipsis;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:4px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
 }
 
 
@@ -887,112 +822,114 @@ button{
    ========================================================= */
 
 .aiShell{
- min-height:calc(100vh - 200px);
- display:flex;
- flex-direction:column;
+  border-radius:23px;
+  border:1px solid rgba(25,230,160,.14);
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(25,230,160,.10),
+      transparent 35%
+    ),
+    var(--card);
+  overflow:hidden;
 }
 
 .aiHeader{
- padding:18px;
- border:1px solid var(--border);
- border-radius:22px;
- background:
-  radial-gradient(
-   circle at 90% 10%,
-   rgba(25,230,160,.15),
-   transparent 40%
-  ),
-  var(--card);
+  padding:18px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border-bottom:1px solid var(--line);
 }
 
-.aiBadge{
- display:inline-flex;
- gap:7px;
- align-items:center;
- color:var(--green);
- font-size:11px;
- font-weight:800;
+.aiLogo{
+  width:43px;
+  height:43px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--green);
+  font-weight:900;
+  background:rgba(25,230,160,.08);
+  border:1px solid rgba(25,230,160,.2);
+  box-shadow:0 0 25px rgba(25,230,160,.1);
+}
+
+.aiHeader strong{
+  display:block;
+}
+
+.aiHeader span{
+  color:var(--muted);
+  font-size:10px;
 }
 
 .aiMessages{
- flex:1;
- overflow-y:auto;
- padding:15px 0;
- min-height:300px;
- max-height:calc(100vh - 370px);
+  height:430px;
+  overflow-y:auto;
+  padding:17px;
 }
 
 .aiMsg{
- max-width:88%;
- width:max-content;
- padding:12px 14px;
- margin:8px 0;
- border-radius:16px 16px 16px 5px;
- background:#0e1c15;
- border:1px solid var(--border);
- color:#eaf6f0;
- line-height:1.5;
- font-size:13px;
- white-space:pre-wrap;
+  max-width:88%;
+  padding:12px 14px;
+  border-radius:16px;
+  background:#161e27;
+  border:1px solid var(--line);
+  margin-bottom:10px;
+  font-size:13px;
+  line-height:1.55;
 }
 
 .aiMsg.user{
- margin-left:auto;
- border-radius:16px 16px 5px 16px;
- background:
-  linear-gradient(
-   135deg,
-   rgba(25,230,160,.18),
-   rgba(25,230,160,.08)
-  );
- border-color:rgba(25,230,160,.2);
+  margin-left:auto;
+  background:rgba(25,230,160,.12);
+  border-color:rgba(25,230,160,.16);
 }
 
-.aiSuggestions{
- display:flex;
- gap:7px;
- overflow-x:auto;
- padding-bottom:10px;
+.aiInputRow{
+  display:flex;
+  gap:8px;
+  padding:12px;
+  border-top:1px solid var(--line);
 }
 
-.aiSuggestions button{
- white-space:nowrap;
- padding:8px 11px;
- border-radius:999px;
- background:#0b1711;
- color:#bdd1c8;
- border:1px solid var(--border);
- font-size:11px;
+.aiInputRow input{
+  flex:1;
+  min-width:0;
+  height:46px;
+  border-radius:14px;
+  background:#080d12;
+  border:1px solid var(--line);
+  color:white;
+  padding:0 13px;
 }
 
-.aiComposer{
- display:flex;
- gap:8px;
- padding:9px;
- border-radius:17px;
- background:#09120d;
- border:1px solid var(--border);
+.aiSend{
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  background:var(--green);
+  color:#03130d;
+  font-weight:900;
 }
 
-.aiComposer textarea{
- flex:1;
- resize:none;
- border:0;
- outline:none;
- background:transparent;
- color:white;
- min-height:40px;
- max-height:100px;
- padding:9px;
+.suggestions{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding:0 13px 13px;
 }
 
-.sendBtn{
- width:43px;
- height:43px;
- border-radius:13px;
- background:var(--green);
- color:#03120b;
- font-weight:900;
+.suggestions button{
+  white-space:nowrap;
+  border-radius:12px;
+  padding:8px 11px;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-size:10px;
 }
 
 
@@ -1001,119 +938,111 @@ button{
    ========================================================= */
 
 .postComposer{
- background:var(--card);
- border:1px solid var(--border);
- border-radius:19px;
- padding:13px;
- margin-bottom:14px;
+  padding:15px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
 }
 
 .postComposer textarea{
- width:100%;
- min-height:85px;
- resize:none;
- background:transparent;
- border:0;
- outline:0;
- color:white;
- padding:5px;
+  width:100%;
+  min-height:90px;
+  resize:none;
+  background:transparent;
+  color:white;
+  border:0;
+  line-height:1.5;
 }
 
-.postComposerBottom{
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:8px;
+.composerBottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding-top:10px;
+  border-top:1px solid var(--line);
 }
 
 .mediaButtons{
- display:flex;
- gap:5px;
+  display:flex;
+  gap:6px;
 }
 
-.smallBtn{
- padding:8px 10px;
- border-radius:10px;
- background:#0a1510;
- color:#bcd0c7;
- border:1px solid var(--border);
- font-size:11px;
-}
-
-.publishBtn{
- padding:9px 13px;
- border-radius:10px;
- background:var(--green);
- color:#03120b;
- font-weight:800;
- font-size:11px;
+.mediaButtons button{
+  width:35px;
+  height:35px;
+  border-radius:11px;
+  background:rgba(255,255,255,.05);
+  color:var(--muted);
 }
 
 .post{
- background:var(--card);
- border:1px solid var(--border);
- border-radius:19px;
- padding:15px;
- margin-bottom:11px;
+  margin-top:11px;
+  padding:16px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
 }
 
 .postHead{
- display:flex;
- gap:10px;
- align-items:center;
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
 .postUserAvatar{
- width:38px;
- height:38px;
- border-radius:50%;
- background:#143a29;
- color:var(--green);
- display:flex;
- align-items:center;
- justify-content:center;
- font-weight:800;
- overflow:hidden;
+  width:39px;
+  height:39px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:rgba(25,230,160,.09);
+  color:var(--green);
+  font-weight:900;
 }
 
 .postUserAvatar img{
- width:100%;
- height:100%;
- object-fit:cover;
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 .postName{
- font-size:13px;
- font-weight:800;
+  font-size:12px;
+  font-weight:800;
 }
 
 .postTime{
- color:var(--muted);
- font-size:10px;
- margin-top:2px;
+  color:var(--muted);
+  font-size:9px;
+  margin-top:3px;
 }
 
 .postText{
- margin-top:13px;
- line-height:1.55;
- font-size:13px;
- white-space:pre-wrap;
+  margin-top:14px;
+  font-size:13px;
+  line-height:1.6;
+  white-space:pre-wrap;
 }
 
 .actions{
- display:flex;
- gap:5px;
- margin-top:14px;
+  display:flex;
+  gap:6px;
+  margin-top:14px;
+  padding-top:11px;
+  border-top:1px solid var(--line);
+  overflow-x:auto;
 }
 
 .actions button{
- flex:1;
- padding:9px 4px;
- border-radius:10px;
- background:#09130e;
- color:#9eb2a9;
- border:1px solid rgba(255,255,255,.04);
- font-size:10px;
+  flex:0 0 auto;
+  padding:7px 9px;
+  border-radius:10px;
+  background:rgba(255,255,255,.04);
+  color:var(--muted);
+  font-size:10px;
 }
 
 
@@ -1121,131 +1050,55 @@ button{
    PROFILE
    ========================================================= */
 
-.profileCard{
- text-align:center;
- padding:24px 15px;
+.profileHero{
+  text-align:center;
+  padding:25px 17px;
 }
 
 .profilePic{
- width:92px;
- height:92px;
- border-radius:50%;
- margin:0 auto 12px;
- display:flex;
- align-items:center;
- justify-content:center;
- background:#153a2b;
- border:2px solid rgba(25,230,160,.25);
- color:var(--green);
- font-size:26px;
- font-weight:800;
- overflow:hidden;
+  width:90px;
+  height:90px;
+  margin:0 auto 13px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:
+    radial-gradient(
+      circle,
+      rgba(25,230,160,.18),
+      rgba(25,230,160,.04)
+    );
+  border:2px solid rgba(25,230,160,.25);
+  color:var(--green);
+  font-size:28px;
+  font-weight:900;
+  box-shadow:
+    0 0 30px rgba(25,230,160,.12);
 }
 
 .profilePic img{
- width:100%;
- height:100%;
- object-fit:cover;
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
-.profileName{
- font-size:20px;
- font-weight:850;
+.profileHero h2{
+  font-size:20px;
 }
 
-.profileUsername{
- color:var(--green);
- font-size:12px;
- margin-top:3px;
+.profileHero p{
+  color:var(--muted);
+  margin-top:4px;
+  font-size:12px;
 }
 
-
-/* =========================================================
-   MODAL
-   ========================================================= */
-
-.modal{
- position:fixed;
- inset:0;
- z-index:2000;
- background:rgba(0,0,0,.72);
- backdrop-filter:blur(8px);
- display:none;
- align-items:flex-end;
- justify-content:center;
- padding:15px;
-}
-
-.modal.show{
- display:flex;
-}
-
-.modalBox{
- width:min(500px,100%);
- max-height:90vh;
- overflow-y:auto;
- background:
-  linear-gradient(
-   150deg,
-   #0e1c15,
-   #060b08
-  );
- border:1px solid var(--border);
- border-radius:25px;
- padding:18px;
- box-shadow:0 -20px 70px rgba(0,0,0,.55);
-}
-
-.modalHeader{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:17px;
-}
-
-.modalHeader h3{
- margin:0;
- font-size:18px;
-}
-
-.closeBtn{
- width:35px;
- height:35px;
- border-radius:10px;
- background:#09130e;
- color:white;
- border:1px solid var(--border);
-}
-
-
-/* =========================================================
-   GIFT GRID
-   ========================================================= */
-
-.giftGrid{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:8px;
-}
-
-.gift{
- padding:15px 7px;
- border-radius:15px;
- background:#09130e;
- border:1px solid var(--border);
- color:white;
- text-align:center;
-}
-
-.giftEmoji{
- font-size:27px;
- display:block;
-}
-
-.giftPrice{
- color:var(--green);
- font-size:11px;
- margin-top:5px;
+.profileActions{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-top:15px;
 }
 
 
@@ -1254,1540 +1107,151 @@ button{
    ========================================================= */
 
 .nav{
- position:fixed;
- z-index:100;
- bottom:0;
- left:0;
- right:0;
- height:79px;
- display:grid;
- grid-template-columns:repeat(5,1fr);
- padding:8px 7px 10px;
- background:
-  linear-gradient(
-   180deg,
-   rgba(5,8,6,.72),
-   rgba(3,5,4,.98)
-  );
- backdrop-filter:blur(20px);
- border-top:1px solid var(--border);
+  position:fixed;
+  z-index:100;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(520px,100%);
+  padding:
+    9px
+    12px
+    calc(9px + env(safe-area-inset-bottom));
+  background:
+    rgba(8,11,16,.88);
+  border-top:1px solid rgba(255,255,255,.07);
+  backdrop-filter:blur(20px);
+}
+
+.navInner{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:5px;
 }
 
 .nav button{
- background:transparent;
- color:#6f8179;
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
- gap:4px;
- font-size:9px;
- border-radius:13px;
+  min-height:55px;
+  border-radius:15px;
+  background:transparent;
+  color:#69747e;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-size:9px;
 }
 
-.nav button span{
- font-size:19px;
- line-height:20px;
+.nav button span:first-child{
+  font-size:19px;
+  line-height:1;
 }
 
 .nav button.active{
- color:var(--green);
- background:rgba(25,230,160,.06);
-}
-
-.nav button.active span{
- filter:drop-shadow(0 0 7px rgba(25,230,160,.5));
+  color:var(--green);
+  background:rgba(25,230,160,.08);
 }
 
 
 /* =========================================================
-   TOAST
+   MODAL
    ========================================================= */
 
-#toast{
- position:fixed;
- z-index:5000;
- left:50%;
- bottom:95px;
- transform:translate(-50%,20px);
- opacity:0;
- pointer-events:none;
- padding:11px 15px;
- border-radius:13px;
- background:#102019;
- border:1px solid rgba(25,230,160,.22);
- color:white;
- font-size:12px;
- box-shadow:var(--shadow);
- transition:.22s;
- max-width:90%;
- text-align:center;
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(8px);
 }
 
-#toast.show{
- opacity:1;
- transform:translate(-50%,0);
+.modal.show{
+  display:flex;
+}
+
+.modalBox{
+  width:min(520px,100%);
+  max-height:90vh;
+  overflow-y:auto;
+  padding:20px;
+  border-radius:27px 27px 0 0;
+  background:#10161e;
+  border:1px solid var(--line);
+  box-shadow:0 -20px 60px rgba(0,0,0,.5);
+}
+
+.modalHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:17px;
+}
+
+.modalHead h3{
+  font-size:18px;
+}
+
+.closeBtn{
+  width:34px;
+  height:34px;
+  border-radius:11px;
+  background:rgba(255,255,255,.06);
+  color:var(--muted);
 }
 
 
 /* =========================================================
-   RESPONSIVE
+   FORM
    ========================================================= */
 
-@media(min-width:700px){
-
- .content{
-  width:min(900px,100%);
-  margin:auto;
- }
-
- .nav{
-  left:50%;
-  right:auto;
-  width:min(650px,100%);
-  transform:translateX(-50%);
-  border:1px solid var(--border);
-  border-bottom:0;
-  border-radius:22px 22px 0 0;
- }
-
- .topbar{
-  padding-left:calc((100% - min(900px,100%))/2 + 15px);
-  padding-right:calc((100% - min(900px,100%))/2 + 15px);
- }
-
+.formGroup{
+  margin-bottom:12px;
 }
 
-</style>
+.formGroup label{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea{
+  width:100%;
+  min-height:46px;
+  padding:0 13px;
+  border-radius:14px;
+  background:#090e14;
+  border:1px solid var(--line);
+  color:white;
+}
+
+.formGroup textarea{
+  padding-top:12px;
+  resize:none;
+}
 
-</head>
-<body>
-
-<!-- =======================================================
-     AUTHENTICATION
-     ======================================================= -->
-
-<section id="auth">
-
- <div class="authGlow"></div>
-
- <div class="authBox">
-
-  <div class="logo">
-   <div class="logoMark"></div>
-  </div>
-
-  <h1 class="authTitle">
-   Track Circle
-  </h1>
-
-  <p class="authSubtitle">
-   Stay Connected. Stay Close.
-   <br>
-   Real-time location, circles,
-   messaging and Track Circle AI.
-  </p>
-
-  <div class="authTabs">
-
-   <button
-    id="loginTab"
-    class="active"
-    onclick="setAuthMode('login')">
-
-    Sign in
-
-   </button>
-
-   <button
-    id="signupTab"
-    onclick="setAuthMode('signup')">
-
-    Create account
-
-   </button>
-
-  </div>
-
-
-  <div
-   id="nameField"
-   class="field hidden">
-
-   <label>
-    Full name
-   </label>
-
-   <input
-    id="authName"
-    type="text"
-    autocomplete="name"
-    placeholder="Your full name"
-   >
-
-  </div>
-
-
-  <div
-   id="usernameField"
-   class="field hidden">
-
-   <label>
-    Username
-   </label>
-
-   <input
-    id="authUsername"
-    type="text"
-    autocomplete="username"
-    placeholder="@username"
-   >
-
-  </div>
-
-
-  <div class="field">
-
-   <label>
-    Email
-   </label>
-
-   <input
-    id="authEmail"
-    type="email"
-    autocomplete="email"
-    placeholder="you@example.com"
-   >
-
-  </div>
-
-
-  <div class="field">
-
-   <label>
-    Password
-   </label>
-
-   <input
-    id="authPassword"
-    type="password"
-    autocomplete="current-password"
-    placeholder="Minimum 6 characters"
-   >
-
-  </div>
-
-
-  <div
-   id="authError"
-   class="authError">
-  </div>
-
-
-  <button
-   id="authButton"
-   class="primaryBtn"
-   onclick="submitAuth()">
-
-   Sign in
-
-  </button>
-
-
-  <div class="divider">
-   OR CONTINUE WITH
-  </div>
-
-
-  <div class="oauthRow">
-
-   <button
-    class="oauthBtn"
-    onclick="oauth('google')">
-
-    Google
-
-   </button>
-
-   <button
-    class="oauthBtn"
-    onclick="oauth('apple')">
-
-    Apple
-
-   </button>
-
-  </div>
-
- </div>
-
-</section>
-
-
-<!-- =======================================================
-     MAIN APPLICATION
-     ======================================================= -->
-
-<section
- id="main"
- class="hidden">
-
- <header class="topbar">
-
-  <div class="brand">
-
-   <div class="brandIcon">
-
-    <div class="logoMark"
-     style="
-      width:22px;
-      height:22px;
-      border-width:2px;
-     ">
-    </div>
-
-   </div>
-
-   <div class="brandText">
-
-    TRACK CIRCLE
-
-    <small>
-     STAY CONNECTED
-    </small>
-
-   </div>
-
-  </div>
-
-
-  <div class="topActions">
-
-   <button
-    class="iconBtn"
-    onclick="go('ai')">
-
-    ✦
-
-   </button>
-
-   <button
-    class="iconBtn"
-    onclick="go('profile')">
-
-    ◉
-
-   </button>
-
-  </div>
-
- </header>
-
-
- <main class="content">
-
-
-  <!-- =====================================================
-       HOME
-       ===================================================== -->
-
-  <section
-   id="home"
-   class="page active">
-
-   <div class="hero">
-
-    <div
-     id="welcomeText"
-     class="heroLabel">
-
-     WELCOME BACK
-
-    </div>
-
-    <h1 id="homeName">
-     Welcome.
-    </h1>
-
-    <p>
-     Your people, your circles,
-     your location — connected
-     in one place.
-    </p>
-
-    <div class="statusPill">
-
-     <span class="statusDot"></span>
-
-     Track Circle is ready
-
-    </div>
-
-   </div>
-
-
-   <div class="sectionHead">
-
-    <h2>
-     Your activity
-    </h2>
-
-   </div>
-
-
-   <div class="statsGrid">
-
-    <div class="statCard">
-
-     <div
-      id="circleCount"
-      class="statValue">
-
-      0
-
-     </div>
-
-     <div class="statLabel">
-      Circles
-     </div>
-
-    </div>
-
-    <div class="statCard">
-
-     <div
-      id="friendCount"
-      class="statValue">
-
-      0
-
-     </div>
-
-     <div class="statLabel">
-      Connections
-     </div>
-
-    </div>
-
-    <div class="statCard">
-
-     <div
-      id="locationCount"
-      class="statValue">
-
-      OFF
-
-     </div>
-
-     <div class="statLabel">
-      Location
-     </div>
-
-    </div>
-
-   </div>
-
-
-   <div class="sectionHead">
-
-    <h2>
-     Location sharing
-    </h2>
-
-    <button onclick="go('map')">
-     Open map
-    </button>
-
-   </div>
-
-
-   <div class="card locationCard">
-
-    <div class="locationInfo">
-
-     <div class="locationIcon">
-      ◉
-     </div>
-
-     <div>
-
-      <b>
-       <span id="locationStatus">
-        Location is off
-       </span>
-      </b>
-
-      <div class="muted"
-       style="
-        font-size:11px;
-        margin-top:4px;
-       ">
-
-       Share your live position
-       with your active circles.
-
-      </div>
-
-     </div>
-
-    </div>
-
-
-    <button
-     id="locationSwitch"
-     class="switch"
-     onclick="toggleLocation()">
-
-     <span></span>
-
-    </button>
-
-   </div>
-
-
-   <div class="sectionHead">
-
-    <h2>
-     Your circles
-    </h2>
-
-    <button onclick="go('circles')">
-     View all
-    </button>
-
-   </div>
-
-
-   <div id="homeCircles">
-
-    <div class="card">
-
-     <b>
-      Loading circles...
-     </b>
-
-    </div>
-
-   </div>
-
-
-   <div class="sectionHead">
-
-    <h2>
-     Quick actions
-    </h2>
-
-   </div>
-
-
-   <div class="statsGrid">
-
-    <button
-     class="statCard"
-     onclick="openModal('circleModal')">
-
-     <div class="statValue">
-      +
-     </div>
-
-     <div class="statLabel">
-      Create circle
-     </div>
-
-    </button>
-
-
-    <button
-     class="statCard"
-     onclick="openModal('joinModal')">
-
-     <div class="statValue">
-      ↗
-     </div>
-
-     <div class="statLabel">
-      Join circle
-     </div>
-
-    </button>
-
-
-    <button
-     class="statCard"
-     onclick="go('search')">
-
-     <div class="statValue">
-      @
-     </div>
-
-     <div class="statLabel">
-      Find people
-     </div>
-
-    </button>
-
-   </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       MAP
-       ===================================================== -->
-
-  <section
-   id="mapPage"
-   class="page">
-
-   <div class="sectionHead"
-    style="margin-top:0">
-
-    <h2>
-     Live Map
-    </h2>
-
-    <button onclick="centerOwnLocation()">
-     My location
-    </button>
-
-   </div>
-
-
-   <div class="mapShell">
-
-    <div
-     id="map">
-    </div>
-
-    <div class="mapOverlay">
-
-     <div class="mapPill">
-
-      <span class="statusDot"
-       style="
-        display:inline-block;
-        margin-right:5px;
-       ">
-      </span>
-
-      LIVE MAP
-
-     </div>
-
-     <div class="mapPill">
-
-      <span id="mapMemberCount">
-       0
-      </span>
-
-      members
-
-     </div>
-
-    </div>
-
-
-    <div class="mapControls">
-
-     <button
-      class="mapControl"
-      onclick="centerOwnLocation()">
-
-      ◎
-
-     </button>
-
-     <button
-      class="mapControl"
-      onclick="refreshMapMembers()">
-
-      ↻
-
-     </button>
-
-    </div>
-
-   </div>
-
-
-   <div class="sectionHead">
-
-    <h2>
-     Location sharing
-    </h2>
-
-   </div>
-
-
-   <div class="card locationCard">
-
-    <div class="locationInfo">
-
-     <div class="locationIcon">
-      ◎
-     </div>
-
-     <div>
-
-      <b>
-       Live location
-      </b>
-
-      <div
-       id="mapLocationText"
-       class="muted"
-       style="
-        font-size:11px;
-        margin-top:4px;
-       ">
-
-       Turn on location sharing.
-
-      </div>
-
-     </div>
-
-    </div>
-
-    <button
-     id="mapLocationSwitch"
-     class="switch"
-     onclick="toggleLocation()">
-
-     <span></span>
-
-    </button>
-
-   </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       CIRCLES
-       ===================================================== -->
-
-  <section
-   id="circles"
-   class="page">
-
-   <div class="sectionHead"
-    style="margin-top:0">
-
-    <h2>
-     My Circles
-    </h2>
-
-    <button
-     onclick="openModal('circleModal')">
-
-     + Create
-
-    </button>
-
-   </div>
-
-
-   <div class="card">
-
-    <div class="muted"
-     style="
-      font-size:12px;
-      line-height:1.5;
-     ">
-
-     Create private groups for family,
-     friends, trips, school teams,
-     football teams and more.
-
-    </div>
-
-    <button
-     class="secondaryBtn"
-     onclick="openModal('joinModal')">
-
-     Join with invite code
-
-    </button>
-
-   </div>
-
-
-   <div id="circleList">
-
-    <div class="card">
-     Loading circles...
-    </div>
-
-   </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       MESSAGES
-       ===================================================== -->
-
-  <section
-   id="messages"
-   class="page">
-
-   <div class="sectionHead"
-    style="margin-top:0">
-
-    <h2>
-     Messages
-    </h2>
-
-    <button onclick="go('search')">
-     New chat
-    </button>
-
-   </div>
-
-
-   <div class="searchBox">
-
-    <span class="searchIcon">
-     ⌕
-    </span>
-
-    <input
-     id="chatSearch"
-     type="search"
-     placeholder="Search conversations..."
-     oninput="filterChats(this.value)"
-    >
-
-   </div>
-
-
-   <div id="chatList">
-
-    <div class="card">
-     Loading conversations...
-    </div>
-
-   </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       SEARCH
-       ===================================================== -->
-
-  <section
-   id="search"
-   class="page">
-
-   <div class="sectionHead"
-    style="margin-top:0">
-
-    <h2>
-     Find People
-    </h2>
-
-   </div>
-
-
-   <div class="searchBox">
-
-    <span class="searchIcon">
-     @
-    </span>
-
-    <input
-     id="userSearch"
-     type="search"
-     placeholder="Search username..."
-     autocomplete="off"
-     oninput="searchUsers()"
-    >
-
-   </div>
-
-
-   <div class="card">
-
-    <div
-     id="userResults"
-     class="muted"
-     style="
-      font-size:12px;
-      line-height:1.5;
-     ">
-
-     Search for someone by username.
-
-    </div>
-
-   </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       AI
-       ===================================================== -->
-
-  <section
-   id="ai"
-   class="page">
-
-   <div class="aiShell">
-
-    <div class="aiHeader">
-
-     <div class="aiBadge">
-
-      <span class="statusDot"></span>
-
-      TRACK CIRCLE AI
-
-     </div>
-
-     <h2
-      style="
-       margin:8px 0 5px;
-      ">
-
-      Your AI assistant
-
-     </h2>
-
-     <div
-      class="muted"
-      style="
-       font-size:12px;
-       line-height:1.5;
-      ">
-
-      Ask questions, get explanations,
-      brainstorm ideas and use AI directly
-      inside Track Circle.
-
-     </div>
-
-    </div>
-
-
-    <div
-     id="aiMessages"
-     class="aiMessages">
-
-     <div class="aiMsg">
-
-      Hello. I'm Track Circle AI.
-      How can I help you?
-
-     </div>
-
-    </div>
-
-
-    <div class="aiSuggestions">
-
-     <button
-      onclick="askSuggestion('What can you help me with?')">
-
-      What can you do?
-
-     </button>
-
-     <button
-      onclick="askSuggestion('Give me an idea for my circle')">
-
-      Circle idea
-
-     </button>
-
-     <button
-      onclick="askSuggestion('Explain something to me simply')">
-
-      Explain something
-
-     </button>
-
-    </div>
-
-
-    <div class="aiComposer">
-
-     <textarea
-      id="aiInput"
-      placeholder="Message Track Circle AI..."
-      rows="1">
-     </textarea>
-
-     <button
-      class="sendBtn"
-      onclick="sendAI()">
-
-      ↑
-
-     </button>
-
-    </div>
-
-   </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       FEED
-       ===================================================== -->
-
-  <section
-   id="feed"
-   class="page">
-
-   <div class="sectionHead"
-    style="margin-top:0">
-
-    <h2>
-     Circle Feed
-    </h2>
-
-   </div>
-
-
-   <div class="postComposer">
-
-    <textarea
-     id="postText"
-     placeholder="Share something with your circles...">
-    </textarea>
-
-
-    <div class="postComposerBottom">
-
-     <div class="mediaButtons">
-
-      <button
-       class="smallBtn"
-       onclick="choosePostMedia('image')">
-
-       📷 Photo
-
-      </button>
-
-      <button
-       class="smallBtn"
-       onclick="choosePostMedia('video')">
-
-       🎥 Video
-
-      </button>
-
-     </div>
-
-
-     <button
-      class="publishBtn"
-      onclick="createPost()">
-
-      Post
-
-     </button>
-
-    </div>
-
-   </div>
-
-
-   <input
-    id="postMediaInput"
-    type="file"
-    accept="image/*,video/*"
-    hidden
-    onchange="handlePostMedia(event)"
-   >
-
-
-   <div id="feedList">
-
-    <div class="card">
-     Loading feed...
-    </div>
-
-   </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       PROFILE
-       ===================================================== -->
-
-  <section
-   id="profile"
-   class="page">
-
-   <div class="card profileCard">
-
-    <div
-     id="profilePic"
-     class="profilePic"
-     onclick="chooseProfilePhoto()">
-
-     TC
-
-    </div>
-
-
-    <div
-     id="profileName"
-     class="profileName">
-
-     Track Circle User
-
-    </div>
-
-
-    <div
-     id="profileUsername"
-     class="profileUsername">
-
-     @user
-
-    </div>
-
-
-    <button
-     class="secondaryBtn"
-     onclick="chooseProfilePhoto()">
-
-     Change profile picture
-
-    </button>
-
-
-    <input
-     id="profilePhotoInput"
-     type="file"
-     accept="image/*"
-     hidden
-     onchange="uploadProfilePhoto(event)"
-    >
-
-   </div>
-
-
-   <div class="card">
-
-    <div class="sectionHead"
-     style="margin:0 0 12px">
-
-     <h2>
-      Account
-     </h2>
-
-    </div>
-
-    <div class="muted"
-     id="profileEmail"
-     style="font-size:12px">
-
-     Loading...
-
-    </div>
-
-   </div>
-
-
-   <button
-    class="secondaryBtn"
-    style="
-     color:var(--red);
-     border-color:rgba(255,94,108,.15);
-    "
-    onclick="signOut()">
-
-    Sign out
-
-   </button>
-
-  </section>
-
-
- </main>
-
-
- <!-- =====================================================
-      NAVIGATION
-      ===================================================== -->
-
- <nav class="nav">
-
-  <button
-   data-page="home"
-   class="active"
-   onclick="go('home')">
-
-   <span>⌂</span>
-   Home
-
-  </button>
-
-
-  <button
-   data-page="mapPage"
-   onclick="go('mapPage')">
-
-   <span>◎</span>
-   Live Map
-
-  </button>
-
-
-  <button
-   data-page="circles"
-   onclick="go('circles')">
-
-   <span>◉</span>
-   Circles
-
-  </button>
-
-
-  <button
-   data-page="messages"
-   onclick="go('messages')">
-
-   <span>▱</span>
-   Messages
-
-  </button>
-
-
-  <button
-   data-page="profile"
-   onclick="go('profile')">
-
-   <span>●</span>
-   Profile
-
-  </button>
-
- </nav>
-
-</section>
-
-
-<!-- =======================================================
-     CREATE CIRCLE MODAL
-     ======================================================= -->
-
-<div
- id="circleModal"
- class="modal"
- onclick="modalBackgroundClose(event,'circleModal')">
-
- <div class="modalBox">
-
-  <div class="modalHeader">
-
-   <h3>
-    Create a Circle
-   </h3>
-
-   <button
-    class="closeBtn"
-    onclick="closeModal('circleModal')">
-
-    ×
-
-   </button>
-
-  </div>
-
-
-  <div class="field">
-
-   <label>
-    Circle name
-   </label>
-
-   <input
-    id="circleName"
-    placeholder="Family Trip"
-   >
-
-  </div>
-
-
-  <div class="field">
-
-   <label>
-    Circle type
-   </label>
-
-   <select id="circleType">
-
-    <option value="Family">
-     Family
-    </option>
-
-    <option value="Friends">
-     Friends
-    </option>
-
-    <option value="School Group">
-     School Group
-    </option>
-
-    <option value="Football Team">
-     Football Team
-    </option>
-
-    <option value="Trip">
-     Trip
-    </option>
-
-    <option value="Other">
-     Other
-    </option>
-
-   </select>
-
-  </div>
-
-
-  <button
-   class="primaryBtn"
-   onclick="createCircle()">
-
-   Create Circle
-
-  </button>
-
- </div>
-
-</div>
-
-
-<!-- =======================================================
-     JOIN CIRCLE MODAL
-     ======================================================= -->
-
-<div
- id="joinModal"
- class="modal"
- onclick="modalBackgroundClose(event,'joinModal')">
-
- <div class="modalBox">
-
-  <div class="modalHeader">
-
-   <h3>
-    Join a Circle
-   </h3>
-
-   <button
-    class="closeBtn"
-    onclick="closeModal('joinModal')">
-
-    ×
-
-   </button>
-
-  </div>
-
-
-  <div class="field">
-
-   <label>
-    Invite code
-   </label>
-
-   <input
-    id="joinCode"
-    placeholder="TC-7K4P9"
-    style="
-     text-transform:uppercase;
-    "
-   >
-
-  </div>
-
-
-  <button
-   class="primaryBtn"
-   onclick="joinCircle()">
-
-   Join Circle
-
-  </button>
-
- </div>
-
-</div>
-
-
-<!-- =======================================================
-     GIFT MODAL
-     ======================================================= -->
-
-<div
- id="giftModal"
- class="modal"
- onclick="modalBackgroundClose(event,'giftModal')">
-
- <div class="modalBox">
-
-  <div class="modalHeader">
-
-   <h3>
-    Send a Gift
-   </h3>
-
-   <button
-    class="closeBtn"
-    onclick="closeModal('giftModal')">
-
-    ×
-
-   </button>
-
-  </div>
-
-
-  <div class="giftGrid">
-
-   <button
-    class="gift"
-    onclick="selectGift('❤️',500)">
-
-    <span class="giftEmoji">
-     ❤️
-    </span>
-
-    <span class="giftPrice">
-     ₦500
-    </span>
-
-   </button>
-
-
-   <button
-    class="gift"
-    onclick="selectGift('🔥',5000)">
-
-    <span class="giftEmoji">
-     🔥
-    </span>
-
-    <span class="giftPrice">
-     ₦5,000
-    </span>
-
-   </button>
-
-
-   <button
-    class="gift"
-    onclick="selectGift('💎',10000)">
-
-    <span class="giftEmoji">
-     💎
-    </span>
-
-    <span class="giftPrice">
-     ₦10,000
-    </span>
-
-   </button>
-
-
-   <button
-    class="gift"
-    onclick="selectGift('👑',50000)">
-
-    <span class="giftEmoji">
-     👑
-    </span>
-
-    <span class="giftPrice">
-     ₦50,000
-    </span>
-
-   </button>
-
-
-   <button
-    class="gift"
-    onclick="selectGift('🚀',100000)">
-
-    <span class="giftEmoji">
-     🚀
-    </span>
-
-    <span class="giftPrice">
-     ₦100,000
-    </span>
-
-   </button>
-
-
-   <button
-    class="gift"
-    onclick="selectGift('💚',430000)">
-
-    <span class="giftEmoji">
-     💚
-    </span>
-
-    <span class="giftPrice">
-     ₦430,000
-    </span>
-
-   </button>
-
-  </div>
-
-
-  <button
-   class="secondaryBtn"
-   onclick="customGift()">
-
-   Custom amount
-
-  </button>
-
-
-  <div
-   id="giftInfo"
-   class="card"
-   style="
-    margin-top:10px;
-    text-align:center;
-   ">
-
-   Select a gift.
-
-  </div>
-
-
-  <button
-   class="primaryBtn"
-   onclick="sendSelectedGift()">
-
-   Continue to payment
-
-  </button>
-
- </div>
-
-</div>
-
-
-<div id="toast"></div>
-<script>
 
 /* =========================================================
-   TRACK CIRCLE — CONFIGURATION
+   GIFT GRID
+   ========================================================= */
+
+.giftGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+
+.gift{
+  min-height:85px;
+  border-radius:17px;
+ /* =========================================================
+   TRACK CIRCLE — SUPABASE / AUTH / PROFILE / CIRCLES
    ========================================================= */
 
 const SUPABASE_URL =
@@ -2796,36 +1260,19 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9saXZhcmVndmNlampnaHJqZGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyODE4MzUsImV4cCI6MjEwNTg1NzgzNX0.r1aukPMLnShXSFjuE47AIaGKmgwHrFuaWl8-2r8Su0Y";
 
-
-let supabaseClient=null;
-
-let currentUser=null;
-
-let currentProfile=null;
-
-let currentAuthMode="login";
-
-let selectedGift=null;
-
-let locationWatcher=null;
-
-let locationEnabled=false;
-
-let map=null;
-
-let ownMarker=null;
-
-let memberMarkers=[];
-
-let searchTimer=null;
-
-let toastTimer=null;
-
-let startupComplete=false;
+let supabaseClient = null;
+let currentUser = null;
+let currentProfile = null;
+let currentAuthMode = "login";
+let selectedGift = null;
+let locationWatcher = null;
+let locationEnabled = false;
+let currentChatUser = null;
+let currentCircle = null;
 
 
 /* =========================================================
-   SUPABASE
+   SUPABASE INITIALIZATION
    ========================================================= */
 
 function initializeSupabase(){
@@ -2834,28 +1281,20 @@ function initializeSupabase(){
 
   if(
    !window.supabase ||
-   typeof window.supabase.createClient!=="function"
+   typeof window.supabase.createClient !== "function"
   ){
 
    console.error(
-    "Supabase library did not load."
+    "Supabase JavaScript library is not loaded."
    );
 
    return false;
-
   }
 
-  supabaseClient=
+  supabaseClient =
    window.supabase.createClient(
     SUPABASE_URL,
-    SUPABASE_ANON_KEY,
-    {
-     auth:{
-      persistSession:true,
-      autoRefreshToken:true,
-      detectSessionInUrl:true
-     }
-    }
+    SUPABASE_ANON_KEY
    );
 
   return true;
@@ -2867,68 +1306,35 @@ function initializeSupabase(){
    error
   );
 
-  supabaseClient=null;
-
   return false;
-
- }
-
 }
 
 
 /* =========================================================
-   TIMEOUT HELPER
-   ========================================================= */
-
-function withTimeout(
- promise,
- milliseconds=8000
-){
-
- return Promise.race([
-
-  promise,
-
-  new Promise((resolve,reject)=>{
-
-   setTimeout(()=>{
-
-    reject(
-     new Error(
-      "Request timed out. Please try again."
-     )
-    );
-
-   },milliseconds);
-
-  })
-
- ]);
-
-}
-
-
-/* =========================================================
-   AUTH SCREEN
+   AUTH UI
    ========================================================= */
 
 function showAuth(){
 
- const auth=
+ const auth =
   document.getElementById("auth");
 
- const main=
+ const main =
   document.getElementById("main");
 
  if(main){
 
   main.classList.add("hidden");
+  main.style.display="none";
 
  }
 
  if(auth){
 
   auth.classList.remove("hidden");
+  auth.style.display="block";
+  auth.style.visibility="visible";
+  auth.style.opacity="1";
 
  }
 
@@ -2937,25 +1343,27 @@ function showAuth(){
 
 function showMain(){
 
- const auth=
+ const auth =
   document.getElementById("auth");
 
- const main=
+ const main =
   document.getElementById("main");
 
  if(auth){
 
   auth.classList.add("hidden");
+  auth.style.display="none";
 
  }
 
  if(main){
 
   main.classList.remove("hidden");
+  main.style.display="flex";
+  main.style.visibility="visible";
+  main.style.opacity="1";
 
  }
-
- updateProfileUI();
 
 }
 
@@ -2968,59 +1376,73 @@ function setAuthMode(mode){
 
  currentAuthMode=mode;
 
- const loginTab=
+ const loginTab =
   document.getElementById("loginTab");
 
- const signupTab=
+ const signupTab =
   document.getElementById("signupTab");
 
- const nameField=
+ const nameField =
   document.getElementById("nameField");
 
- const usernameField=
+ const usernameField =
   document.getElementById("usernameField");
 
- const button=
+ const authButton =
   document.getElementById("authButton");
 
- const error=
-  document.getElementById("authError");
+ const switchText =
+  document.getElementById("switchText");
 
  if(mode==="signup"){
 
-  loginTab?.classList.remove("active");
+  if(loginTab)
+   loginTab.classList.remove("active");
 
-  signupTab?.classList.add("active");
+  if(signupTab)
+   signupTab.classList.add("active");
 
-  nameField?.classList.remove("hidden");
+  if(nameField)
+   nameField.classList.remove("hidden");
 
-  usernameField?.classList.remove("hidden");
+  if(usernameField)
+   usernameField.classList.remove("hidden");
 
-  if(button)
-   button.textContent="Create account";
+  if(authButton)
+   authButton.textContent="Create account";
+
+  if(switchText)
+   switchText.textContent=
+    "Already have an account?";
 
  }else{
 
-  loginTab?.classList.add("active");
+  if(loginTab)
+   loginTab.classList.add("active");
 
-  signupTab?.classList.remove("active");
+  if(signupTab)
+   signupTab.classList.remove("active");
 
-  nameField?.classList.add("hidden");
+  if(nameField)
+   nameField.classList.add("hidden");
 
-  usernameField?.classList.add("hidden");
+  if(usernameField)
+   usernameField.classList.add("hidden");
 
-  if(button)
-   button.textContent="Sign in";
+  if(authButton)
+   authButton.textContent="Sign in";
+
+  if(switchText)
+   switchText.textContent=
+    "Don't have an account?";
 
  }
 
- if(error){
+ const error =
+  document.getElementById("authError");
 
+ if(error)
   error.textContent="";
-
-  error.style.color="var(--red)";
-
- }
 
 }
 
@@ -3037,100 +1459,91 @@ function toggleAuth(){
 
 
 /* =========================================================
-   AUTH SUBMISSION
+   SIGN UP / SIGN IN
    ========================================================= */
 
 async function submitAuth(){
 
- const errorBox=
-  document.getElementById("authError");
-
- const button=
-  document.getElementById("authButton");
-
- const email=
-  document.getElementById("authEmail")
-   ?.value
-   .trim();
-
- const password=
-  document.getElementById("authPassword")
-   ?.value;
-
- const name=
+ const name =
   document.getElementById("authName")
    ?.value
    .trim();
 
- const username=
+ const username =
   document.getElementById("authUsername")
    ?.value
    .trim()
    .replace(/^@/,"")
    .toLowerCase();
 
+ const email =
+  document.getElementById("authEmail")
+   ?.value
+   .trim();
 
- if(errorBox){
+ const password =
+  document.getElementById("authPassword")
+   ?.value;
 
+ const errorBox =
+  document.getElementById("authError");
+
+ const button =
+  document.getElementById("authButton");
+
+ if(errorBox)
   errorBox.textContent="";
-
-  errorBox.style.color="var(--red)";
-
- }
-
 
  if(!supabaseClient){
 
-  errorBox.textContent=
-   "Supabase is not connected.";
+  if(errorBox)
+   errorBox.textContent=
+    "Supabase is not connected.";
 
   return;
-
  }
-
 
  if(!email){
 
-  errorBox.textContent=
-   "Enter your email address.";
+  if(errorBox)
+   errorBox.textContent=
+    "Enter your email address.";
 
   return;
-
  }
-
 
  if(!password || password.length<6){
 
-  errorBox.textContent=
-   "Password must contain at least 6 characters.";
+  if(errorBox)
+   errorBox.textContent=
+    "Password must contain at least 6 characters.";
 
   return;
-
  }
 
+ if(
+  currentAuthMode==="signup" &&
+  !name
+ ){
 
- if(currentAuthMode==="signup"){
-
-  if(!name){
-
+  if(errorBox)
    errorBox.textContent=
     "Enter your full name.";
 
-   return;
+  return;
+ }
 
-  }
+ if(
+  currentAuthMode==="signup" &&
+  !username
+ ){
 
-  if(!username){
-
+  if(errorBox)
    errorBox.textContent=
     "Choose a username.";
 
-   return;
-
-  }
-
+  return;
  }
-
 
  try{
 
@@ -3140,7 +1553,7 @@ async function submitAuth(){
 
    button.textContent=
     currentAuthMode==="signup"
-     ? "Creating..."
+     ? "Creating account..."
      : "Signing in...";
 
   }
@@ -3148,54 +1561,34 @@ async function submitAuth(){
 
   if(currentAuthMode==="signup"){
 
-   const result=
-    await withTimeout(
+   const result =
+    await supabaseClient.auth.signUp({
 
-     supabaseClient.auth.signUp({
+     email:email,
 
-      email:email,
+     password:password,
 
-      password:password,
-
-      options:{
-       data:{
-        display_name:name,
-        username:username
-       }
+     options:{
+      data:{
+       display_name:name,
+       username:username
       }
+     }
 
-     }),
-
-     12000
-
-    );
-
+    });
 
    if(result.error)
     throw result.error;
 
-
-   if(result.data?.user){
-
-    currentUser=
-     result.data.user;
-
-   }
-
-
    if(result.data?.session){
 
-    currentUser=
+    currentUser =
      result.data.session.user;
 
     await createOrUpdateProfile({
-
      id:currentUser.id,
-
      display_name:name,
-
      username:username
-
     });
 
     await loadCurrentProfile();
@@ -3205,51 +1598,46 @@ async function submitAuth(){
     await loadAppData();
 
     toast(
-     "Account created."
+     "Account created successfully."
     );
 
    }else{
 
-    errorBox.style.color=
-     "var(--green)";
+    showAuth();
 
-    errorBox.textContent=
-     "Account created. Check your email if confirmation is required.";
+    if(errorBox){
+
+     errorBox.style.color=
+      "var(--green)";
+
+     errorBox.textContent=
+      "Account created. Check your email if confirmation is required.";
+
+    }
 
    }
 
   }else{
 
+   const result =
+    await supabaseClient.auth.signInWithPassword({
 
-   const result=
-    await withTimeout(
+     email:email,
 
-     supabaseClient.auth.signInWithPassword({
+     password:password
 
-      email:email,
-
-      password:password
-
-     }),
-
-     12000
-
-    );
-
+    });
 
    if(result.error)
     throw result.error;
-
 
    if(!result.data?.session)
     throw new Error(
      "No active session was created."
     );
 
-
-   currentUser=
+   currentUser =
     result.data.session.user;
-
 
    await loadCurrentProfile();
 
@@ -3266,13 +1654,20 @@ async function submitAuth(){
  }catch(error){
 
   console.error(
-   "Authentication:",
+   "Authentication error:",
    error
   );
 
-  errorBox.textContent=
-   error?.message||
-   "Authentication failed.";
+  if(errorBox){
+
+   errorBox.style.color=
+    "var(--red)";
+
+   errorBox.textContent=
+    error.message ||
+    "Authentication failed.";
+
+  }
 
  }finally{
 
@@ -3293,7 +1688,7 @@ async function submitAuth(){
 
 
 /* =========================================================
-   OAUTH
+   GOOGLE / APPLE OAUTH
    ========================================================= */
 
 async function oauth(provider){
@@ -3305,40 +1700,40 @@ async function oauth(provider){
   );
 
   return;
-
  }
 
  try{
 
-  const result=
-   await withTimeout(
+  const result =
+   await supabaseClient.auth.signInWithOAuth({
 
-    supabaseClient.auth.signInWithOAuth({
+    provider:provider,
 
-     provider:provider,
+    options:{
+     redirectTo:
+      window.location.origin +
+      window.location.pathname
+    }
 
-     options:{
-      redirectTo:
-       window.location.href.split("#")[0]
-     }
-
-    }),
-
-    10000
-
-   );
-
+   });
 
   if(result.error)
    throw result.error;
 
  }catch(error){
 
-  document.getElementById(
-   "authError"
-  ).textContent=
-   error.message||
-   "Social sign in failed.";
+  console.error(
+   "OAuth error:",
+   error
+  );
+
+  const errorBox =
+   document.getElementById("authError");
+
+  if(errorBox)
+   errorBox.textContent=
+    error.message ||
+    "Social sign-in failed.";
 
  }
 
@@ -3351,50 +1746,44 @@ async function oauth(provider){
 
 async function createOrUpdateProfile(profile){
 
- if(!supabaseClient || !profile?.id)
+ if(
+  !supabaseClient ||
+  !profile ||
+  !profile.id
+ )
   return;
 
  try{
 
-  const result=
-   await withTimeout(
+  const {error} =
+   await supabaseClient
+    .from("profiles")
+    .upsert({
 
-    supabaseClient
-     .from("profiles")
-     .upsert({
+     id:profile.id,
 
-      id:profile.id,
+     display_name:
+      profile.display_name ||
+      "Track Circle User",
 
-      display_name:
-       profile.display_name||
-       "Track Circle User",
+     username:
+      profile.username ||
+      null
 
-      username:
-       profile.username||
-       null
+    },{
+     onConflict:"id"
+    });
 
-     },{
-      onConflict:"id"
-     }),
-
-    8000
-
-   );
-
-
-  if(result.error){
-
+  if(error)
    console.warn(
     "Profile upsert:",
-    result.error.message
+    error.message
    );
-
-  }
 
  }catch(error){
 
   console.warn(
-   "Profile upsert failed:",
+   "Profile operation:",
    error
   );
 
@@ -3405,191 +1794,38 @@ async function createOrUpdateProfile(profile){
 
 async function loadCurrentProfile(){
 
- if(!supabaseClient || !currentUser)
+ if(
+  !supabaseClient ||
+  !currentUser
+ )
   return null;
 
  try{
 
-  const result=
-   await withTimeout(
+  const {data,error} =
+   await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id",currentUser.id)
+    .maybeSingle();
 
-    supabaseClient
-     .from("profiles")
-     .select("*")
-     .eq(
-      "id",
-      currentUser.id
-     )
-     .maybeSingle(),
+  if(error)
+   throw error;
 
-    7000
-
-   );
-
-
-  if(result.error){
-
-   console.warn(
-    "Profile:",
-    result.error.message
-   );
-
-   return null;
-
-  }
-
-
-  currentProfile=
-   result.data||null;
-
-
-  if(!currentProfile){
-
-   await createOrUpdateProfile({
-
-    id:currentUser.id,
-
-    display_name:
-     currentUser.user_metadata?.display_name||
-     currentUser.email?.split("@")[0]||
-     "Track Circle User",
-
-    username:
-     currentUser.user_metadata?.username||
-     null
-
-   });
-
-
-   const retry=
-    await supabaseClient
-     .from("profiles")
-     .select("*")
-     .eq(
-      "id",
-      currentUser.id
-     )
-     .maybeSingle();
-
-
-   currentProfile=
-    retry.data||null;
-
-  }
-
-
-  updateProfileUI();
+  currentProfile=data || null;
 
   return currentProfile;
 
  }catch(error){
 
   console.warn(
-   "Profile load failed:",
-   error
+   "Profile loading:",
+   error.message
   );
 
   return null;
 
  }
-
-}
-
-
-function updateProfileUI(){
-
- const name=
-  currentProfile?.display_name||
-  currentUser?.user_metadata?.display_name||
-  currentUser?.email?.split("@")[0]||
-  "Track Circle User";
-
-
- const username=
-  currentProfile?.username||
-  currentUser?.user_metadata?.username||
-  "user";
-
-
- const avatar=
-  currentProfile?.avatar_url;
-
-
- const homeName=
-  document.getElementById("homeName");
-
- if(homeName)
-  homeName.textContent=
-   "Welcome, "+name+".";
-
-
- const profileName=
-  document.getElementById("profileName");
-
- if(profileName)
-  profileName.textContent=name;
-
-
- const profileUsername=
-  document.getElementById("profileUsername");
-
- if(profileUsername)
-  profileUsername.textContent=
-   "@"+username;
-
-
- const profileEmail=
-  document.getElementById("profileEmail");
-
- if(profileEmail)
-  profileEmail.textContent=
-   currentUser?.email||
-   "";
-
-
- const pic=
-  document.getElementById("profilePic");
-
- if(pic){
-
-  if(avatar){
-
-   pic.innerHTML=
-    `<img src="${escapeAttr(avatar)}">`;
-
-  }else{
-
-   pic.textContent=
-    name
-     .charAt(0)
-     .toUpperCase();
-
-  }
-
- }
-
-}
-
-
-/* =========================================================
-   APP DATA
-   ========================================================= */
-
-async function loadAppData(){
-
- await Promise.allSettled([
-
-  loadHomeData(),
-
-  loadCircles(),
-
-  loadChats(),
-
-  loadPosts(),
-
-  loadFriendCount()
-
- ]);
 
 }
 
@@ -3600,24 +1836,47 @@ async function loadAppData(){
 
 async function loadHomeData(){
 
- const welcome=
+ if(!currentUser)
+  return;
+
+ const name =
+  currentProfile?.display_name ||
+  currentUser.user_metadata?.display_name ||
+  currentUser.email?.split("@")[0] ||
+  "there";
+
+ const homeName =
+  document.getElementById("homeName");
+
+ if(homeName)
+  homeName.textContent=
+   "Welcome, "+name+".";
+
+ const welcome =
   document.getElementById("welcomeText");
 
  if(welcome){
 
-  const hour=
+  const hour =
    new Date().getHours();
 
-  welcome.textContent=
-   hour<12
-    ? "GOOD MORNING"
-    : hour<18
-     ? "GOOD AFTERNOON"
-     : "GOOD EVENING";
+  if(hour<12)
+   welcome.textContent=
+    "GOOD MORNING";
+
+  else if(hour<18)
+   welcome.textContent=
+    "GOOD AFTERNOON";
+
+  else
+   welcome.textContent=
+    "GOOD EVENING";
 
  }
 
- updateLocationUI();
+ updateProfileImages(
+  currentProfile?.avatar_url || ""
+ );
 
 }
 
@@ -3631,18 +1890,14 @@ function go(page){
  document
   .querySelectorAll(".page")
   .forEach(section=>{
-
    section.classList.remove("active");
-
   });
 
-
- const target=
+ const target =
   document.getElementById(page);
 
  if(target)
   target.classList.add("active");
-
 
  document
   .querySelectorAll(".nav button")
@@ -3650,49 +1905,28 @@ function go(page){
 
    button.classList.toggle(
     "active",
-    button.dataset.page===page
+    button.getAttribute("data-page")===page
    );
 
   });
 
-
- const content=
+ const content =
   document.querySelector(".content");
 
  if(content)
   content.scrollTop=0;
 
-
- if(page==="mapPage"){
-
-  setTimeout(()=>{
-
-   initializeMap();
-
-   if(map)
-    map.invalidateSize();
-
-   refreshMapMembers();
-
-  },100);
-
- }
-
-
- if(page==="feed")
-  loadPosts();
-
-
- if(page==="messages")
-  loadChats();
-
+ if(page==="home")
+  loadHomeData();
 
  if(page==="circles")
   loadCircles();
 
+ if(page==="messages")
+  loadChats();
 
- if(page==="profile")
-  updateProfileUI();
+ if(page==="feed")
+  loadPosts();
 
 }
 
@@ -3703,15 +1937,10 @@ function go(page){
 
 function toggleLocation(){
 
- if(locationEnabled){
-
+ if(locationEnabled)
   stopLocation();
-
- }else{
-
+ else
   startLocation();
-
- }
 
 }
 
@@ -3725,9 +1954,7 @@ function startLocation(){
   );
 
   return;
-
  }
-
 
  navigator.geolocation.getCurrentPosition(
 
@@ -3738,68 +1965,38 @@ function startLocation(){
    updateLocationUI();
 
    updateOwnLocation(
-
     position.coords.latitude,
-
     position.coords.longitude
-
    );
 
+   locationWatcher =
+    navigator.geolocation.watchPosition(
 
-   updateOwnMapPosition(
+     pos=>{
 
-    position.coords.latitude,
+      updateOwnLocation(
+       pos.coords.latitude,
+       pos.coords.longitude
+      );
 
-    position.coords.longitude
+     },
 
-   );
+     error=>{
 
+      console.warn(
+       "Location watcher:",
+       error
+      );
 
-   if(!locationWatcher){
+     },
 
-    locationWatcher=
-     navigator.geolocation.watchPosition(
+     {
+      enableHighAccuracy:true,
+      maximumAge:10000,
+      timeout:15000
+     }
 
-      position=>{
-
-       updateOwnLocation(
-
-        position.coords.latitude,
-
-        position.coords.longitude
-
-       );
-
-
-       updateOwnMapPosition(
-
-        position.coords.latitude,
-
-        position.coords.longitude
-
-       );
-
-      },
-
-      error=>{
-
-       console.warn(
-        "Location watcher:",
-        error
-       );
-
-      },
-
-      {
-       enableHighAccuracy:true,
-       maximumAge:10000,
-       timeout:15000
-      }
-
-     );
-
-   }
-
+    );
 
    toast(
     "Location sharing is ON."
@@ -3815,7 +2012,7 @@ function startLocation(){
    );
 
    toast(
-    "Please allow location permission."
+    "Allow location permission to enable sharing."
    );
 
   },
@@ -3833,16 +2030,18 @@ function startLocation(){
 
 function stopLocation(){
 
- if(locationWatcher!==null){
+ if(
+  locationWatcher !== null &&
+  navigator.geolocation
+ ){
 
   navigator.geolocation.clearWatch(
    locationWatcher
   );
 
-  locationWatcher=null;
-
  }
 
+ locationWatcher=null;
  locationEnabled=false;
 
  updateLocationUI();
@@ -3856,399 +2055,95 @@ function stopLocation(){
 
 function updateLocationUI(){
 
- const status=
+ const status =
   document.getElementById(
    "locationStatus"
   );
 
- const homeSwitch=
+ const toggle =
   document.getElementById(
    "locationSwitch"
   );
 
- const mapSwitch=
-  document.getElementById(
-   "mapLocationSwitch"
-  );
-
- const count=
-  document.getElementById(
-   "locationCount"
-  );
-
- const mapText=
-  document.getElementById(
-   "mapLocationText"
-  );
-
-
  if(status){
 
-  status.textContent=
+  status.textContent =
    locationEnabled
     ? "Location sharing is ON"
     : "Location is off";
 
  }
 
+ if(toggle){
 
- if(mapText){
-
-  mapText.textContent=
+  toggle.classList.toggle(
+   "on",
    locationEnabled
-    ? "Your live position is being shared."
-    : "Turn on location sharing.";
+  );
 
  }
-
-
- homeSwitch?.classList.toggle(
-  "on",
-  locationEnabled
- );
-
-
- mapSwitch?.classList.toggle(
-  "on",
-  locationEnabled
- );
-
-
- if(count)
-  count.textContent=
-   locationEnabled
-    ? "ON"
-    : "OFF";
 
 }
 
 
-async function updateOwnLocation(
- lat,
- lng
-){
+async function updateOwnLocation(lat,lng){
 
- if(!supabaseClient || !currentUser)
+ if(
+  !supabaseClient ||
+  !currentUser
+ )
   return;
 
  try{
 
-  const result=
-   await withTimeout(
+  const {error} =
+   await supabaseClient
+    .from("profiles")
+    .update({
 
-    supabaseClient
-     .from("profiles")
-     .update({
+     latitude:lat,
 
-      latitude:lat,
+     longitude:lng,
 
-      longitude:lng,
+     location_updated_at:
+      new Date().toISOString()
 
-      location_updated_at:
-       new Date().toISOString()
+    })
+    .eq(
+     "id",
+     currentUser.id
+    );
 
-     })
-     .eq(
-      "id",
-      currentUser.id
-     ),
-
-    5000
-
-   );
-
-
-  if(result.error){
-
+  if(error)
    console.warn(
     "Location update:",
-    result.error.message
+    error.message
    );
-
-  }
 
  }catch(error){
 
   console.warn(
-   "Location update failed:",
+   "Location update:",
    error
   );
 
  }
 
-}
-
-
-/* =========================================================
-   MAP
-   ========================================================= */
-
-function initializeMap(){
-
- if(map)
-  return;
-
-
- const element=
-  document.getElementById("map");
-
- if(!element)
-  return;
-
-
- map=
-  L.map(
-   element,
-   {
-    zoomControl:true
-   }
-  ).setView(
-   [6.5244,3.3792],
-   11
-  );
-
-
- L.tileLayer(
-
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-
-  {
-   maxZoom:19,
-
-   attribution:
-    "&copy; OpenStreetMap contributors"
-  }
-
- ).addTo(map);
-
-
- setTimeout(()=>{
-
-  map.invalidateSize();
-
- },200);
-
-}
-
-
-function updateOwnMapPosition(
- lat,
- lng
-){
-
- initializeMap();
-
- if(!map)
-  return;
-
-
- if(!ownMarker){
-
-  ownMarker=
-   L.marker([lat,lng])
-    .addTo(map)
-    .bindPopup(
-     "You are here"
-    );
-
- }else{
-
-  ownMarker.setLatLng(
-   [lat,lng]
-  );
-
- }
-
-
- map.setView(
-  [lat,lng],
-  Math.max(
-   map.getZoom(),
-   14
-  )
- );
-
-
- const mapText=
-  document.getElementById(
-   "mapLocationText"
-  );
-
- if(mapText){
-
-  mapText.textContent=
-   "Live position: "+
-   lat.toFixed(5)+
-   ", "+
-   lng.toFixed(5);
-
- }
-
-}
-
-
-function centerOwnLocation(){
-
- if(!ownMarker){
-
-  if(!locationEnabled){
-
-   toast(
-    "Turn on location first."
-   );
-
-   return;
-
-  }
-
-  toast(
-   "Waiting for your GPS position..."
-  );
-
-  return;
-
- }
-
-
- initializeMap();
-
- map.setView(
-  ownMarker.getLatLng(),
-  16
- );
-
-}
-
-
-async function refreshMapMembers(){
-
- initializeMap();
-
- if(!supabaseClient)
-  return;
-
-
- try{
-
-  const result=
-   await withTimeout(
-
-    supabaseClient
-     .from("profiles")
-     .select(
-      "id,display_name,username,avatar_url,latitude,longitude,location_updated_at"
-     )
-     .not("latitude","is",null)
-     .not("longitude","is",null)
-     .limit(100),
-
-    7000
-
-   );
-
-
-  if(result.error)
-   throw result.error;
-
-
-  memberMarkers.forEach(
-   marker=>map.removeLayer(marker)
-  );
-
-
-  memberMarkers=[];
-
-
-  const members=
-   (result.data||[])
-    .filter(
-     user=>
-      user.id!==currentUser?.id &&
-      Number.isFinite(
-       Number(user.latitude)
-      ) &&
-      Number.isFinite(
-       Number(user.longitude)
-      )
-    );
-
-
-  members.forEach(user=>{
-
-   const marker=
-    L.circleMarker(
-
-     [
-      Number(user.latitude),
-      Number(user.longitude)
-     ],
-
-     {
-      radius:8,
-      color:"#19e6a0",
-      fillColor:"#19e6a0",
-      fillOpacity:.7,
-      weight:2
-     }
-
-    ).addTo(map);
-
-
-   marker.bindPopup(
-
-    `<b>${escapeHtml(
-     user.display_name||
-     "Track Circle User"
-    )}</b><br>@${escapeHtml(
-     user.username||
-     "user"
-    )}`
-
-   );
-
-
-   memberMarkers.push(marker);
-
-  });
-
-
-  const count=
-   document.getElementById(
-    "mapMemberCount"
-   );
-
-  if(count)
-   count.textContent=
-    members.length+
-    (
-     locationEnabled
-      ? 1
-      : 0
-    );
-
-
- }catch(error){
-
-  console.warn(
-   "Map members:",
-   error
-  );
-
- }
 
 }
 
 
 /* =========================================================
-   FRIENDS SEARCH
+   USER SEARCH
    ========================================================= */
+
+let searchTimer=null;
 
 function searchUsers(){
 
  clearTimeout(searchTimer);
 
-
- searchTimer=
+ searchTimer =
   setTimeout(
    performUserSearch,
    300
@@ -4259,99 +2154,82 @@ function searchUsers(){
 
 async function performUserSearch(){
 
- const input=
+ const input =
   document.getElementById(
    "userSearch"
   );
 
- const result=
+ const result =
   document.getElementById(
    "userResults"
   );
 
-
  if(!input || !result)
   return;
 
-
- const q=
+ const q =
   input.value
    .trim()
    .replace(/^@/,"")
    .toLowerCase();
 
-
  if(q.length<2){
 
   result.innerHTML=
    `<div class="muted">
-    Type at least 2 characters.
-   </div>`;
+     Type at least 2 characters.
+    </div>`;
 
   return;
-
  }
-
 
  if(!supabaseClient){
 
   result.innerHTML=
    `<div class="card">
-    Supabase is not connected.
-   </div>`;
+     Supabase is not connected.
+    </div>`;
 
   return;
-
  }
-
 
  try{
 
-  const response=
-   await withTimeout(
+  const {data,error} =
+   await supabaseClient
+    .from("profiles")
+    .select(
+     "id,display_name,username,avatar_url"
+    )
+    .ilike(
+     "username",
+     `%${q}%`
+    )
+    .limit(30);
 
-    supabaseClient
-     .from("profiles")
-     .select(
-      "id,display_name,username,avatar_url"
-     )
-     .ilike(
-      "username",
-      "%"+q+"%"
-     )
-     .limit(30),
+  if(error)
+   throw error;
 
-    7000
-
-   );
-
-
-  if(response.error)
-   throw response.error;
-
-
-  const users=
-   (response.data||[])
+  const users =
+   (data || [])
     .filter(
-     user=>
-      !currentUser||
+     user =>
+      !currentUser ||
       user.id!==currentUser.id
     );
-
 
   if(!users.length){
 
    result.innerHTML=
     `<div class="card">
-     No users found.
-    </div>`;
+      No users found.
+     </div>`;
 
    return;
 
   }
 
-
-  result.innerHTML=
+  result.innerHTML =
    users.map(user=>`
 
     <div class="userResult">
@@ -4360,37 +2238,2209 @@ async function performUserSearch(){
 
       ${
        user.avatar_url
-        ?
+       ?
        `<img
-        src="${escapeAttr(
-         user.avatar_url
-        )}"
-       >`
-        :
+         src="${escapeAttr(user.avatar_url)}"
+         alt=""
+        >`
+       :
        escapeHtml(
         (
-         user.display_name||
+         user.display_name ||
          "U"
         )
-        .charAt(0)
-        .toUpperCase()
+         .charAt(0)
+         .toUpperCase()
        )
       }
 
      </div>
 
-
      <div class="userInfo">
 
       <b>
        ${escapeHtml(
-        user.display_name||
+        user.display_name ||
         "Track Circle User"
        )}
       </b>
 
       <div class="muted">
        @${escapeHtml(
-        user.username||
+        user.username ||
         "user"
-       )
+       )}
+      </div>
+
+     </div>
+
+     <button
+      class="addBtn"
+      onclick="addFriend('${escapeAttr(user.id)}')">
+
+      Add
+
+     </button>
+
+    </div>
+
+   `).join("");
+
+ }catch(error){
+
+  result.innerHTML=
+   `<div class="card">
+     ${escapeHtml(
+      error.message ||
+      "Search failed."
+     )}
+    </div>`;
+
+ }
+
+}
+
+
+async function addFriend(id){
+
+ if(
+  !supabaseClient ||
+  !currentUser
+ ){
+
+  toast(
+   "Sign in first."
+  );
+
+  return;
+ }
+
+ if(id===currentUser.id){
+
+  toast(
+   "You cannot add yourself."
+  );
+
+  return;
+ }
+
+ try{
+
+  const {error} =
+   await supabaseClient
+    .from("friends")
+    .upsert({
+
+     user_id:
+      currentUser.id,
+
+     friend_id:
+      id,
+
+     status:
+      "pending"
+
+    },{
+     onConflict:
+      "user_id,friend_id"
+    });
+
+  if(error)
+   throw error;
+
+  toast(
+   "Friend request sent."
+  );
+
+ }catch(error){
+
+  toast(
+   error.message ||
+   "Could not send friend request."
+  );
+
+ }
+
+}
+
+
+/* =========================================================
+   CIRCLES
+   ========================================================= */
+
+async function createCircle(){
+
+ const name =
+  document.getElementById(
+   "circleName"
+  )?.value
+   .trim();
+
+ const type =
+  document.getElementById(
+   "circleType"
+  )?.value
+   .trim();
+
+ if(!name){
+
+  toast(
+   "Enter a circle name."
+  );
+
+  return;
+ }
+
+ if(
+  !supabaseClient ||
+  !currentUser
+ ){
+
+  toast(
+   "Sign in first."
+  );
+
+  return;
+ }
+
+ try{
+
+  const invite =
+   "TC-" +
+   Math.random()
+    .toString(36)
+    .substring(2,8)
+    .toUpperCase();
+
+  const {data,error} =
+   await supabaseClient
+    .from("circles")
+    .insert({
+
+     name:name,
+
+     type:
+      type ||
+      "Friends",
+
+     invite_code:
+      invite,
+
+     owner_id:
+      currentUser.id
+
+    })
+    .select()
+    .single();
+
+  if(error)
+   throw error;
+
+  const member =
+   await supabaseClient
+    .from("circle_members")
+    .insert({
+
+     circle_id:
+      data.id,
+
+     user_id:
+      currentUser.id,
+
+     role:
+      "owner"
+
+    });
+
+  if(member.error)
+   throw member.error;
+
+  closeModal(
+   "circleModal"
+  );
+
+  const nameInput =
+   document.getElementById(
+    "circleName"
+   );
+
+  const typeInput =
+   document.getElementById(
+    "circleType"
+   );
+
+  if(nameInput)
+   nameInput.value="";
+
+  if(typeInput)
+   typeInput.value="";
+
+  toast(
+   "Circle created: "+invite
+  );
+
+  await loadCircles();
+
+ }catch(error){
+
+  toast(
+   error.message ||
+   "Could not create circle."
+  );
+
+ }
+
+}
+
+
+async function joinCircle(){
+
+ const input =
+  document.getElementById(
+   "joinCode"
+  );
+
+ if(!input)
+  return;
+
+ const code =
+  input.value
+   .trim()
+   .toUpperCase();
+
+ if(!code){
+
+  toast(
+   "Enter an invite code."
+  );
+
+  return;
+ }
+
+ if(
+  !supabaseClient ||
+  !currentUser
+ ){
+
+  toast(
+   "Sign in first."
+  );
+
+  return;
+ }
+
+ try{
+
+  const {data,error} =
+   await supabaseClient
+    .from("circles")
+    .select(
+     "id,name"
+    )
+    .eq(
+     "invite_code",
+     code
+    )
+    .maybeSingle();
+
+  if(error)
+   throw error;
+
+  if(!data){
+
+   toast(
+    "Circle not found."
+   );
+
+   return;
+  }
+
+  const {error:memberError} =
+   await supabaseClient
+    .from("circle_members")
+    .upsert({
+
+     circle_id:
+      data.id,
+
+     user_id:
+      currentUser.id,
+
+     role:
+      "member"
+
+    },{
+     onConflict:
+      "circle_id,user_id"
+    });
+
+  if(memberError)
+   throw memberError;
+
+  input.value="";
+
+  toast(
+   "Joined "+data.name+"."
+  );
+
+  await loadCircles();
+
+ }catch(error){
+
+  toast(
+   error.message ||
+   "Could not join circle."
+  );
+
+ }
+
+}
+
+
+async function loadCircles(){
+
+ const list =
+  document.getElementById(
+   "circleList"
+  );
+
+ const home =
+  document.getElementById(
+   "homeCircles"
+  );
+
+ if(!list)
+  return;
+
+ if(
+  !supabaseClient ||
+  !currentUser
+ ){
+
+  list.innerHTML="";
+  return;
+
+ }
+
+ try{
+
+  const {data,error} =
+   await supabaseClient
+    .from("circle_members")
+    .select(
+     "circle_id,circles(*)"
+    )
+    .eq(
+     "user_id",
+     currentUser.id
+    );
+
+  if(error)
+   throw error;
+
+  const rows =
+   (data || [])
+    .filter(
+     row=>row.circles
+    );
+
+  if(!rows.length){
+
+   list.innerHTML=
+    `<div class="card">
+
+      <b>No circles yet.</b>
+
+      <div
+       class="muted"
+       style="margin-top:6px">
+
+       Create or join your first
+       Track Circle.
+
+      </div>
+
+     </div>`;
+
+   if(home){
+
+    home.innerHTML=
+     `<div class="circleCard">
+
+       <b>No circles yet</b>
+
+       <div
+        class="muted"
+        style="margin-top:5px">
+
+        Create or join your first
+        circle.
+
+       </div>
+
+      </div>`;
+
+   }
+
+   return;
+
+  }
+
+  list.innerHTML =
+   rows.map(row=>{
+
+    const circle =
+     row.circles;
+
+    return `
+
+     <div
+      class="circleCard"
+      onclick="openCircle('${escapeAttr(circle.id)}')">
+
+      <div
+       style="
+        display:flex;
+        justify-content:space-between;
+        gap:10px;
+       ">
+
+       <div>
+
+        <b>
+         ${escapeHtml(
+          circle.name
+         )}
+        </b>
+
+        <div class="muted">
+         ${escapeHtml(
+          circle.type ||
+          "Circle"
+         )}
+        </div>
+
+       </div>
+
+       <span class="green">
+        ● LIVE
+       </span>
+
+      </div>
+
+      <div
+       class="muted"
+       style="margin-top:8px">
+
+       Invite code:
+       <b style="color:white">
+        ${escapeHtml(
+         circle.invite_code ||
+         ""
+        )}
+       </b>
+
+      </div>
+
+     </div>
+
+    `;
+
+   }).join("");
+
+  if(home){
+
+   const first =
+    rows[0].circles;
+
+   home.innerHTML=
+
+    `<div
+      class="circleCard"
+      onclick="openCircle('${escapeAttr(first.id)}')">
+
+      <b>
+       ${escapeHtml(
+        first.name
+       )}
+      </b>
+
+      <div class="muted">
+       ${escapeHtml(
+        first.type ||
+        "Circle"
+       )}
+      </div>
+
+      <div class="avatarStack">
+
+       <div class="avatar">
+        TC
+       </div>
+
+       <div class="avatar">
+        +
+       </div>
+
+      </div>
+
+     </div>`;
+
+  }
+
+ }catch(error){
+
+  console.warn(
+   "Circles:",
+   error
+  );
+
+  list.innerHTML=
+   `<div class="card">
+     ${escapeHtml(
+      error.message ||
+      "Circles unavailable."
+     )}
+    </div>`;
+
+ }
+
+}
+
+
+async function openCircle(circleId){
+
+ if(!supabaseClient || !currentUser)
+  return;
+
+ try{
+
+  const {data,error} =
+   await supabaseClient
+    .from("circles")
+    .select("*")
+    .eq(
+     "id",
+     circleId
+    )
+    .maybeSingle();
+
+  if(error)
+   throw error;
+
+  if(!data){
+
+   toast(
+    "Circle not found."
+   );
+
+   return;
+  }
+
+  currentCircle=data;
+
+  const title =
+   document.getElementById(
+    "activeCircleName"
+   );
+
+  if(title)
+   title.textContent=
+    data.name;
+
+  go("map");
+
+  await loadCircleMembers(
+   data.id
+  );
+
+ }catch(error){
+
+  toast(
+   error.message ||
+   "Could not open circle."
+  );
+
+ }
+
+}
+
+
+async function loadCircleMembers(circleId){
+
+ const container =
+  document.getElementById(
+   "circleMembers"
+  );
+
+ if(!container)
+  return;
+
+ try{
+
+  const {data,error} =
+   await supabaseClient
+    .from("circle_members")
+    .select(
+     "user_id,role,profiles(id,display_name,username,avatar_url,latitude,longitude,location_updated_at)"
+    )
+    .eq(
+     "circle_id",
+     circleId
+    );
+
+  if(error)
+   throw error;
+
+  if(!data?.length){
+
+   container.innerHTML=
+    `<div class="muted">
+      No members found.
+     </div>`;
+
+   return;
+  }
+
+  container.innerHTML =
+   data.map(member=>{
+
+    const profile =
+     member.profiles;
+
+    if(!profile)
+     return "";
+
+    return `
+
+     <div class="memberRow">
+
+      <div class="avatar">
+
+       ${
+        profile.avatar_url
+        ?
+        `<img
+          src="${escapeAttr(
+           profile.avatar_url
+          )}"
+          alt=""
+         >`
+        :
+        escapeHtml(
+         (
+          profile.display_name ||
+          "U"
+         )
+          .charAt(0)
+          .toUpperCase()
+        )
+       }
+
+      </div>
+
+      <div style="flex:1">
+
+       <b>
+        ${escapeHtml(
+         profile.display_name ||
+         "Track Circle User"
+        )}
+       </b>
+
+       <div class="muted">
+        @${escapeHtml(
+         profile.username ||
+         "user"
+        )}
+       </div>
+
+      </div>
+
+      <span class="green">
+       ●
+      </span>
+
+     </div>
+
+    `;
+
+   }).join("");
+
+ }catch(error){
+
+  container.innerHTML=
+   `<div class="muted">
+     ${escapeHtml(
+      error.message ||
+      "Members unavailable."
+     )}
+    </div>`;
+
+ }
+
+}
+
+
+/* =========================================================
+   MODAL HELPERS
+   ========================================================= */
+
+function openModal(id){
+
+ const modal =
+  document.getElementById(id);
+
+ if(modal)
+  modal.classList.add("show");
+
+}
+
+
+function closeModal(id){
+
+ const modal =
+  document.getElementById(id);
+
+ if(modal)
+  modal.classList.remove("show");
+
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+let toastTimer=null;
+
+function toast(message){
+
+ const element =
+  document.getElementById(
+   "toast"
+  );
+
+ if(!element)
+  return;
+
+ element.textContent =
+  String(message || "");
+
+ element.classList.add(
+  "show"
+ );
+
+ clearTimeout(
+  toastTimer
+ );
+
+ toastTimer =
+  setTimeout(()=>{
+
+   element.classList.remove(
+    "show"
+   );
+
+  },2800);
+
+}
+
+
+/* =========================================================
+   UTILITY FUNCTIONS
+   ========================================================= */
+
+function escapeHtml(value){
+
+ return String(
+  value ?? ""
+ )
+  .replaceAll(
+   "&",
+   "&amp;"
+  )
+  .replaceAll(
+   "<",
+   "&lt;"
+  )
+  .replaceAll(
+   ">",
+   "&gt;"
+  )
+  .replaceAll(
+   '"',
+   "&quot;"
+  )
+  .replaceAll(
+   "'",
+   "&#039;"
+  );
+
+}
+
+
+function escapeAttr(value){
+
+ return escapeHtml(
+  value
+ );
+
+}
+
+
+function formatDate(value){
+
+ if(!value)
+  return "";
+
+ try{
+
+  return new Date(
+   value
+  ).toLocaleString();
+
+ }catch(error){
+
+  return "";
+
+ }
+
+}
+
+
+/* =========================================================
+   PROFILE IMAGE DISPLAY
+   ========================================================= */
+
+function updateProfileImages(url){
+
+ if(!url)
+  return;
+
+ document
+  .querySelectorAll(
+   ".profilePic"
+  )
+  .forEach(element=>{
+
+   element.innerHTML =
+    `<img
+      src="${escapeAttr(url)}"
+      alt="Profile"
+     >`;
+
+  });
+
+}/* =========================================================
+   TRACK CIRCLE — MESSAGING
+   ========================================================= */
+
+async function loadChats(){
+
+ const list =
+  document.getElementById(
+   "chatList"
+  );
+
+ if(!list)
+  return;
+
+ if(
+  !supabaseClient ||
+  !currentUser
+ ){
+
+  list.innerHTML=
+   `<div class="card">
+     Your conversations will appear here.
+    </div>`;
+
+  return;
+ }
+
+ try{
+
+  const {data,error} =
+   await supabaseClient
+    .from("messages")
+    .select("*")
+    .or(
+     `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
+    )
+    .order(
+     "created_at",
+     {ascending:false}
+    )
+    .limit(100);
+
+  if(error)
+   throw error;
+
+  if(!data?.length){
+
+   list.innerHTML=
+    `<div class="card">
+
+      <b>No conversations yet.</b>
+
+      <div
+       class="muted"
+       style="margin-top:5px">
+
+       Search for a friend to start
+       a conversation.
+
+      </div>
+
+     </div>`;
+
+   return;
+  }
+
+  list.innerHTML =
+   data.map(message=>`
+
+    <div
+     class="chat"
+     onclick="openConversation('${escapeAttr(
+      message.sender_id===currentUser.id
+       ? message.receiver_id
+       : message.sender_id
+     )}')">
+
+     <div class="chatAvatar">
+      TC
+     </div>
+
+     <div class="chatInfo">
+
+      <div class="chatName">
+       Conversation
+      </div>
+
+      <div class="chatPreview">
+       ${escapeHtml(
+        message.content ||
+        "Message"
+       )}
+      </div>
+
+     </div>
+
+    </div>
+
+   `).join("");
+
+ }catch(error){
+
+  console.warn(
+   "Messages:",
+   error.message
+  );
+
+  list.innerHTML=
+   `<div class="card">
+
+     <b>Messages</b>
+
+     <div
+      class="muted"
+      style="margin-top:5px">
+
+      Search for a friend to begin
+      a conversation.
+
+     </div>
+
+    </div>`;
+
+ }
+
+}
+
+
+function filterChats(q){
+
+ const query =
+  String(q || "")
+   .toLowerCase();
+
+ document
+  .querySelectorAll(
+   "#chatList .chat"
+  )
+  .forEach(row=>{
+
+   row.style.display =
+    row.textContent
+     .toLowerCase()
+     .includes(query)
+      ? "flex"
+      : "none";
+
+  });
+
+}
+
+
+async function openConversation(userId){
+
+ currentChatUser =
+  userId;
+
+ const modal =
+  document.getElementById(
+   "chatModal"
+  );
+
+ if(modal)
+  modal.classList.add(
+   "show"
+  );
+
+ await loadConversation(
+  userId
+ );
+
+}
+
+
+async function loadConversation(userId){
+
+ const box =
+  document.getElementById(
+   "conversationMessages"
+  );
+
+ if(!box)
+  return;
+
+ if(
+  !supabaseClient ||
+  !currentUser
+ )
+  return;
+
+ try{
+
+  const {data,error} =
+   await supabaseClient
+    .from("messages")
+    .select("*")
+    .or(
+     `and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`
+    )
+    .order(
+     "created_at",
+     {ascending:true}
+    );
+
+  if(error)
+   throw error;
+
+  if(!data?.length){
+
+   box.innerHTML=
+    `<div class="muted">
+      No messages yet.
+     </div>`;
+
+   return;
+  }
+
+  box.innerHTML =
+   data.map(message=>`
+
+    <div
+     class="
+      messageBubble
+      ${
+       message.sender_id===currentUser.id
+       ? "mine"
+       : "theirs"
+      }
+     ">
+
+     ${escapeHtml(
+      message.content ||
+      ""
+     )}
+
+    </div>
+
+   `).join("");
+
+  box.scrollTop =
+   box.scrollHeight;
+
+ }catch(error){
+
+  box.innerHTML=
+   `<div class="muted">
+     ${escapeHtml(
+      error.message ||
+      "Could not load messages."
+     )}
+    </div>`;
+
+ }
+
+}
+
+
+async function sendMessage(){
+
+ const input =
+  document.getElementById(
+   "messageInput"
+  );
+
+ if(!input)
+  return;
+
+ const text =
+  input.value.trim();
+
+ if(!text)
+  return;
+
+ if(
+  !supabaseClient ||
+  !currentUser
+ ){
+
+  toast(
+   "Sign in first."
+  );
+
+  return;
+ }
+
+ if(!currentChatUser){
+
+  toast(
+   "Choose a conversation first."
+  );
+
+  return;
+ }
+
+ try{
+
+  const {error} =
+   await supabaseClient
+    .from("messages")
+    .insert({
+
+     sender_id:
+      currentUser.id,
+
+     receiver_id:
+      currentChatUser,
+
+     content:
+      text
+
+    });
+
+  if(error)
+   throw error;
+
+  input.value="";
+
+  await loadConversation(
+   currentChatUser
+  );
+
+  await loadChats();
+
+ }catch(error){
+
+  toast(
+   error.message ||
+   "Message could not be sent."
+  );
+
+ }
+
+}
+
+
+/* =========================================================
+   TRACK CIRCLE AI
+   ========================================================= */
+
+async function sendAI(){
+
+ const input =
+  document.getElementById(
+   "aiInput"
+  );
+
+ const box =
+  document.getElementById(
+   "aiMessages"
+  );
+
+ if(!input || !box)
+  return;
+
+ const text =
+  input.value.trim();
+
+ if(!text)
+  return;
+
+ box.innerHTML +=
+  `<div class="aiMsg user">
+    ${escapeHtml(text)}
+   </div>`;
+
+ input.value="";
+
+ box.scrollTop =
+  box.scrollHeight;
+
+ if(!supabaseClient){
+
+  box.innerHTML +=
+   `<div class="aiMsg">
+     Track Circle AI is unavailable
+     because Supabase is not connected.
+    </div>`;
+
+  return;
+ }
+
+ const typing =
+  document.createElement(
+   "div"
+  );
+
+ typing.className=
+  "aiMsg";
+
+ typing.textContent=
+  "Track Circle AI is thinking...";
+
+ box.appendChild(
+  typing
+ );
+
+ box.scrollTop =
+  box.scrollHeight;
+
+ try{
+
+  const result =
+   await supabaseClient.functions.invoke(
+
+    "track-circle-ai",
+
+    {
+     body:{
+      message:text,
+      history:[]
+     }
+    }
+
+   );
+
+  if(result.error)
+   throw result.error;
+
+  const data =
+   result.data;
+
+  const reply =
+   data?.reply ||
+   data?.response ||
+   data?.message ||
+   "I received your message.";
+
+  typing.textContent =
+   reply;
+
+ }catch(error){
+
+  console.warn(
+   "Track Circle AI:",
+   error
+  );
+
+  typing.textContent =
+   "I couldn't reach Track Circle AI right now. Please try again.";
+
+ }
+
+ box.scrollTop =
+  box.scrollHeight;
+
+}
+
+
+function askSuggestion(text){
+
+ const input =
+  document.getElementById(
+   "aiInput"
+  );
+
+ if(!input)
+  return;
+
+ input.value =
+  text;
+
+ sendAI();
+
+}
+
+
+/* =========================================================
+   POSTS / SOCIAL FEED
+   ========================================================= */
+
+async function createPost(){
+
+ const input =
+  document.getElementById(
+   "postText"
+  );
+
+ if(!input)
+  return;
+
+ const text =
+  input.value.trim();
+
+ if(!text){
+
+  toast(
+   "Write something first."
+  );
+
+  return;
+ }
+
+ if(
+  !supabaseClient ||
+  !currentUser
+ ){
+
+  toast(
+   "Sign in first."
+  );
+
+  return;
+ }
+
+ try{
+
+  const {error} =
+   await supabaseClient
+    .from("posts")
+    .insert({
+
+     user_id:
+      currentUser.id,
+
+     content:
+      text
+
+    });
+
+  if(error)
+   throw error;
+
+  input.value="";
+
+  toast(
+   "Post published."
+  );
+
+  await loadPosts();
+
+ }catch(error){
+
+  toast(
+   error.message ||
+   "Could not publish post."
+  );
+
+ }
+
+}
+
+
+async function loadPosts(){
+
+ const feed =
+  document.getElementById(
+   "feedList"
+  );
+
+ if(!feed)
+  return;
+
+ if(!supabaseClient){
+
+  feed.innerHTML=
+   `<div class="card">
+     Connect Supabase to load posts.
+    </div>`;
+
+  return;
+ }
+
+ try{
+
+  const {data,error} =
+   await supabaseClient
+    .from("posts")
+    .select("*")
+    .order(
+     "created_at",
+     {ascending:false}
+    )
+    .limit(50);
+
+  if(error)
+   throw error;
+
+  if(!data?.length){
+
+   feed.innerHTML=
+    `<div class="card">
+
+      <b>No posts yet.</b>
+
+      <div
+       class="muted"
+       style="margin-top:5px">
+
+       Be the first person to post.
+
+      </div>
+
+     </div>`;
+
+   return;
+  }
+
+  feed.innerHTML =
+   data.map(post=>`
+
+    <article class="post">
+
+     <div class="postHead">
+
+      <div class="postUserAvatar">
+       TC
+      </div>
+
+      <div>
+
+       <div class="postName">
+        Track Circle User
+       </div>
+
+       <div class="postTime">
+        ${formatDate(
+         post.created_at
+        )}
+       </div>
+
+      </div>
+
+     </div>
+
+     <div class="postText">
+      ${escapeHtml(
+       post.content || ""
+      )}
+     </div>
+
+     <div class="actions">
+
+      <button
+       onclick="toast('Like recorded')">
+
+       ♡ Like
+
+      </button>
+
+      <button
+       onclick="toast('Comment system ready')">
+
+       ◯ Comment
+
+      </button>
+
+      <button
+       onclick="toast('Share link ready')">
+
+       ↗ Share
+
+      </button>
+
+      <button
+       onclick="openGiftModal()">
+
+       🎁 Gift
+
+      </button>
+
+     </div>
+
+    </article>
+
+   `).join("");
+
+ }catch(error){
+
+  console.warn(
+   "Posts:",
+   error
+  );
+
+  feed.innerHTML=
+   `<div class="card">
+
+     <b>Posts</b>
+
+     <div
+      class="muted"
+      style="margin-top:5px">
+
+      ${escapeHtml(
+       error.message ||
+       "Posts are unavailable."
+      )}
+
+     </div>
+
+    </div>`;
+
+ }
+
+}
+
+
+/* =========================================================
+   MEDIA
+   ========================================================= */
+
+function choosePostMedia(type){
+
+ const input =
+  document.getElementById(
+   "postMediaInput"
+  );
+
+ if(!input){
+
+  toast(
+   "Media picker is not available."
+  );
+
+  return;
+ }
+
+ if(type==="image")
+  input.accept="image/*";
+
+ else if(type==="video")
+  input.accept="video/*";
+
+ else
+  input.accept=
+   "image/*,video/*";
+
+ input.click();
+
+}
+
+
+function handlePostMedia(event){
+
+ const file =
+  event.target.files?.[0];
+
+ if(!file)
+  return;
+
+ toast(
+  file.name+" selected."
+ );
+
+}
+
+
+/* =========================================================
+   PROFILE PHOTO
+   ========================================================= */
+
+function chooseProfilePhoto(){
+
+ const input =
+  document.getElementById(
+   "profilePhotoInput"
+  );
+
+ if(input)
+  input.click();
+
+}
+
+
+async function uploadProfilePhoto(event){
+
+ const file =
+  event.target.files?.[0];
+
+ if(!file)
+  return;
+
+ if(
+  !supabaseClient ||
+  !currentUser
+ ){
+
+  toast(
+   "Sign in first."
+  );
+
+  return;
+ }
+
+ try{
+
+  const extension =
+   file.name
+    .split(".")
+    .pop()
+    .toLowerCase();
+
+  const path =
+   currentUser.id +
+   "/profile." +
+   extension;
+
+  const {error:uploadError} =
+   await supabaseClient.storage
+    .from("avatar")
+    .upload(
+     path,
+     file,
+     {
+      upsert:true,
+      contentType:file.type
+     }
+    );
+
+  if(uploadError)
+   throw uploadError;
+
+  const {data:urlData} =
+   supabaseClient.storage
+    .from("avatar")
+    .getPublicUrl(
+     path
+    );
+
+  const avatarUrl =
+   urlData?.publicUrl;
+
+  if(!avatarUrl)
+   throw new Error(
+    "Could not create image URL."
+   );
+
+  const {error:updateError} =
+   await supabaseClient
+    .from("profiles")
+    .update({
+     avatar_url:
+      avatarUrl
+    })
+    .eq(
+     "id",
+     currentUser.id
+    );
+
+  if(updateError)
+   throw updateError;
+
+  if(currentProfile)
+   currentProfile.avatar_url =
+    avatarUrl;
+
+  updateProfileImages(
+   avatarUrl
+  );
+
+  toast(
+   "Profile picture updated."
+  );
+
+ }catch(error){
+
+  console.error(
+   "Profile photo:",
+   error
+  );
+
+  toast(
+   error.message ||
+   "Could not upload photo."
+  );
+
+ }
+
+}
+
+
+/* =========================================================
+   GIFTS
+   ========================================================= */
+
+function selectGift(
+ emoji,
+ price
+){
+
+ selectedGift={
+  emoji:
+   emoji,
+
+  price:
+   Number(price)
+ };
+
+ const info =
+  document.getElementById(
+   "giftInfo"
+  );
+
+ if(info){
+
+  info.innerHTML =
+   `<b style="color:var(--green)">
+     ${escapeHtml(emoji)}
+     ₦${Number(price).toLocaleString()}
+    </b>
+    selected.
+    <br>
+    <span class="muted">
+     Payment confirmation is required
+     before sending.
+    </span>`;
+
+ }
+
+}
+
+
+function customGift(){
+
+ const amount =
+  prompt(
+   "Enter custom gift amount in Naira:"
+  );
+
+ if(!amount)
+  return;
+
+ const value =
+  Number(
+   String(amount)
+    .replaceAll(",","")
+    .trim()
+  );
+
+ if(
+  !Number.isFinite(value) ||
+  value<25000
+ ){
+
+  toast(
+   "Custom gifts start at ₦25,000."
+  );
+
+  return;
+ }
+
+ selectedGift={
+  emoji:"✨",
+  price:value
+ };
+
+ const info =
+  document.getElementById(
+   "giftInfo"
+  );
+
+ if(info){
+
+  info.innerHTML =
+   `<b style="color:var(--green)">
+     ✨ Custom gift
+     ₦${value.toLocaleString()}
+    </b>
+    <br>
+    <span class="muted">
+     Custom gift selected.
+    </span>`;
+
+ }
+
+}
+
+
+function openGiftModal(){
+
+ const modal =
+  document.getElementById(
+   "giftModal"
+  );
+
+ if(modal)
+  modal.classList.add(
+   "show"
+  );
+
+}
+
+
+function sendSelectedGift(){
+
+ if(!selectedGift){
+
+  toast(
+   "Select a gift first."
+  );
+
+  return;
+ }
+
+ toast(
+  "Payment must be verified before the gift is sent."
+ );
+
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+async function signOut(){
+
+ try{
+
+  if(supabaseClient){
+
+   await supabaseClient
+    .auth
+    .signOut();
+
+  }
+
+ }catch(error){
+
+  console.warn(
+   "Sign out:",
+   error
+  );
+
+ }
+
+ currentUser=null;
+ currentProfile=null;
+
+ stopLocation();
+
+ showAuth();
+
+ setAuthMode(
+  "login"
+ );
+
+ toast(
+  "Signed out."
+ );
+
+}
+
+
+/* =========================================================
+   APP DATA
+   ========================================================= */
+
+async function loadAppData(){
+
+ if(!currentUser)
+  return;
+
+ try{
+  await loadCurrentProfile();
+ }catch(error){
+  console.warn(error);
+ }
+
+ try{
+  await loadHomeData();
+ }catch(error){
+  console.warn(error);
+ }
+
+ try{
+  await loadCircles();
+ }catch(error){
+  console.warn(error);
+ }
+
+ try{
+  await loadChats();
+ }catch(error){
+  console.warn(error);
+ }
+
+ try{
+  await loadPosts();
+ }catch(error){
+  console.warn(error);
+ }
+
+}
+
+
+/* =========================================================
+   AUTH STATE
+   ========================================================= */
+
+function setupAuthListener(){
+
+ if(!supabaseClient)
+  return;
+
+ supabaseClient.auth.onAuthStateChange(
+  async(event,session)=>{
+
+   console.log(
+    "Track Circle auth:",
+    event
+   );
+
+   if(session){
+
+    currentUser =
+     session.user;
+
+    if(
+     event==="SIGNED_IN" ||
+     event==="TOKEN_REFRESHED"
+    ){
+
+     await loadCurrentProfile();
+
+     showMain();
+
+     await loadAppData();
+
+    }
+
+   }else if(
+    event==="SIGNED_OUT"
+   ){
+
+    currentUser=null;
+    currentProfile=null;
+
+    showAuth();
+
+   }
+
+  }
+ );
+
+}
+
+
+/* =========================================================
+   STARTUP — NO SPLASH SCREEN
+   ========================================================= */
+
+document.addEventListener(
+ "DOMContentLoaded",
+ async()=>{
+
+  const connected =
+   initializeSupabase();
+
+  if(!connected){
+
+   showAuth();
+
+   return;
+
+  }
+
+  setupAuthListener();
+
+  try{
+
+   const {data,error} =
+    await supabaseClient.auth.getSession();
+
+   if(error)
+    throw error;
+
+   if(data?.session){
+
+    currentUser =
+     data.session.user;
+
+    await loadCurrentProfile();
+
+    showMain();
+
+    await loadAppData();
+
+   }else{
+
+    showAuth();
+
+   }
+
+  }catch(error){
+
+   console.warn(
+    "Initial session:",
+    error
+   );
+
+   showAuth();
+
+  }
+
+
+  /* AI ENTER KEY */
+
+  const aiInput =
+   document.getElementById(
+    "aiInput"
+   );
+
+  if(aiInput){
+
+   aiInput.addEventListener(
+    "keydown",
+    event=>{
+
+     if(
+      event.key==="Enter" &&
+      !event.shiftKey
+     ){
+
+      event.preventDefault();
+
+      sendAI();
+
+     }
+
+    }
+   );
+
+  }
+
+
+  /* SEARCH ENTER / INPUT */
+
+  const userSearch =
+   document.getElementById(
+    "userSearch"
+   );
+
+  if(userSearch){
+
+   userSearch.addEventListener(
+    "input",
+    searchUsers
+   );
+
+  }
+
+
+  /* MESSAGE ENTER */
+
+  const messageInput =
+   document.getElementById(
+    "messageInput"
+   );
+
+  if(messageInput){
+
+   messageInput.addEventListener(
+    "keydown",
+    event=>{
+
+     if(
+      event.key==="Enter" &&
+      !event.shiftKey
+     ){
+
+      event.preventDefault();
+
+      sendMessage();
+
+     }
+
+    }
+   );
+
+  }
+
+ });
+
+
+/* =========================================================
+   GLOBAL ERROR PROTECTION
+   ========================================================= */
+
+window.addEventListener(
+ "error",
+ event=>{
+
+  console.error(
+   "Track Circle error:",
+   event.error ||
+   event.message
+  );
+
+ });
+
+
+window.addEventListener(
+ "unhandledrejection",
+ event=>{
+
+  console.error(
+   "Track Circle promise error:",
+   event.reason
+  );
+
+ });
+
+
+/* =========================================================
+   END OF TRACK CIRCLE JAVASCRIPT
+   ========================================================= */
+
+</script>
+
+</body>
+
+</html>
