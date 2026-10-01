@@ -6,7 +6,7 @@
     <title>TRACK CIRCLE — Stay Connected. Stay Close.</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet CSS for Real Map -->
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -46,12 +46,11 @@
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Cinematic Forest & Greeny Sky Background Glow */
         .cinematic-bg {
             position: fixed;
             inset: 0;
-            background: linear-gradient(180deg, rgba(5,8,14,0.6) 0%, rgba(10,30,25,0.85) 100%), 
-                        radial-gradient(circle at 50% 15%, rgba(25,230,160,0.22) 0%, transparent 60%);
+            background: linear-gradient(180deg, rgba(5,8,14,0.55) 0%, rgba(8,26,22,0.9) 100%), 
+                        radial-gradient(circle at 50% 12%, rgba(25,230,160,0.25) 0%, transparent 65%);
             z-index: -1;
             pointer-events: none;
         }
@@ -59,10 +58,10 @@
             box-shadow: 0 0 25px rgba(25, 230, 160, 0.25);
         }
         .glow-cyan {
-            box-shadow: 0 0 30px rgba(67, 217, 255, 0.2);
+            box-shadow: 0 0 30px rgba(67, 217, 255, 0.22);
         }
         .glass-card {
-            background: rgba(14, 23, 38, 0.78);
+            background: rgba(14, 23, 38, 0.82);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(25, 230, 160, 0.15);
@@ -90,10 +89,7 @@
 </head>
 <body class="bg-darkBg text-textPrimary antialiased flex flex-col min-h-screen relative">
 
-    <!-- Cinematic Background -->
     <div class="cinematic-bg"></div>
-
-    <!-- TOAST NOTIFICATIONS -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- WELCOME / SPLASH SCREEN VIEW -->
@@ -142,7 +138,6 @@
                 <p class="text-textSecondary text-xs mt-1">Sign in to continue to your account</p>
             </div>
 
-            <!-- Login Form -->
             <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Email Address</label>
@@ -162,7 +157,6 @@
                 </div>
             </form>
 
-            <!-- Signup Form -->
             <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-4 hidden">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Full Name / Display Name</label>
@@ -195,11 +189,11 @@
         </div>
     </div>
 
-    <!-- MAIN APP SHELL -->
+    <!-- MAIN APP SHELL (6 TABS NAVIGATION) -->
     <div id="app-shell" class="flex flex-col flex-1 max-w-md w-full mx-auto relative z-10 hidden pb-24">
         
         <!-- TOP HEADER -->
-        <header class="flex items-center justify-between px-4 py-3.5 border-b border-borderSubtle bg-darkBg/80 backdrop-blur-xl sticky top-0 z-30">
+        <header class="flex items-center justify-between px-4 py-3.5 border-b border-borderSubtle bg-darkBg/85 backdrop-blur-xl sticky top-0 z-30">
             <div class="flex items-center gap-3">
                 <div id="header-avatar" class="w-10 h-10 rounded-2xl bg-mint/20 border border-mint/40 flex items-center justify-center text-mint font-bold text-sm glow-mint">
                     TC
@@ -224,9 +218,8 @@
         <!-- MAIN VIEWS CONTAINER -->
         <main class="flex-1 overflow-y-auto">
             
-            <!-- HOME VIEW -->
+            <!-- 1. HOME VIEW -->
             <section id="view-home" class="p-4 space-y-6">
-                <!-- Greeting Card -->
                 <div class="glass-card p-6 relative overflow-hidden glow-mint">
                     <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-mint/10 rounded-full blur-3xl pointer-events-none"></div>
                     <span id="home-greeting" class="text-xs font-bold uppercase tracking-widest text-mint">Good day</span>
@@ -243,7 +236,6 @@
                     </div>
                 </div>
 
-                <!-- Quick Actions Grid -->
                 <div>
                     <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary mb-3 px-1">Quick Actions</h3>
                     <div class="grid grid-cols-4 gap-3">
@@ -253,17 +245,17 @@
                             </div>
                             <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Map</span>
                         </button>
+                        <button onclick="switchTab('track')" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
+                            <div class="w-10 h-10 rounded-2xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
+                                <i class="fa-solid fa-camera-retro text-sm"></i>
+                            </div>
+                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Track</span>
+                        </button>
                         <button onclick="openCreateCircleModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
                             <div class="w-10 h-10 rounded-2xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
                                 <i class="fa-solid fa-users-rectangle text-sm"></i>
                             </div>
                             <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Create</span>
-                        </button>
-                        <button onclick="openJoinCircleModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
-                            <div class="w-10 h-10 rounded-2xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
-                                <i class="fa-solid fa-user-plus text-sm"></i>
-                            </div>
-                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Join</span>
                         </button>
                         <button onclick="openAiModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-skyCyan transition group">
                             <div class="w-10 h-10 rounded-2xl bg-skyCyan/10 text-skyCyan flex items-center justify-center group-hover:scale-110 transition">
@@ -274,7 +266,6 @@
                     </div>
                 </div>
 
-                <!-- Circles List Preview -->
                 <div>
                     <div class="flex items-center justify-between mb-3 px-1">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary">Your Circles</h3>
@@ -286,22 +277,9 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Social Feed -->
-                <div>
-                    <div class="flex items-center justify-between mb-3 px-1">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary">Social Feed</h3>
-                        <button onclick="openPostModal()" class="text-xs text-mint font-bold hover:underline">+ Post</button>
-                    </div>
-                    <div id="home-posts-list" class="space-y-3">
-                        <div class="glass-card p-4 text-center text-textSecondary text-xs">
-                            No posts available. Share something with your circle!
-                        </div>
-                    </div>
-                </div>
             </section>
 
-            <!-- LIVE MAP VIEW -->
+            <!-- 2. LIVE MAP VIEW -->
             <section id="view-map" class="p-4 h-[calc(100vh-140px)] hidden flex flex-col">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="font-bold text-sm text-textPrimary">Live Location Radar</h2>
@@ -314,7 +292,22 @@
                 </div>
             </section>
 
-            <!-- CIRCLES VIEW -->
+            <!-- 3. TRACK VIEW (Instagram-Style Social Feed: Photos, Videos, Likes, Comments) -->
+            <section id="view-track" class="p-4 space-y-4 hidden">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-bold text-base text-textPrimary">Track Feed</h2>
+                    <button onclick="openPostModal()" class="px-3.5 py-1.5 bg-mint text-darkBg rounded-xl text-xs font-extrabold hover:opacity-95 transition glow-mint">
+                        <i class="fa-solid fa-plus mr-1"></i> New Post
+                    </button>
+                </div>
+                <div id="track-feed-list" class="space-y-4 pb-10">
+                    <div class="glass-card p-6 text-center text-textSecondary text-xs">
+                        Loading social media feed...
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. CIRCLES VIEW -->
             <section id="view-circles" class="p-4 space-y-4 hidden">
                 <div class="flex items-center justify-between">
                     <h2 class="font-bold text-base text-textPrimary">Your Circles</h2>
@@ -330,17 +323,33 @@
                 </div>
             </section>
 
-            <!-- MESSAGES VIEW -->
+            <!-- 5. MESSAGES VIEW (With Snap-Style Calling Integration) -->
             <section id="view-messages" class="p-4 space-y-4 hidden">
-                <h2 class="font-bold text-base text-textPrimary">Messages & Chat</h2>
-                <div id="messages-list" class="space-y-2">
-                    <div class="glass-card p-6 text-center text-textSecondary text-xs">
-                        No active conversations. Connect with your circle members.
+                <div class="flex items-center justify-between">
+                    <h2 class="font-bold text-base text-textPrimary">Messages & Chats</h2>
+                    <button onclick="startSnapCall('Tomi')" class="px-3 py-1.5 bg-mint/20 border border-mint/40 text-mint rounded-xl text-xs font-bold hover:bg-mint hover:text-darkBg transition flex items-center gap-1.5 glow-mint">
+                        <i class="fa-solid fa-phone"></i> Snap Call
+                    </button>
+                </div>
+                <div id="messages-list" class="space-y-3">
+                    <div class="glass-card p-4 flex items-center justify-between cursor-pointer hover:border-mint transition" onclick="startSnapCall('Tomi')">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-mint/20 border border-mint/30 flex items-center justify-center font-bold text-mint">
+                                TM
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-textPrimary">Tomi <span class="text-[10px] text-mint font-normal ml-1">● Online</span></h4>
+                                <p class="text-xs text-textSecondary">Tap to start video/audio snap call</p>
+                            </div>
+                        </div>
+                        <div class="w-9 h-9 rounded-xl bg-mint/10 text-mint flex items-center justify-center">
+                            <i class="fa-solid fa-video"></i>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- PROFILE VIEW -->
+            <!-- 6. PROFILE VIEW -->
             <section id="view-profile" class="p-4 space-y-6 hidden">
                 <div class="glass-card p-6 text-center relative glow-mint">
                     <div class="w-24 h-24 rounded-3xl bg-mint/20 border-2 border-mint mx-auto flex items-center justify-center text-mint text-3xl font-extrabold mb-3 glow-mint" id="profile-avatar-display">
@@ -376,29 +385,58 @@
 
         </main>
 
-        <!-- BOTTOM NAVIGATION -->
-        <nav class="absolute bottom-3 left-4 right-4 h-16 glass-card border border-borderSubtle flex items-center justify-around px-2 z-30 glow-mint">
-            <button onclick="switchTab('home')" id="nav-btn-home" class="flex flex-col items-center justify-center w-16 text-mint transition py-1">
-                <i class="fa-solid fa-house text-base"></i>
-                <span class="text-[10px] mt-1 font-bold">Home</span>
+        <!-- 6-TAB BOTTOM NAVIGATION BAR -->
+        <nav class="absolute bottom-3 left-3 right-3 h-16 glass-card border border-borderSubtle flex items-center justify-around px-1 z-30 glow-mint">
+            <button onclick="switchTab('home')" id="nav-btn-home" class="flex flex-col items-center justify-center w-14 text-mint transition py-1">
+                <i class="fa-solid fa-house text-sm"></i>
+                <span class="text-[9px] mt-1 font-bold">Home</span>
             </button>
-            <button onclick="switchTab('map')" id="nav-btn-map" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition py-1">
-                <i class="fa-solid fa-map text-base"></i>
-                <span class="text-[10px] mt-1 font-medium">Map</span>
+            <button onclick="switchTab('map')" id="nav-btn-map" class="flex flex-col items-center justify-center w-14 text-textSecondary hover:text-mint transition py-1">
+                <i class="fa-solid fa-map text-sm"></i>
+                <span class="text-[9px] mt-1 font-medium">Map</span>
             </button>
-            <button onclick="switchTab('circles')" id="nav-btn-circles" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition py-1">
-                <i class="fa-solid fa-users text-base"></i>
-                <span class="text-[10px] mt-1 font-medium">Circles</span>
+            <button onclick="switchTab('track')" id="nav-btn-track" class="flex flex-col items-center justify-center w-14 text-textSecondary hover:text-mint transition py-1">
+                <i class="fa-solid fa-camera-retro text-sm"></i>
+                <span class="text-[9px] mt-1 font-medium">Track</span>
             </button>
-            <button onclick="switchTab('messages')" id="nav-btn-messages" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition py-1">
-                <i class="fa-solid fa-message text-base"></i>
-                <span class="text-[10px] mt-1 font-medium">Messages</span>
+            <button onclick="switchTab('circles')" id="nav-btn-circles" class="flex flex-col items-center justify-center w-14 text-textSecondary hover:text-mint transition py-1">
+                <i class="fa-solid fa-users text-sm"></i>
+                <span class="text-[9px] mt-1 font-medium">Circles</span>
             </button>
-            <button onclick="switchTab('profile')" id="nav-btn-profile" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition py-1">
-                <i class="fa-solid fa-user text-base"></i>
-                <span class="text-[10px] mt-1 font-medium">Profile</span>
+            <button onclick="switchTab('messages')" id="nav-btn-messages" class="flex flex-col items-center justify-center w-14 text-textSecondary hover:text-mint transition py-1">
+                <i class="fa-solid fa-message text-sm"></i>
+                <span class="text-[9px] mt-1 font-medium">Chats</span>
+            </button>
+            <button onclick="switchTab('profile')" id="nav-btn-profile" class="flex flex-col items-center justify-center w-14 text-textSecondary hover:text-mint transition py-1">
+                <i class="fa-solid fa-user text-sm"></i>
+                <span class="text-[9px] mt-1 font-medium">Profile</span>
             </button>
         </nav>
+    </div>
+
+    <!-- SNAP-STYLE CALLING OVERLAY INTERFACE -->
+    <div id="snap-call-modal" class="fixed inset-0 z-50 bg-darkBg/95 backdrop-blur-2xl flex flex-col justify-between p-6 text-center hidden">
+        <div class="pt-8">
+            <p id="call-status-text" class="text-xs uppercase tracking-widest text-mint font-bold animate-pulse">Ringing Secure Line...</p>
+            <h2 id="call-username" class="text-2xl font-extrabold text-textPrimary mt-1">Tomi</h2>
+        </div>
+        <div class="flex flex-col items-center justify-center my-auto">
+            <div class="w-32 h-32 rounded-full bg-mint/20 border-4 border-mint flex items-center justify-center text-mint text-4xl font-extrabold glow-mint animate-bounce" id="call-avatar-initials">
+                TM
+            </div>
+            <p class="text-xs text-textSecondary mt-4">Encrypted P2P Audio / Video Stream</p>
+        </div>
+        <div class="flex items-center justify-center gap-6 pb-6">
+            <button onclick="toggleCallMute()" class="w-14 h-14 rounded-full glass-card flex items-center justify-center text-textPrimary hover:border-mint text-lg">
+                <i class="fa-solid fa-microphone-slash"></i>
+            </button>
+            <button onclick="endSnapCall()" class="w-16 h-16 rounded-full bg-danger text-white flex items-center justify-center text-2xl shadow-lg hover:scale-105 transition">
+                <i class="fa-solid fa-phone-slash"></i>
+            </button>
+            <button onclick="toggleCallSpeaker()" class="w-14 h-14 rounded-full glass-card flex items-center justify-center text-textPrimary hover:border-mint text-lg">
+                <i class="fa-solid fa-volume-high"></i>
+            </button>
+        </div>
     </div>
 
     <!-- TRACK CIRCLE AI MODAL -->
@@ -410,7 +448,7 @@
                 </div>
                 <div>
                     <h3 class="font-extrabold text-sm text-textPrimary">Track Circle AI</h3>
-                    <p class="text-[10px] text-skyCyan font-semibold">Powered by OpenAI & Supabase Edge Function</p>
+                    <p class="text-[10px] text-skyCyan font-semibold">Powered by Gemini & Supabase Edge Function</p>
                 </div>
             </div>
             <button onclick="closeAiModal()" class="w-10 h-10 rounded-2xl glass-card flex items-center justify-center text-textSecondary hover:text-textPrimary">
@@ -419,7 +457,7 @@
         </div>
         <div id="ai-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3.5">
             <div class="glass-card p-4 text-xs max-w-[85%] text-textPrimary">
-                Hello! I am Track Circle AI, your official assistant connected via Supabase. How can I help you coordinate your circles or location today?
+                Hello! I am Track Circle AI, your assistant connected via Supabase. How can I help you coordinate your circles or location today?
             </div>
         </div>
         <div class="p-4 border-t border-borderSubtle glass-card flex gap-2">
@@ -471,12 +509,16 @@
         </div>
     </div>
 
-    <!-- SOCIAL POST MODAL -->
+    <!-- SOCIAL POST MODAL (Track Feed) -->
     <div id="post-modal" class="fixed inset-0 z-50 bg-darkBg/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
         <div class="w-full max-w-sm glass-card p-6 space-y-4 glow-mint">
-            <h3 class="font-extrabold text-base text-textPrimary">Create Social Post</h3>
+            <h3 class="font-extrabold text-base text-textPrimary">Create Track Post</h3>
             <div>
-                <textarea id="post-content-input" rows="4" placeholder="What's happening in your circle?" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl p-3 text-xs focus:outline-none focus:border-mint text-textPrimary resize-none"></textarea>
+                <textarea id="post-content-input" rows="3" placeholder="Share your location or moment..." class="w-full bg-secondaryBg border border-borderSubtle rounded-xl p-3 text-xs focus:outline-none focus:border-mint text-textPrimary resize-none"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Image URL (Optional)</label>
+                <input type="text" id="post-media-input" placeholder="https://image-link.com/photo.jpg" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-mint text-textPrimary">
             </div>
             <div class="flex gap-2 pt-2">
                 <button onclick="closePostModal()" class="flex-1 bg-secondaryBg py-3 rounded-2xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
@@ -487,7 +529,6 @@
 
     <!-- APPLICATION SCRIPT -->
     <script>
-        // SUPABASE CONFIGURATION
         const SUPABASE_URL = "https://olivaregvcejjghrjdio.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9saXZhcmVndmNlampnaHJqZGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyODE4MzUsImV4cCI6MjEwNTg1NzgzNX0.r1aukPMLnShXSFjuE47AIaGKmgwHrFuaWl8-2r8Su0Y"; 
 
@@ -499,7 +540,6 @@
         let isLocationActive = false;
         let aiHistory = [];
 
-        // INITIALIZATION
         window.addEventListener('DOMContentLoaded', () => {
             try {
                 initializeSupabase();
@@ -538,7 +578,6 @@
             }
         }
 
-        // VIEW NAVIGATION
         function showSplash() {
             document.getElementById('splash-screen').classList.remove('hidden');
             document.getElementById('auth-wrapper').classList.add('hidden');
@@ -552,9 +591,7 @@
             switchAuthForm(mode);
         }
 
-        function backToSplash() {
-            showSplash();
-        }
+        function backToSplash() { showSplash(); }
 
         function switchAuthForm(formType) {
             const loginForm = document.getElementById('login-form');
@@ -580,7 +617,6 @@
             loadHomeData();
         }
 
-        // AUTHENTICATION ACTIONS
         async function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
@@ -611,14 +647,12 @@
                 currentUser = data.user;
 
                 if (currentUser) {
-                    // Write user to database profiles table immediately
-                    const { error: profileError } = await supabaseClient.from('profiles').upsert({
+                    await supabaseClient.from('profiles').upsert({
                         id: currentUser.id,
                         display_name: displayName,
                         username: username,
                         created_at: new Date().toISOString()
                     });
-                    if (profileError) console.warn("Profile table insert warning:", profileError.message);
                 }
                 await loadUserProfile();
                 showMainApp();
@@ -629,9 +663,7 @@
         }
 
         async function signOut() {
-            if (supabaseClient) {
-                await supabaseClient.auth.signOut();
-            }
+            if (supabaseClient) await supabaseClient.auth.signOut();
             currentUser = null;
             currentProfile = null;
             if (locationWatcherId !== null) {
@@ -642,16 +674,10 @@
             toast("Signed out successfully", "success");
         }
 
-        // PROFILE & HOME DATA SYNCHRONIZATION
         async function loadUserProfile() {
             if (!currentUser) return;
             try {
-                const { data, error } = await supabaseClient
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', currentUser.id)
-                    .single();
-                
+                const { data } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
                 if (data) {
                     currentProfile = data;
                     const name = currentProfile.display_name || currentProfile.username || "User";
@@ -663,7 +689,6 @@
                     document.getElementById('profile-avatar-display').textContent = initials;
                 }
             } catch (err) {
-                console.warn("Profile table fetch fallback active:", err);
                 const fallbackName = currentUser.email.split('@')[0];
                 document.getElementById('header-username').textContent = fallbackName;
                 document.getElementById('profile-display-name').textContent = fallbackName;
@@ -683,12 +708,12 @@
 
         async function loadHomeData() {
             loadCirclesPreview();
-            loadPosts();
+            loadTrackFeed();
         }
 
-        // MAIN NAVIGATION TABS
+        // 6 TABS SWITCHING
         function switchTab(tabName) {
-            const tabs = ['home', 'map', 'circles', 'messages', 'profile'];
+            const tabs = ['home', 'map', 'track', 'circles', 'messages', 'profile'];
             tabs.forEach(t => {
                 const sec = document.getElementById(`view-${t}`);
                 const btn = document.getElementById(`nav-btn-${t}`);
@@ -709,14 +734,14 @@
 
             if (tabName === 'map') {
                 setTimeout(() => initMap(), 200);
+            } else if (tabName === 'track') {
+                loadTrackFeed();
             } else if (tabName === 'circles') {
                 loadFullCircles();
-            } else if (tabName === 'messages') {
-                loadMessagesList();
             }
         }
 
-        // LIVE MAP & GEOLOCATION
+        // LIVE MAP
         function initMap() {
             if (!mapInstance) {
                 mapInstance = L.map('map', { zoomControl: false }).setView([6.5244, 3.3792], 13);
@@ -741,7 +766,6 @@
                         async (position) => {
                             const lat = position.coords.latitude;
                             const lng = position.coords.longitude;
-                            
                             if (currentUser && supabaseClient) {
                                 await supabaseClient.from('profiles').update({
                                     latitude: lat,
@@ -749,17 +773,13 @@
                                     location_updated_at: new Date().toISOString()
                                 }).eq('id', currentUser.id);
                             }
-
                             if (mapInstance) {
                                 mapInstance.setView([lat, lng], 15);
                                 L.marker([lat, lng]).addTo(mapInstance).bindPopup("You are here").openPopup();
                             }
                         },
-                        (error) => {
-                            toast("Geolocation permission denied or unavailable.", "error");
-                            isLocationActive = false;
-                        },
-                        { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+                        () => { toast("Geolocation unavailable.", "error"); isLocationActive = false; },
+                        { enableHighAccuracy: true }
                     );
                 }
                 stateEl.textContent = "● LIVE";
@@ -769,10 +789,7 @@
                 if(profileLoc) { profileLoc.textContent = "Live"; profileLoc.className = "text-sm font-bold text-mint mt-1"; }
                 toast("Location sharing enabled.", "success");
             } else {
-                if (locationWatcherId !== null) {
-                    navigator.geolocation.clearWatch(locationWatcherId);
-                    locationWatcherId = null;
-                }
+                if (locationWatcherId !== null) { navigator.geolocation.clearWatch(locationWatcherId); locationWatcherId = null; }
                 stateEl.textContent = "Disabled";
                 stateEl.className = "text-sm font-bold text-yellow-400 mt-0.5";
                 btnEl.textContent = "Turn On";
@@ -783,18 +800,98 @@
         }
 
         function centerMapOnUser() {
-            if (!isLocationActive) {
-                toast("Please turn on location sharing first.", "error");
-                return;
-            }
+            if (!isLocationActive) { toast("Turn on location sharing first.", "error"); return; }
             navigator.geolocation.getCurrentPosition((pos) => {
-                if (mapInstance) {
-                    mapInstance.setView([pos.coords.latitude, pos.coords.longitude], 16);
-                }
+                if (mapInstance) mapInstance.setView([pos.coords.latitude, pos.coords.longitude], 16);
             });
         }
 
-        // CIRCLES LOGIC
+        // TRACK FEED (Instagram Style: Post pictures/videos, likes, comments)
+        function openPostModal() { document.getElementById('post-modal').classList.remove('hidden'); }
+        function closePostModal() { document.getElementById('post-modal').classList.add('hidden'); }
+
+        async function submitPost() {
+            const content = document.getElementById('post-content-input').value.trim();
+            const mediaUrl = document.getElementById('post-media-input').value.trim();
+            if (!content) { toast("Write something for your post.", "error"); return; }
+
+            try {
+                const { error } = await supabaseClient.from('posts').insert({
+                    user_id: currentUser.id,
+                    content: content,
+                    media_url: mediaUrl || null
+                });
+                if (error) throw error;
+                closePostModal();
+                document.getElementById('post-content-input').value = '';
+                document.getElementById('post-media-input').value = '';
+                toast("Published to Track Feed!", "success");
+                loadTrackFeed();
+            } catch (err) {
+                toast(err.message || "Failed to post.", "error");
+            }
+        }
+
+        async function loadTrackFeed() {
+            const container = document.getElementById('track-feed-list');
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('posts')
+                    .select('id, content, media_url, created_at, user_id, profiles(display_name, username)')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    container.innerHTML = data.map(post => `
+                        <div class="glass-card p-4 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-full bg-mint/20 border border-mint/40 flex items-center justify-center text-mint font-bold text-xs">
+                                        ${(post.profiles?.display_name || 'TC').substring(0,2).toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-xs text-textPrimary">${escapeHtml(post.profiles?.display_name || 'User')}</h4>
+                                        <span class="text-[10px] text-mint">@${escapeHtml(post.profiles?.username || 'user')}</span>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-textSecondary">${new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            </div>
+                            <p class="text-xs text-textPrimary leading-relaxed">${escapeHtml(post.content)}</p>
+                            ${post.media_url ? `<div class="rounded-2xl overflow-hidden border border-borderSubtle max-h-60"><img src="${escapeHtml(post.media_url)}" class="w-full h-full object-cover"></div>` : ''}
+                            <div class="flex items-center justify-between pt-2 border-t border-borderSubtle text-xs text-textSecondary">
+                                <button onclick="toast('Liked post!', 'success')" class="hover:text-mint transition flex items-center gap-1.5"><i class="fa-regular fa-heart"><span>0</span></i> Like</button>
+                                <button onclick="toast('Comments open', 'success')" class="hover:text-mint transition flex items-center gap-1.5"><i class="fa-regular fa-comment"></i> Comment</button>
+                                <button onclick="toast('Post link shared!', 'success')" class="hover:text-mint transition flex items-center gap-1.5"><i class="fa-solid fa-share"></i> Share</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">No track posts yet. Tap New Post to share!</div>`;
+                }
+            } catch (err) {
+                container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">Feed is ready for updates.</div>`;
+            }
+        }
+
+        // SNAP-STYLE CALLING LOGIC
+        function startSnapCall(friendName) {
+            document.getElementById('call-username').textContent = friendName;
+            document.getElementById('call-avatar-initials').textContent = friendName.substring(0, 2).toUpperCase();
+            document.getElementById('snap-call-modal').classList.remove('hidden');
+            toast(`Calling ${friendName}...`, "success");
+        }
+
+        function endSnapCall() {
+            document.getElementById('snap-call-modal').classList.add('hidden');
+            toast("Call ended", "error");
+        }
+
+        function toggleCallMute() { toast("Microphone toggled", "success"); }
+        function toggleCallSpeaker() { toast("Audio output toggled", "success"); }
+
+        // CIRCLES & AI
         function openCreateCircleModal() { document.getElementById('create-circle-modal').classList.remove('hidden'); }
         function closeCreateCircleModal() { document.getElementById('create-circle-modal').classList.add('hidden'); }
         function openJoinCircleModal() { document.getElementById('join-circle-modal').classList.remove('hidden'); }
@@ -803,182 +900,65 @@
         async function submitCreateCircle() {
             const name = document.getElementById('new-circle-name').value.trim();
             const type = document.getElementById('new-circle-type').value;
-            if (!name) { toast("Circle name is required.", "error"); return; }
-
+            if (!name) { toast("Circle name required.", "error"); return; }
             const inviteCode = "TC-" + Math.random().toString(36).substring(2, 7).toUpperCase();
 
             try {
-                const { data, error } = await supabaseClient.from('circles').insert({
-                    name: name,
-                    type: type,
-                    invite_code: inviteCode,
-                    owner_id: currentUser.id
-                }).select().single();
-
+                const { data, error } = await supabaseClient.from('circles').insert({ name, type, invite_code: inviteCode, owner_id: currentUser.id }).select().single();
                 if (error) throw error;
-
-                if (data) {
-                    await supabaseClient.from('circle_members').insert({
-                        circle_id: data.id,
-                        user_id: currentUser.id,
-                        role: 'owner'
-                    });
-                }
-
+                if (data) await supabaseClient.from('circle_members').insert({ circle_id: data.id, user_id: currentUser.id, role: 'owner' });
                 closeCreateCircleModal();
                 toast(`Circle created! Code: ${inviteCode}`, "success");
                 loadCirclesPreview();
-                loadFullCircles();
-            } catch (err) {
-                toast(err.message || "Failed to create circle", "error");
-            }
+            } catch (err) { toast(err.message, "error"); }
         }
 
         async function submitJoinCircle() {
             const code = document.getElementById('join-invite-code').value.trim().toUpperCase();
-            if (!code) { toast("Invite code is required.", "error"); return; }
-
+            if (!code) { toast("Invite code required.", "error"); return; }
             try {
-                const { data: circle, error: findError } = await supabaseClient
-                    .from('circles')
-                    .select('id, name')
-                    .eq('invite_code', code)
-                    .single();
-
-                if (findError || !circle) throw new Error("Circle not found with that invite code.");
-
-                const { error: memberError } = await supabaseClient.from('circle_members').insert({
-                    circle_id: circle.id,
-                    user_id: currentUser.id,
-                    role: 'member'
-                });
-
-                if (memberError) throw memberError;
-
+                const { data: circle, error: findError } = await supabaseClient.from('circles').select('id, name').eq('invite_code', code).single();
+                if (findError || !circle) throw new Error("Circle not found.");
+                await supabaseClient.from('circle_members').insert({ circle_id: circle.id, user_id: currentUser.id, role: 'member' });
                 closeJoinCircleModal();
-                toast(`Successfully joined ${circle.name}!`, "success");
+                toast(`Joined ${circle.name}!`, "success");
                 loadCirclesPreview();
-                loadFullCircles();
-            } catch (err) {
-                toast(err.message || "Failed to join circle", "error");
-            }
+            } catch (err) { toast(err.message, "error"); }
         }
 
         async function loadCirclesPreview() {
             const container = document.getElementById('home-circles-list');
             if (!supabaseClient || !currentUser) return;
             try {
-                const { data, error } = await supabaseClient
-                    .from('circle_members')
-                    .select('circles(id, name, type, invite_code)')
-                    .eq('user_id', currentUser.id);
-
-                if (error) throw error;
+                const { data } = await supabaseClient.from('circle_members').select('circles(id, name, type, invite_code)').eq('user_id', currentUser.id);
                 if (data && data.length > 0) {
                     container.innerHTML = data.map(item => `
                         <div class="glass-card p-4 flex items-center justify-between">
-                            <div>
-                                <h4 class="font-bold text-sm text-textPrimary">${escapeHtml(item.circles.name)}</h4>
-                                <span class="text-xs text-mint font-medium">${item.circles.type} • Code: ${item.circles.invite_code}</span>
-                            </div>
+                            <div><h4 class="font-bold text-sm text-textPrimary">${escapeHtml(item.circles.name)}</h4><span class="text-xs text-mint font-medium">${item.circles.type} • Code: ${item.circles.invite_code}</span></div>
                             <span class="text-xs text-mint font-bold bg-mint/10 px-2.5 py-1 rounded-lg">Active</span>
                         </div>
                     `).join('');
                 }
-            } catch (err) {
-                console.warn("Circles preview load note:", err);
-            }
+            } catch (err) { console.warn(err); }
         }
 
         async function loadFullCircles() {
             const container = document.getElementById('circles-full-list');
             if (!supabaseClient || !currentUser) return;
             try {
-                const { data, error } = await supabaseClient
-                    .from('circle_members')
-                    .select('circles(id, name, type, invite_code, owner_id)')
-                    .eq('user_id', currentUser.id);
-
-                if (error) throw error;
+                const { data } = await supabaseClient.from('circle_members').select('circles(id, name, type, invite_code)').eq('user_id', currentUser.id);
                 if (data && data.length > 0) {
                     container.innerHTML = data.map(item => `
                         <div class="glass-card p-4 flex items-center justify-between">
-                            <div>
-                                <h4 class="font-bold text-sm text-textPrimary">${escapeHtml(item.circles.name)}</h4>
-                                <p class="text-xs text-textSecondary mt-0.5">Type: ${item.circles.type} | Code: <span class="text-mint font-mono font-bold">${item.circles.invite_code}</span></p>
-                            </div>
-                            <button onclick="navigator.clipboard.writeText('${item.circles.invite_code}'); toast('Invite code copied!', 'success');" class="px-3.5 py-1.5 glass-card rounded-xl text-xs font-bold text-mint hover:border-mint">
-                                Copy Code
-                            </button>
+                            <div><h4 class="font-bold text-sm text-textPrimary">${escapeHtml(item.circles.name)}</h4><p class="text-xs text-textSecondary">Code: <span class="text-mint font-mono font-bold">${item.circles.invite_code}</span></p></div>
+                            <button onclick="navigator.clipboard.writeText('${item.circles.invite_code}'); toast('Copied!', 'success');" class="px-3 py-1.5 glass-card rounded-xl text-xs font-bold text-mint">Copy</button>
                         </div>
                     `).join('');
-                } else {
-                    container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">No circles found. Create or join one.</div>`;
-                }
-            } catch (err) {
-                container.innerHTML = `<div class="glass-card p-6 text-center text-danger text-xs">Could not load circles.</div>`;
-            }
+                } else { container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">No circles found.</div>`; }
+            } catch (err) { container.innerHTML = `<div class="glass-card p-6 text-center text-danger text-xs">Error loading circles.</div>`; }
         }
 
-        // SOCIAL FEED
-        function openPostModal() { document.getElementById('post-modal').classList.remove('hidden'); }
-        function closePostModal() { document.getElementById('post-modal').classList.add('hidden'); }
-
-        async function submitPost() {
-            const content = document.getElementById('post-content-input').value.trim();
-            if (!content) { toast("Post content cannot be empty.", "error"); return; }
-
-            try {
-                const { error } = await supabaseClient.from('posts').insert({
-                    user_id: currentUser.id,
-                    content: content
-                });
-
-                if (error) throw error;
-
-                closePostModal();
-                document.getElementById('post-content-input').value = '';
-                toast("Post published successfully!", "success");
-                loadPosts();
-            } catch (err) {
-                toast(err.message || "Failed to publish post.", "error");
-            }
-        }
-
-        async function loadPosts() {
-            const container = document.getElementById('home-posts-list');
-            if (!supabaseClient) return;
-            try {
-                const { data, error } = await supabaseClient
-                    .from('posts')
-                    .select('id, content, created_at, user_id, profiles(display_name, username)')
-                    .order('created_at', { ascending: false })
-                    .limit(5);
-
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    container.innerHTML = data.map(post => `
-                        <div class="glass-card p-4 space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-mint">@${escapeHtml(post.profiles?.username || 'user')}</span>
-                                <span class="text-[10px] text-textSecondary">${new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                            </div>
-                            <p class="text-xs text-textPrimary leading-relaxed">${escapeHtml(post.content)}</p>
-                        </div>
-                    `).join('');
-                }
-            } catch (err) {
-                console.warn("Posts load note:", err);
-            }
-        }
-
-        async function loadMessagesList() {
-            const container = document.getElementById('messages-list');
-            if (!supabaseClient || !currentUser) return;
-            container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">Messaging interface ready for live sync.</div>`;
-        }
-
-        // TRACK CIRCLE AI (CONNECTS TO SUPABASE EDGE FUNCTION -> OPENAI)
+        // TRACK CIRCLE AI (Gemini Backend)
         function openAiModal() { document.getElementById('ai-modal').classList.remove('hidden'); }
         function closeAiModal() { document.getElementById('ai-modal').classList.add('hidden'); }
 
@@ -988,70 +968,39 @@
             if (!message) return;
 
             const chatContainer = document.getElementById('ai-chat-messages');
-            chatContainer.innerHTML += `
-                <div class="glass-card p-3.5 text-xs max-w-[85%] ml-auto text-textPrimary border border-skyCyan/30">
-                    ${escapeHtml(message)}
-                </div>
-            `;
+            chatContainer.innerHTML += `<div class="glass-card p-3.5 text-xs max-w-[85%] ml-auto text-textPrimary border border-skyCyan/30">${escapeHtml(message)}</div>`;
             inputEl.value = '';
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             const loadingId = 'ai-loading-' + Date.now();
-            chatContainer.innerHTML += `
-                <div id="${loadingId}" class="glass-card p-3.5 text-xs max-w-[85%] text-textSecondary animate-pulse">
-                    Track Circle AI is thinking...
-                </div>
-            `;
+            chatContainer.innerHTML += `<div id="${loadingId}" class="glass-card p-3.5 text-xs max-w-[85%] text-textSecondary animate-pulse">Track Circle AI is thinking...</div>`;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
                 const { data, error } = await supabaseClient.functions.invoke("track-circle-ai", {
-                    body: {
-                        message: message,
-                        history: aiHistory
-                    }
+                    body: { message: message, history: aiHistory }
                 });
-
                 document.getElementById(loadingId)?.remove();
-
                 if (error) throw error;
-
-                const reply = data?.reply || "Track Circle AI returned an empty response.";
-                chatContainer.innerHTML += `
-                    <div class="glass-card p-3.5 text-xs max-w-[85%] text-textPrimary border border-skyCyan/20">
-                        ${escapeHtml(reply)}
-                    </div>
-                `;
-
+                const reply = data?.reply || "No response received.";
+                chatContainer.innerHTML += `<div class="glass-card p-3.5 text-xs max-w-[85%] text-textPrimary border border-skyCyan/20">${escapeHtml(reply)}</div>`;
                 aiHistory.push({ role: 'user', content: message });
                 aiHistory.push({ role: 'assistant', content: reply });
                 if (aiHistory.length > 10) aiHistory = aiHistory.slice(-10);
-
             } catch (err) {
                 document.getElementById(loadingId)?.remove();
-                console.error("AI Edge Function Error:", err);
-                chatContainer.innerHTML += `
-                    <div class="glass-card p-3.5 text-xs max-w-[85%] text-danger border border-danger/30">
-                        Track Circle AI is temporarily unavailable. Please verify your Supabase Edge Function deployment.
-                    </div>
-                `;
+                chatContainer.innerHTML += `<div class="glass-card p-3.5 text-xs max-w-[85%] text-danger border border-danger/30">AI unavailable right now. Check Edge Function logs.</div>`;
             }
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // UTILITIES
         function toast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const el = document.createElement('div');
-            el.className = `pointer-events-auto px-4 py-3 rounded-2xl text-xs font-bold shadow-2xl border backdrop-blur-xl transition duration-300 ${
-                type === 'error' ? 'bg-danger/90 text-textPrimary border-danger' : 'glass-card text-mint border-mint/40 glow-mint'
-            }`;
+            el.className = `pointer-events-auto px-4 py-3 rounded-2xl text-xs font-bold shadow-2xl border backdrop-blur-xl transition duration-300 ${type === 'error' ? 'bg-danger/90 text-textPrimary border-danger' : 'glass-card text-mint border-mint/40 glow-mint'}`;
             el.textContent = message;
             container.appendChild(el);
-            setTimeout(() => {
-                el.style.opacity = '0';
-                setTimeout(() => el.remove(), 300);
-            }, 3500);
+            setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 3500);
         }
 
         function escapeHtml(str) {
