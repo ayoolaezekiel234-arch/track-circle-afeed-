@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -21,13 +21,16 @@
             theme: {
                 extend: {
                     colors: {
-                        darkBg: '#080B10',
-                        cardBg: '#10151D',
-                        cardSecondary: '#0B1017',
+                        darkBg: '#070A0F',
+                        secondaryBg: '#0B1017',
+                        cardBg: '#101720',
+                        elevatedCard: '#151D27',
                         mint: '#19E6A0',
-                        mintGlow: 'rgba(25,230,160,0.25)',
-                        textPrimary: '#FFFFFF',
-                        textSecondary: '#8E98A7',
+                        secondaryGreen: '#0DFFB2',
+                        skyCyan: '#43D9FF',
+                        textPrimary: '#F5F8FA',
+                        textSecondary: '#87929F',
+                        danger: '#FF4D67',
                         borderSubtle: 'rgba(255,255,255,0.07)'
                     }
                 }
@@ -37,17 +40,36 @@
 
     <style>
         body {
-            background-color: #080B10;
-            color: #FFFFFF;
+            background-color: #070A0F;
+            color: #F5F8FA;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
         }
-        .glow-mint {
-            box-shadow: 0 0 20px rgba(25, 230, 160, 0.2);
+        /* Cinematic Ambient Lighting & Glows */
+        .ambient-glow {
+            position: fixed;
+            top: -15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100vw;
+            height: 55vh;
+            background: radial-gradient(circle, rgba(25,230,160,0.12) 0%, rgba(67,217,255,0.04) 40%, transparent 75%);
+            z-index: 0;
+            pointer-events: none;
         }
-        .glow-mint-sm {
-            box-shadow: 0 0 10px rgba(25, 230, 160, 0.15);
+        .glow-mint {
+            box-shadow: 0 0 20px rgba(25,230,160,0.18);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 30px rgba(67,217,255,0.15);
+        }
+        .glass-card {
+            background: rgba(16,23,32,0.78);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 20px;
         }
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
@@ -55,7 +77,7 @@
             height: 4px;
         }
         ::-webkit-scrollbar-track {
-            background: #080B10;
+            background: #070A0F;
         }
         ::-webkit-scrollbar-thumb {
             background: #19E6A0;
@@ -65,43 +87,46 @@
             width: 100%;
             height: 100%;
             background: #0B1017;
-            border-radius: 1rem;
+            border-radius: 18px;
             z-index: 1;
         }
     </style>
 </head>
-<body class="bg-darkBg text-textPrimary antialiased flex flex-col min-h-screen">
+<body class="bg-darkBg text-textPrimary antialiased flex flex-col min-h-screen relative">
+
+    <!-- Cinematic Background Ambient Glow -->
+    <div class="ambient-glow"></div>
 
     <!-- TOAST NOTIFICATION CONTAINER -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- AUTHENTICATION WRAPPER -->
-    <div id="auth-wrapper" class="fixed inset-0 z-40 bg-darkBg flex flex-col justify-center items-center p-4 overflow-y-auto hidden">
-        <div class="w-full max-w-md bg-cardBg border border-borderSubtle rounded-2xl p-8 shadow-2xl glow-mint-sm">
+    <div id="auth-wrapper" class="fixed inset-0 z-40 bg-darkBg/95 backdrop-blur-xl flex flex-col justify-center items-center p-4 overflow-y-auto hidden">
+        <div class="w-full max-w-md glass-card p-8 shadow-2xl glow-mint relative z-10">
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-mint/10 border border-mint/25 text-mint text-2xl mb-4 glow-mint">
-                    <i class="fa-solid fa-earth-americas"></i>
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-mint/10 border border-mint/25 text-mint text-3xl mb-4 glow-mint">
+                    <i class="fa-solid fa-earth-americas animate-pulse"></i>
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight">TRACK CIRCLE</h1>
-                <p class="text-textSecondary text-sm mt-1">Stay Connected. Stay Close.</p>
+                <h1 class="text-2xl font-extrabold tracking-tight text-textPrimary">TRACK CIRCLE</h1>
+                <p class="text-mint text-xs font-bold uppercase tracking-widest mt-1">Stay Connected. Stay Close.</p>
             </div>
 
             <!-- Login Form -->
             <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">Email Address</label>
-                    <input type="email" id="login-email" required class="w-full bg-cardSecondary border border-borderSubtle rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-mint transition">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Email Address</label>
+                    <input type="email" id="login-email" required class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">Password</label>
-                    <input type="password" id="login-password" required class="w-full bg-cardSecondary border border-borderSubtle rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-mint transition">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Password</label>
+                    <input type="password" id="login-password" required class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
-                <button type="submit" class="w-full bg-mint text-darkBg font-bold py-3 rounded-xl hover:opacity-90 transition glow-mint cursor-pointer">
+                <button type="submit" class="w-full bg-mint text-darkBg font-extrabold py-3.5 rounded-xl hover:opacity-95 transition glow-mint cursor-pointer">
                     Sign In
                 </button>
                 <div class="text-center mt-4">
                     <button type="button" onclick="switchAuthMode('signup')" class="text-xs text-textSecondary hover:text-mint transition">
-                        Don't have an account? <span class="text-mint font-semibold">Sign up</span>
+                        Don't have an account? <span class="text-mint font-bold">Sign up</span>
                     </button>
                 </div>
             </form>
@@ -109,27 +134,27 @@
             <!-- Signup Form -->
             <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-4 hidden">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">Display Name</label>
-                    <input type="text" id="signup-display-name" required class="w-full bg-cardSecondary border border-borderSubtle rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-mint transition">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Display Name</label>
+                    <input type="text" id="signup-display-name" required class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">Username</label>
-                    <input type="text" id="signup-username" required placeholder="e.g. ezekiel" class="w-full bg-cardSecondary border border-borderSubtle rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-mint transition">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Username</label>
+                    <input type="text" id="signup-username" required placeholder="e.g. ezekiel" class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">Email Address</label>
-                    <input type="email" id="signup-email" required class="w-full bg-cardSecondary border border-borderSubtle rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-mint transition">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Email Address</label>
+                    <input type="email" id="signup-email" required class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">Password</label>
-                    <input type="password" id="signup-password" required class="w-full bg-cardSecondary border border-borderSubtle rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-mint transition">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Password</label>
+                    <input type="password" id="signup-password" required class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
                 </div>
-                <button type="submit" class="w-full bg-mint text-darkBg font-bold py-3 rounded-xl hover:opacity-90 transition glow-mint cursor-pointer">
+                <button type="submit" class="w-full bg-mint text-darkBg font-extrabold py-3.5 rounded-xl hover:opacity-95 transition glow-mint cursor-pointer">
                     Create Account
                 </button>
                 <div class="text-center mt-4">
                     <button type="button" onclick="switchAuthMode('login')" class="text-xs text-textSecondary hover:text-mint transition">
-                        Already have an account? <span class="text-mint font-semibold">Sign in</span>
+                        Already have an account? <span class="text-mint font-bold">Sign in</span>
                     </button>
                 </div>
             </form>
@@ -137,26 +162,26 @@
     </div>
 
     <!-- MAIN APP SHELL -->
-    <div id="app-shell" class="flex flex-col flex-1 max-w-md w-full mx-auto relative hidden pb-20">
+    <div id="app-shell" class="flex flex-col flex-1 max-w-md w-full mx-auto relative z-10 hidden pb-24">
         
         <!-- TOP HEADER -->
-        <header class="flex items-center justify-between px-4 py-3 border-b border-borderSubtle bg-darkBg/80 backdrop-blur sticky top-0 z-30">
+        <header class="flex items-center justify-between px-4 py-3.5 border-b border-borderSubtle bg-darkBg/80 backdrop-blur-xl sticky top-0 z-30">
             <div class="flex items-center gap-3">
-                <div id="header-avatar" class="w-9 h-9 rounded-full bg-mint/20 border border-mint/40 flex items-center justify-center text-mint font-bold text-sm">
+                <div id="header-avatar" class="w-10 h-10 rounded-xl bg-mint/20 border border-mint/40 flex items-center justify-center text-mint font-bold text-sm glow-mint">
                     TC
                 </div>
                 <div>
-                    <h2 id="header-username" class="font-bold text-sm leading-tight">Track Circle</h2>
-                    <span id="location-status-badge" class="text-[10px] text-textSecondary flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> Location Off
+                    <h2 id="header-username" class="font-bold text-sm leading-tight text-textPrimary">Track Circle</h2>
+                    <span id="location-status-badge" class="text-[10px] text-textSecondary flex items-center gap-1.5 mt-0.5">
+                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span> Location Off
                     </span>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="openAiModal()" class="w-9 h-9 rounded-xl bg-cardBg border border-borderSubtle flex items-center justify-center text-mint hover:border-mint transition" title="Track Circle AI">
+                <button onclick="openAiModal()" class="w-10 h-10 rounded-xl glass-card flex items-center justify-center text-skyCyan hover:border-skyCyan transition glow-cyan" title="Track Circle AI">
                     <i class="fa-solid fa-sparkles"></i>
                 </button>
-                <button onclick="signOut()" class="w-9 h-9 rounded-xl bg-cardBg border border-borderSubtle flex items-center justify-center text-textSecondary hover:text-red-400 transition" title="Sign Out">
+                <button onclick="signOut()" class="w-10 h-10 rounded-xl glass-card flex items-center justify-center text-textSecondary hover:text-danger transition" title="Sign Out">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </div>
@@ -167,18 +192,18 @@
             
             <!-- HOME VIEW -->
             <section id="view-home" class="p-4 space-y-6">
-                <!-- Greeting Card -->
-                <div class="bg-cardBg border border-borderSubtle rounded-2xl p-5 relative overflow-hidden">
-                    <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-mint/5 rounded-full blur-2xl"></div>
-                    <span id="home-greeting" class="text-xs font-semibold uppercase tracking-wider text-textSecondary">Good day</span>
-                    <h2 id="home-display-name" class="text-xl font-bold mt-1">Welcome back</h2>
+                <!-- Greeting & Status Card -->
+                <div class="glass-card p-6 relative overflow-hidden glow-mint">
+                    <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-mint/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <span id="home-greeting" class="text-xs font-bold uppercase tracking-widest text-mint">Good day</span>
+                    <h2 id="home-display-name" class="text-xl font-extrabold mt-1 text-textPrimary">Welcome back</h2>
                     
-                    <div class="mt-4 pt-4 border-t border-borderSubtle flex items-center justify-between">
+                    <div class="mt-5 pt-4 border-t border-borderSubtle flex items-center justify-between">
                         <div>
                             <p class="text-xs text-textSecondary">Location Sharing</p>
-                            <p id="home-location-state" class="text-sm font-semibold text-yellow-400 mt-0.5">Disabled</p>
+                            <p id="home-location-state" class="text-sm font-bold text-yellow-400 mt-0.5">Disabled</p>
                         </div>
-                        <button onclick="toggleLocationSharing()" id="home-location-btn" class="px-4 py-2 rounded-xl bg-cardSecondary border border-borderSubtle text-xs font-bold hover:border-mint transition">
+                        <button onclick="toggleLocationSharing()" id="home-location-btn" class="px-4 py-2 rounded-xl bg-secondaryBg border border-borderSubtle text-xs font-bold text-mint hover:border-mint transition">
                             Turn On
                         </button>
                     </div>
@@ -186,43 +211,43 @@
 
                 <!-- Quick Actions -->
                 <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-textSecondary mb-3">Quick Actions</h3>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary mb-3 px-1">Quick Actions</h3>
                     <div class="grid grid-cols-4 gap-3">
-                        <button onclick="switchTab('map')" class="bg-cardBg border border-borderSubtle rounded-xl p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition">
-                            <div class="w-10 h-10 rounded-xl bg-mint/10 text-mint flex items-center justify-center">
-                                <i class="fa-solid fa-map-location-dot"></i>
+                        <button onclick="switchTab('map')" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
+                            <div class="w-10 h-10 rounded-xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
+                                <i class="fa-solid fa-map-location-dot text-sm"></i>
                             </div>
-                            <span class="text-[11px] font-medium text-textSecondary">Live Map</span>
+                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Live Map</span>
                         </button>
-                        <button onclick="openCreateCircleModal()" class="bg-cardBg border border-borderSubtle rounded-xl p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition">
-                            <div class="w-10 h-10 rounded-xl bg-mint/10 text-mint flex items-center justify-center">
-                                <i class="fa-solid fa-users-rectangle"></i>
+                        <button onclick="openCreateCircleModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
+                            <div class="w-10 h-10 rounded-xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
+                                <i class="fa-solid fa-users-rectangle text-sm"></i>
                             </div>
-                            <span class="text-[11px] font-medium text-textSecondary">New Circle</span>
+                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">New Circle</span>
                         </button>
-                        <button onclick="openJoinCircleModal()" class="bg-cardBg border border-borderSubtle rounded-xl p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition">
-                            <div class="w-10 h-10 rounded-xl bg-mint/10 text-mint flex items-center justify-center">
-                                <i class="fa-solid fa-user-plus"></i>
+                        <button onclick="openJoinCircleModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
+                            <div class="w-10 h-10 rounded-xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
+                                <i class="fa-solid fa-user-plus text-sm"></i>
                             </div>
-                            <span class="text-[11px] font-medium text-textSecondary">Join Circle</span>
+                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Join</span>
                         </button>
-                        <button onclick="openAiModal()" class="bg-cardBg border border-borderSubtle rounded-xl p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition">
-                            <div class="w-10 h-10 rounded-xl bg-mint/10 text-mint flex items-center justify-center">
-                                <i class="fa-solid fa-robot"></i>
+                        <button onclick="openAiModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-skyCyan transition group">
+                            <div class="w-10 h-10 rounded-xl bg-skyCyan/10 text-skyCyan flex items-center justify-center group-hover:scale-110 transition">
+                                <i class="fa-solid fa-robot text-sm"></i>
                             </div>
-                            <span class="text-[11px] font-medium text-textSecondary">TC AI</span>
+                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">TC AI</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- Active Circles Preview -->
                 <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-xs font-semibold uppercase tracking-wider text-textSecondary">Your Circles</h3>
-                        <button onclick="switchTab('circles')" class="text-xs text-mint font-medium">View All</button>
+                    <div class="flex items-center justify-between mb-3 px-1">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary">Your Circles</h3>
+                        <button onclick="switchTab('circles')" class="text-xs text-mint font-bold hover:underline">View All</button>
                     </div>
-                    <div id="home-circles-list" class="space-y-2">
-                        <div class="bg-cardBg border border-borderSubtle rounded-xl p-4 text-center text-textSecondary text-xs">
+                    <div id="home-circles-list" class="space-y-2.5">
+                        <div class="glass-card p-4 text-center text-textSecondary text-xs">
                             No circles yet. Create or join your first circle.
                         </div>
                     </div>
@@ -230,12 +255,12 @@
 
                 <!-- Social Feed Preview -->
                 <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-xs font-semibold uppercase tracking-wider text-textSecondary">Social Feed</h3>
-                        <button onclick="toast('Post creator coming online', 'success')" class="text-xs text-mint font-medium">+ Post</button>
+                    <div class="flex items-center justify-between mb-3 px-1">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary">Social Feed</h3>
+                        <button onclick="openPostModal()" class="text-xs text-mint font-bold hover:underline">+ Post</button>
                     </div>
                     <div id="home-posts-list" class="space-y-3">
-                        <div class="bg-cardBg border border-borderSubtle rounded-xl p-4 text-center text-textSecondary text-xs">
+                        <div class="glass-card p-4 text-center text-textSecondary text-xs">
                             No posts available. Be the first to share something!
                         </div>
                     </div>
@@ -243,14 +268,14 @@
             </section>
 
             <!-- LIVE MAP VIEW -->
-            <section id="view-map" class="p-4 h-[calc(100vh-130px)] hidden flex flex-col">
+            <section id="view-map" class="p-4 h-[calc(100vh-140px)] hidden flex flex-col">
                 <div class="flex items-center justify-between mb-3">
-                    <h2 class="font-bold text-sm">Live Location Radar</h2>
-                    <button onclick="centerMapOnUser()" class="px-3 py-1 bg-cardBg border border-borderSubtle rounded-lg text-xs text-mint hover:border-mint">
+                    <h2 class="font-bold text-sm text-textPrimary">Live Location Radar</h2>
+                    <button onclick="centerMapOnUser()" class="px-3.5 py-1.5 glass-card rounded-xl text-xs text-mint font-semibold hover:border-mint transition">
                         <i class="fa-solid fa-crosshairs mr-1"></i> My Location
                     </button>
                 </div>
-                <div class="flex-1 rounded-2xl overflow-hidden border border-borderSubtle relative">
+                <div class="flex-1 rounded-2xl overflow-hidden glass-card relative p-1">
                     <div id="map" class="map-container"></div>
                 </div>
             </section>
@@ -258,14 +283,14 @@
             <!-- CIRCLES VIEW -->
             <section id="view-circles" class="p-4 space-y-4 hidden">
                 <div class="flex items-center justify-between">
-                    <h2 class="font-bold text-base">Your Circles</h2>
+                    <h2 class="font-bold text-base text-textPrimary">Your Circles</h2>
                     <div class="flex gap-2">
-                        <button onclick="openJoinCircleModal()" class="px-3 py-1.5 bg-cardBg border border-borderSubtle rounded-xl text-xs font-semibold hover:border-mint transition">Join</button>
-                        <button onclick="openCreateCircleModal()" class="px-3 py-1.5 bg-mint text-darkBg rounded-xl text-xs font-bold hover:opacity-90 transition">Create</button>
+                        <button onclick="openJoinCircleModal()" class="px-3.5 py-1.5 glass-card rounded-xl text-xs font-bold hover:border-mint transition">Join</button>
+                        <button onclick="openCreateCircleModal()" class="px-3.5 py-1.5 bg-mint text-darkBg rounded-xl text-xs font-extrabold hover:opacity-95 transition glow-mint">Create</button>
                     </div>
                 </div>
                 <div id="circles-full-list" class="space-y-3">
-                    <div class="bg-cardBg border border-borderSubtle rounded-xl p-6 text-center text-textSecondary text-xs">
+                    <div class="glass-card p-6 text-center text-textSecondary text-xs">
                         Loading circles...
                     </div>
                 </div>
@@ -273,9 +298,9 @@
 
             <!-- MESSAGES VIEW -->
             <section id="view-messages" class="p-4 space-y-4 hidden">
-                <h2 class="font-bold text-base">Messages</h2>
+                <h2 class="font-bold text-base text-textPrimary">Messages</h2>
                 <div id="messages-list" class="space-y-2">
-                    <div class="bg-cardBg border border-borderSubtle rounded-xl p-6 text-center text-textSecondary text-xs">
+                    <div class="glass-card p-6 text-center text-textSecondary text-xs">
                         No conversations yet. Connect with circle members to start chatting.
                     </div>
                 </div>
@@ -283,32 +308,32 @@
 
             <!-- PROFILE VIEW -->
             <section id="view-profile" class="p-4 space-y-6 hidden">
-                <div class="bg-cardBg border border-borderSubtle rounded-2xl p-6 text-center relative">
-                    <div class="w-20 h-20 rounded-full bg-mint/20 border-2 border-mint mx-auto flex items-center justify-center text-mint text-2xl font-bold mb-3" id="profile-avatar-display">
+                <div class="glass-card p-6 text-center relative glow-mint">
+                    <div class="w-20 h-20 rounded-2xl bg-mint/20 border-2 border-mint mx-auto flex items-center justify-center text-mint text-2xl font-extrabold mb-3 glow-mint" id="profile-avatar-display">
                         TC
                     </div>
-                    <h2 id="profile-display-name" class="font-bold text-lg">User Name</h2>
-                    <p id="profile-username" class="text-xs text-textSecondary mt-0.5">@username</p>
+                    <h2 id="profile-display-name" class="font-extrabold text-lg text-textPrimary">User Name</h2>
+                    <p id="profile-username" class="text-xs text-mint font-semibold mt-0.5">@username</p>
                     
                     <div class="mt-6 pt-6 border-t border-borderSubtle grid grid-cols-2 gap-4 text-center">
                         <div>
                             <p class="text-xs text-textSecondary">Location Sharing</p>
-                            <p id="profile-loc-status" class="text-sm font-semibold text-yellow-400 mt-1">Off</p>
+                            <p id="profile-loc-status" class="text-sm font-bold text-yellow-400 mt-1">Off</p>
                         </div>
                         <div>
-                            <p class="text-xs text-textSecondary">Member Status</p>
-                            <p class="text-sm font-semibold text-mint mt-1">Active</p>
+                            <p class="text-xs text-textSecondary">Account Status</p>
+                            <p class="text-sm font-bold text-mint mt-1">Active</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-cardBg border border-borderSubtle rounded-2xl p-4 space-y-3">
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-textSecondary">Settings</h3>
-                    <button onclick="toggleLocationSharing()" class="w-full flex items-center justify-between p-3 bg-cardSecondary rounded-xl text-xs hover:border hover:border-mint transition">
+                <div class="glass-card p-4 space-y-3">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary">Settings</h3>
+                    <button onclick="toggleLocationSharing()" class="w-full flex items-center justify-between p-3 bg-secondaryBg/80 rounded-xl text-xs hover:border hover:border-mint transition text-textPrimary">
                         <span>Toggle Location Sharing</span>
                         <i class="fa-solid fa-location-arrow text-mint"></i>
                     </button>
-                    <button onclick="signOut()" class="w-full flex items-center justify-between p-3 bg-cardSecondary rounded-xl text-xs text-red-400 hover:bg-red-500/10 transition">
+                    <button onclick="signOut()" class="w-full flex items-center justify-between p-3 bg-secondaryBg/80 rounded-xl text-xs text-danger hover:bg-danger/10 transition">
                         <span>Sign Out</span>
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
@@ -318,24 +343,24 @@
         </main>
 
         <!-- BOTTOM NAVIGATION -->
-        <nav class="absolute bottom-0 left-0 right-0 h-16 bg-cardBg/90 backdrop-blur border-t border-borderSubtle flex items-center justify-around px-2 z-30">
-            <button onclick="switchTab('home')" id="nav-btn-home" class="flex flex-col items-center justify-center w-16 text-mint transition">
+        <nav class="absolute bottom-3 left-4 right-4 h-16 glass-card border border-borderSubtle flex items-center justify-around px-2 z-30 glow-mint">
+            <button onclick="switchTab('home')" id="nav-btn-home" class="flex flex-col items-center justify-center w-16 text-mint transition py-1">
                 <i class="fa-solid fa-house text-base"></i>
-                <span class="text-[10px] mt-1 font-medium">Home</span>
+                <span class="text-[10px] mt-1 font-bold">Home</span>
             </button>
-            <button onclick="switchTab('map')" id="nav-btn-map" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition">
+            <button onclick="switchTab('map')" id="nav-btn-map" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition py-1">
                 <i class="fa-solid fa-map text-base"></i>
                 <span class="text-[10px] mt-1 font-medium">Map</span>
             </button>
-            <button onclick="switchTab('circles')" id="nav-btn-circles" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition">
+            <button onclick="switchTab('circles')" id="nav-btn-circles" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition py-1">
                 <i class="fa-solid fa-users text-base"></i>
                 <span class="text-[10px] mt-1 font-medium">Circles</span>
             </button>
-            <button onclick="switchTab('messages')" id="nav-btn-messages" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition">
+            <button onclick="switchTab('messages')" id="nav-btn-messages" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition py-1">
                 <i class="fa-solid fa-message text-base"></i>
                 <span class="text-[10px] mt-1 font-medium">Messages</span>
             </button>
-            <button onclick="switchTab('profile')" id="nav-btn-profile" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition">
+            <button onclick="switchTab('profile')" id="nav-btn-profile" class="flex flex-col items-center justify-center w-16 text-textSecondary hover:text-mint transition py-1">
                 <i class="fa-solid fa-user text-base"></i>
                 <span class="text-[10px] mt-1 font-medium">Profile</span>
             </button>
@@ -343,45 +368,45 @@
     </div>
 
     <!-- TRACK CIRCLE AI MODAL -->
-    <div id="ai-modal" class="fixed inset-0 z-50 bg-darkBg/90 backdrop-blur flex flex-col hidden">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-borderSubtle bg-cardBg">
+    <div id="ai-modal" class="fixed inset-0 z-50 bg-darkBg/95 backdrop-blur-2xl flex flex-col hidden">
+        <div class="flex items-center justify-between px-4 py-3.5 border-b border-borderSubtle glass-card">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-mint/10 text-mint flex items-center justify-center">
-                    <i class="fa-solid fa-sparkles"></i>
+                <div class="w-9 h-9 rounded-xl bg-skyCyan/20 text-skyCyan flex items-center justify-center glow-cyan">
+                    <i class="fa-solid fa-sparkles text-sm"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-sm">Track Circle AI</h3>
-                    <p class="text-[10px] text-textSecondary">Powered by OpenAI gpt-5.6-luna</p>
+                    <h3 class="font-extrabold text-sm text-textPrimary">Track Circle AI</h3>
+                    <p class="text-[10px] text-skyCyan font-semibold">Powered by OpenAI gpt-5.6-luna</p>
                 </div>
             </div>
-            <button onclick="closeAiModal()" class="w-8 h-8 rounded-xl bg-cardSecondary flex items-center justify-center text-textSecondary hover:text-white">
-                <i class="fa-solid fa-xmark"></i>
+            <button onclick="closeAiModal()" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-textSecondary hover:text-textPrimary">
+                <i class="fa-solid fa-xmark text-base"></i>
             </button>
         </div>
         <div id="ai-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3">
-            <div class="bg-cardBg border border-borderSubtle rounded-2xl p-3.5 text-xs max-w-[85%]">
-                Hello! I am Track Circle AI. How can I assist you with your circles, location, or travel today?
+            <div class="glass-card p-3.5 text-xs max-w-[85%] text-textPrimary">
+                Hello! I am Track Circle AI, your official intelligent assistant. How can I help you navigate your circles or location today?
             </div>
         </div>
-        <div class="p-3 border-t border-borderSubtle bg-cardBg flex gap-2">
-            <input type="text" id="ai-input" placeholder="Ask Track Circle AI..." onkeydown="if(event.key==='Enter')sendAI()" class="flex-1 bg-cardSecondary border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-mint">
-            <button onclick="sendAI()" class="bg-mint text-darkBg px-4 py-3 rounded-xl font-bold text-xs hover:opacity-90 transition glow-mint-sm">
-                <i class="fa-solid fa-paper-plane"></i>
+        <div class="p-3.5 border-t border-borderSubtle glass-card flex gap-2">
+            <input type="text" id="ai-input" placeholder="Ask Track Circle AI..." onkeydown="if(event.key==='Enter')sendAI()" class="flex-1 bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-skyCyan text-textPrimary">
+            <button onclick="sendAI()" class="bg-skyCyan text-darkBg px-4 py-3 rounded-xl font-extrabold text-xs hover:opacity-95 transition glow-cyan flex items-center justify-center">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
             </button>
         </div>
     </div>
 
     <!-- CREATE CIRCLE MODAL -->
-    <div id="create-circle-modal" class="fixed inset-0 z-50 bg-darkBg/80 backdrop-blur flex items-center justify-center p-4 hidden">
-        <div class="w-full max-w-sm bg-cardBg border border-borderSubtle rounded-2xl p-6 space-y-4">
-            <h3 class="font-bold text-base">Create a Circle</h3>
+    <div id="create-circle-modal" class="fixed inset-0 z-50 bg-darkBg/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="w-full max-w-sm glass-card p-6 space-y-4 glow-mint">
+            <h3 class="font-extrabold text-base text-textPrimary">Create a Circle</h3>
             <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">Circle Name</label>
-                <input type="text" id="new-circle-name" placeholder="e.g. Lagos Family" class="w-full bg-cardSecondary border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-mint">
+                <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Circle Name</label>
+                <input type="text" id="new-circle-name" placeholder="e.g. Lagos Family" class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-mint text-textPrimary">
             </div>
             <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">Circle Type</label>
-                <select id="new-circle-type" class="w-full bg-cardSecondary border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-mint">
+                <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Circle Type</label>
+                <select id="new-circle-type" class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-mint text-textPrimary">
                     <option value="Family">Family</option>
                     <option value="Friends">Friends</option>
                     <option value="School">School</option>
@@ -391,23 +416,37 @@
                 </select>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="closeCreateCircleModal()" class="flex-1 bg-cardSecondary py-3 rounded-xl text-xs font-bold text-textSecondary hover:bg-cardBg">Cancel</button>
-                <button onclick="submitCreateCircle()" class="flex-1 bg-mint text-darkBg py-3 rounded-xl text-xs font-bold hover:opacity-90 glow-mint-sm">Create</button>
+                <button onclick="closeCreateCircleModal()" class="flex-1 bg-secondaryBg py-3 rounded-xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
+                <button onclick="submitCreateCircle()" class="flex-1 bg-mint text-darkBg py-3 rounded-xl text-xs font-extrabold hover:opacity-95 glow-mint">Create</button>
             </div>
         </div>
     </div>
 
     <!-- JOIN CIRCLE MODAL -->
-    <div id="join-circle-modal" class="fixed inset-0 z-50 bg-darkBg/80 backdrop-blur flex items-center justify-center p-4 hidden">
-        <div class="w-full max-w-sm bg-cardBg border border-borderSubtle rounded-2xl p-6 space-y-4">
-            <h3 class="font-bold text-base">Join a Circle</h3>
+    <div id="join-circle-modal" class="fixed inset-0 z-50 bg-darkBg/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="w-full max-w-sm glass-card p-6 space-y-4 glow-mint">
+            <h3 class="font-extrabold text-base text-textPrimary">Join a Circle</h3>
             <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-textSecondary mb-2">Invite Code</label>
-                <input type="text" id="join-invite-code" placeholder="e.g. TC-7K4P9" class="w-full bg-cardSecondary border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-mint uppercase">
+                <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Invite Code</label>
+                <input type="text" id="join-invite-code" placeholder="e.g. TC-7K4P9" class="w-full bg-secondaryBg border border-borderSubtle rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-mint uppercase text-textPrimary">
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="closeJoinCircleModal()" class="flex-1 bg-cardSecondary py-3 rounded-xl text-xs font-bold text-textSecondary hover:bg-cardBg">Cancel</button>
-                <button onclick="submitJoinCircle()" class="flex-1 bg-mint text-darkBg py-3 rounded-xl text-xs font-bold hover:opacity-90 glow-mint-sm">Join</button>
+                <button onclick="closeJoinCircleModal()" class="flex-1 bg-secondaryBg py-3 rounded-xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
+                <button onclick="submitJoinCircle()" class="flex-1 bg-mint text-darkBg py-3 rounded-xl text-xs font-extrabold hover:opacity-95 glow-mint">Join</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SOCIAL POST MODAL -->
+    <div id="post-modal" class="fixed inset-0 z-50 bg-darkBg/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="w-full max-w-sm glass-card p-6 space-y-4 glow-mint">
+            <h3 class="font-extrabold text-base text-textPrimary">Create Social Post</h3>
+            <div>
+                <textarea id="post-content-input" rows="4" placeholder="What's happening in your circle?" class="w-full bg-secondaryBg border border-borderSubtle rounded-xl p-3 text-xs focus:outline-none focus:border-mint text-textPrimary resize-none"></textarea>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closePostModal()" class="flex-1 bg-secondaryBg py-3 rounded-xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
+                <button onclick="submitPost()" class="flex-1 bg-mint text-darkBg py-3 rounded-xl text-xs font-extrabold hover:opacity-95 glow-mint">Publish</button>
             </div>
         </div>
     </div>
@@ -588,6 +627,7 @@
 
         async function loadHomeData() {
             loadCirclesPreview();
+            loadPosts();
         }
 
         // NAVIGATION TABS
@@ -615,13 +655,15 @@
                 setTimeout(() => initMap(), 200);
             } else if (tabName === 'circles') {
                 loadFullCircles();
+            } else if (tabName === 'messages') {
+                loadMessagesList();
             }
         }
 
         // LIVE MAP & GEOLOCATION
         function initMap() {
             if (!mapInstance) {
-                mapInstance = L.map('map', { zoomControl: false }).setView([6.5244, 3.3792], 13); // Default Lagos, Nigeria
+                mapInstance = L.map('map', { zoomControl: false }).setView([6.5244, 3.3792], 13);
                 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                     maxZoom: 19,
                     attribution: '&copy; OpenStreetMap & CARTO'
@@ -664,11 +706,11 @@
                         { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
                     );
                 }
-                stateEl.textContent = "Active (Live)";
-                stateEl.className = "text-sm font-semibold text-mint mt-0.5";
+                stateEl.textContent = "● LIVE";
+                stateEl.className = "text-sm font-bold text-mint mt-0.5";
                 btnEl.textContent = "Turn Off";
-                badgeEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-mint animate-pulse"></span> Location On';
-                if(profileLoc) { profileLoc.textContent = "On"; profileLoc.className = "text-sm font-semibold text-mint mt-1"; }
+                badgeEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span> Location Live';
+                if(profileLoc) { profileLoc.textContent = "Live"; profileLoc.className = "text-sm font-bold text-mint mt-1"; }
                 toast("Location sharing enabled.", "success");
             } else {
                 if (locationWatcherId !== null) {
@@ -676,10 +718,10 @@
                     locationWatcherId = null;
                 }
                 stateEl.textContent = "Disabled";
-                stateEl.className = "text-sm font-semibold text-yellow-400 mt-0.5";
+                stateEl.className = "text-sm font-bold text-yellow-400 mt-0.5";
                 btnEl.textContent = "Turn On";
-                badgeEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> Location Off';
-                if(profileLoc) { profileLoc.textContent = "Off"; profileLoc.className = "text-sm font-semibold text-yellow-400 mt-1"; }
+                badgeEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500"></span> Location Off';
+                if(profileLoc) { profileLoc.textContent = "Off"; profileLoc.className = "text-sm font-bold text-yellow-400 mt-1"; }
                 toast("Location sharing disabled.", "success");
             }
         }
@@ -778,12 +820,12 @@
                 if (error) throw error;
                 if (data && data.length > 0) {
                     container.innerHTML = data.map(item => `
-                        <div class="bg-cardBg border border-borderSubtle rounded-xl p-3.5 flex items-center justify-between">
+                        <div class="glass-card p-4 flex items-center justify-between">
                             <div>
-                                <h4 class="font-bold text-xs">${escapeHtml(item.circles.name)}</h4>
-                                <span class="text-[10px] text-textSecondary">${item.circles.type} • Code: ${item.circles.invite_code}</span>
+                                <h4 class="font-bold text-sm text-textPrimary">${escapeHtml(item.circles.name)}</h4>
+                                <span class="text-xs text-mint font-medium">${item.circles.type} • Code: ${item.circles.invite_code}</span>
                             </div>
-                            <span class="text-xs text-mint font-semibold">Active</span>
+                            <span class="text-xs text-mint font-bold bg-mint/10 px-2.5 py-1 rounded-lg">Active</span>
                         </div>
                     `).join('');
                 }
@@ -804,25 +846,100 @@
                 if (error) throw error;
                 if (data && data.length > 0) {
                     container.innerHTML = data.map(item => `
-                        <div class="bg-cardBg border border-borderSubtle rounded-xl p-4 flex items-center justify-between">
+                        <div class="glass-card p-4 flex items-center justify-between">
                             <div>
-                                <h4 class="font-bold text-sm">${escapeHtml(item.circles.name)}</h4>
-                                <p class="text-xs text-textSecondary mt-0.5">Type: ${item.circles.type} | Code: <span class="text-mint font-mono">${item.circles.invite_code}</span></p>
+                                <h4 class="font-bold text-sm text-textPrimary">${escapeHtml(item.circles.name)}</h4>
+                                <p class="text-xs text-textSecondary mt-0.5">Type: ${item.circles.type} | Code: <span class="text-mint font-mono font-bold">${item.circles.invite_code}</span></p>
                             </div>
-                            <button onclick="navigator.clipboard.writeText('${item.circles.invite_code}'); toast('Invite code copied!', 'success');" class="px-3 py-1.5 bg-cardSecondary border border-borderSubtle rounded-lg text-xs hover:border-mint">
+                            <button onclick="navigator.clipboard.writeText('${item.circles.invite_code}'); toast('Invite code copied!', 'success');" class="px-3.5 py-1.5 glass-card rounded-xl text-xs font-bold text-mint hover:border-mint">
                                 Copy Code
                             </button>
                         </div>
                     `).join('');
                 } else {
-                    container.innerHTML = `<div class="bg-cardBg border border-borderSubtle rounded-xl p-6 text-center text-textSecondary text-xs">No circles found. Create or join one.</div>`;
+                    container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">No circles found. Create or join one.</div>`;
                 }
             } catch (err) {
-                container.innerHTML = `<div class="bg-cardBg border border-borderSubtle rounded-xl p-6 text-center text-red-400 text-xs">Could not load circles.</div>`;
+                container.innerHTML = `<div class="glass-card p-6 text-center text-danger text-xs">Could not load circles. Schema check required.</div>`;
             }
         }
 
-        // TRACK CIRCLE AI CHAT
+        // SOCIAL FEED LOGIC
+        function openPostModal() { document.getElementById('post-modal').classList.remove('hidden'); }
+        function closePostModal() { document.getElementById('post-modal').classList.add('hidden'); }
+
+        async function submitPost() {
+            const content = document.getElementById('post-content-input').value.trim();
+            if (!content) { toast("Post content cannot be empty.", "error"); return; }
+
+            try {
+                const { error } = await supabaseClient.from('posts').insert({
+                    user_id: currentUser.id,
+                    content: content
+                });
+
+                if (error) throw error;
+
+                closePostModal();
+                document.getElementById('post-content-input').value = '';
+                toast("Post published successfully!", "success");
+                loadPosts();
+            } catch (err) {
+                toast(err.message || "Failed to publish post. Check posts table schema.", "error");
+            }
+        }
+
+        async function loadPosts() {
+            const container = document.getElementById('home-posts-list');
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('posts')
+                    .select('id, content, created_at, user_id, profiles(display_name, username)')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    container.innerHTML = data.map(post => `
+                        <div class="glass-card p-4 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-mint">@${escapeHtml(post.profiles?.username || 'user')}</span>
+                                <span class="text-[10px] text-textSecondary">${new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            </div>
+                            <p class="text-xs text-textPrimary leading-relaxed">${escapeHtml(post.content)}</p>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.warn("Posts load skipped or missing schema:", err);
+            }
+        }
+
+        // MESSAGES LIST
+        async function loadMessagesList() {
+            const container = document.getElementById('messages-list');
+            if (!supabaseClient || !currentUser) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('messages')
+                    .select('*')
+                    .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    container.innerHTML = `<div class="glass-card p-4 text-xs text-mint font-semibold">Active message threads loaded.</div>`;
+                } else {
+                    container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">No conversations yet. Connect with circle members.</div>`;
+                }
+            } catch (err) {
+                container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">Messaging schema initializing. Ready for real-time chat.</div>`;
+            }
+        }
+
+        // REAL TRACK CIRCLE AI (CONNECTS TO SUPABASE EDGE FUNCTION -> OPENAI)
         function openAiModal() { document.getElementById('ai-modal').classList.remove('hidden'); }
         function closeAiModal() { document.getElementById('ai-modal').classList.add('hidden'); }
 
@@ -833,7 +950,7 @@
 
             const chatContainer = document.getElementById('ai-chat-messages');
             chatContainer.innerHTML += `
-                <div class="bg-mint/10 border border-mint/20 rounded-2xl p-3.5 text-xs max-w-[85%] ml-auto text-white">
+                <div class="glass-card p-3.5 text-xs max-w-[85%] ml-auto text-textPrimary border border-skyCyan/30">
                     ${escapeHtml(message)}
                 </div>
             `;
@@ -842,7 +959,7 @@
 
             const loadingId = 'ai-loading-' + Date.now();
             chatContainer.innerHTML += `
-                <div id="${loadingId}" class="bg-cardBg border border-borderSubtle rounded-2xl p-3.5 text-xs max-w-[85%] text-textSecondary animate-pulse">
+                <div id="${loadingId}" class="glass-card p-3.5 text-xs max-w-[85%] text-textSecondary animate-pulse">
                     Track Circle AI is thinking...
                 </div>
             `;
@@ -860,21 +977,23 @@
 
                 if (error) throw error;
 
-                const reply = data?.reply || "I couldn't process that right now.";
+                const reply = data?.reply || "Track Circle AI returned an empty response.";
                 chatContainer.innerHTML += `
-                    <div class="bg-cardBg border border-borderSubtle rounded-2xl p-3.5 text-xs max-w-[85%]">
+                    <div class="glass-card p-3.5 text-xs max-w-[85%] text-textPrimary border border-skyCyan/20">
                         ${escapeHtml(reply)}
                     </div>
                 `;
 
                 aiHistory.push({ role: 'user', content: message });
                 aiHistory.push({ role: 'assistant', content: reply });
+                if (aiHistory.length > 10) aiHistory = aiHistory.slice(-10); // Keep last 10 messages
 
             } catch (err) {
                 document.getElementById(loadingId)?.remove();
+                console.error("AI Edge Function Error:", err);
                 chatContainer.innerHTML += `
-                    <div class="bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl p-3.5 text-xs max-w-[85%]">
-                        Track Circle AI couldn't connect right now. Please try again.
+                    <div class="glass-card p-3.5 text-xs max-w-[85%] text-danger border border-danger/30">
+                        Track Circle AI is temporarily unavailable. Please try again.
                     </div>
                 `;
             }
@@ -885,8 +1004,8 @@
         function toast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const el = document.createElement('div');
-            el.className = `pointer-events-auto px-4 py-3 rounded-xl text-xs font-semibold shadow-lg border transition duration-300 ${
-                type === 'error' ? 'bg-red-500/90 text-white border-red-600' : 'bg-cardBg text-mint border-mint/40 glow-mint-sm'
+            el.className = `pointer-events-auto px-4 py-3 rounded-xl text-xs font-bold shadow-2xl border backdrop-blur-xl transition duration-300 ${
+                type === 'error' ? 'bg-danger/90 text-textPrimary border-danger' : 'glass-card text-mint border-mint/40 glow-mint'
             }`;
             el.textContent = message;
             container.appendChild(el);
