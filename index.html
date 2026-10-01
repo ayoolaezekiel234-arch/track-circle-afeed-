@@ -1,3389 +1,4396 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#080B10">
-<title>Track Circle — Stay Connected. Stay Close.</title>
+
+<meta
+ name="viewport"
+ content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+>
+
+<meta
+ name="theme-color"
+ content="#07100d"
+>
+
+<title>Track Circle</title>
+
+<link
+ rel="stylesheet"
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+ integrity="sha256-p4NxAoJBhIINfQ3L8sZlRkz5qG0G0sM5xYp5Q5Yp5Y="
+ crossorigin=""
+>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script
+ src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+ integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+ crossorigin="">
+</script>
+
 <style>
+
+:root{
+
+ --bg:#050806;
+ --bg2:#08110d;
+ --card:#0c1712;
+ --card2:#101d17;
+ --green:#19e6a0;
+ --green2:#72ffd0;
+ --greenDark:#0b6f50;
+ --white:#f5fff9;
+ --muted:#8ea69c;
+ --border:rgba(25,230,160,.13);
+ --red:#ff5e6c;
+ --yellow:#ffd76a;
+ --blue:#6ab7ff;
+ --shadow:0 18px 50px rgba(0,0,0,.35);
+}
+
 *{
  box-sizing:border-box;
- margin:0;
- padding:0;
  -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
+html,
+body{
+ margin:0;
+ padding:0;
+ width:100%;
  min-height:100%;
- background:#080B10;
- color:#fff;
- font-family:Inter,Arial,Helvetica,sans-serif;
+ background:
+ radial-gradient(
+  circle at 50% -10%,
+  rgba(25,230,160,.12),
+  transparent 34%
+ ),
+ linear-gradient(
+  180deg,
+  #07100d 0%,
+  #050806 55%,
+  #030504 100%
+ );
+ color:var(--white);
+ font-family:
+  Inter,
+  system-ui,
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  sans-serif;
 }
 
 body{
- overflow-x:hidden;
+ overflow:hidden;
 }
 
-button,input,textarea{
+button,
+input,
+textarea,
+select{
  font:inherit;
 }
 
 button{
- cursor:pointer;
  border:0;
+ cursor:pointer;
 }
 
 .hidden{
- display:none!important;
+ display:none !important;
 }
 
-/* =========================
-   AUTH
-========================= */
+.muted{
+ color:var(--muted);
+}
 
-#authScreen{
- min-height:100vh;
+.green{
+ color:var(--green);
+}
+
+.red{
+ color:var(--red);
+}
+
+.blue{
+ color:var(--blue);
+}
+
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+
+#auth{
+ position:fixed;
+ inset:0;
+ z-index:1000;
+ overflow-y:auto;
+ padding:24px 18px;
  display:flex;
  align-items:center;
  justify-content:center;
- padding:20px;
+}
+
+.authGlow{
+ position:fixed;
+ width:320px;
+ height:320px;
+ border-radius:50%;
+ background:rgba(25,230,160,.10);
+ filter:blur(80px);
+ top:-120px;
+ left:50%;
+ transform:translateX(-50%);
+ pointer-events:none;
+}
+
+.authBox{
+ width:min(430px,100%);
+ padding:28px 22px;
+ border:1px solid var(--border);
+ border-radius:30px;
+ background:
+ linear-gradient(
+  145deg,
+  rgba(15,31,24,.96),
+  rgba(5,10,8,.98)
+ );
+ box-shadow:var(--shadow);
  position:relative;
  overflow:hidden;
- background:
- radial-gradient(circle at 10% 0%,rgba(25,230,160,.16),transparent 32%),
- radial-gradient(circle at 100% 100%,rgba(25,230,160,.09),transparent 35%),
- #080B10;
 }
 
-.auth-glow{
+.authBox:before{
+ content:"";
  position:absolute;
- width:300px;
- height:300px;
+ width:180px;
+ height:180px;
  border-radius:50%;
- background:rgba(25,230,160,.08);
- filter:blur(80px);
-}
-
-.auth-glow.a{top:-150px;left:-100px}
-.auth-glow.b{bottom:-160px;right:-100px}
-
-.auth-card{
- position:relative;
- z-index:2;
- width:100%;
- max-width:430px;
- padding:28px 22px;
- border-radius:28px;
- background:rgba(16,21,29,.94);
- border:1px solid rgba(255,255,255,.08);
- box-shadow:0 25px 80px rgba(0,0,0,.5);
+ background:rgba(25,230,160,.09);
+ filter:blur(60px);
+ right:-80px;
+ top:-80px;
 }
 
 .logo{
- text-align:center;
- margin-bottom:26px;
-}
-
-.logo-icon{
- width:72px;
- height:72px;
- margin:auto auto 15px;
+ width:68px;
+ height:68px;
  border-radius:22px;
  display:flex;
  align-items:center;
  justify-content:center;
- background:rgba(25,230,160,.1);
- border:1px solid rgba(25,230,160,.35);
- box-shadow:0 0 35px rgba(25,230,160,.16);
- font-size:33px;
-}
-
-.logo h1{
+ margin-bottom:18px;
+ background:
+  radial-gradient(
+   circle,
+   rgba(25,230,160,.3),
+   rgba(25,230,160,.04)
+  );
+ border:1px solid rgba(25,230,160,.3);
+ box-shadow:
+  0 0 35px rgba(25,230,160,.16);
  font-size:29px;
+}
+
+.logoMark{
+ width:34px;
+ height:34px;
+ border:3px solid var(--green);
+ border-radius:50%;
+ position:relative;
+ box-shadow:
+  0 0 16px rgba(25,230,160,.7);
+}
+
+.logoMark:after{
+ content:"";
+ position:absolute;
+ width:9px;
+ height:9px;
+ background:var(--green);
+ border-radius:50%;
+ top:50%;
+ left:50%;
+ transform:translate(-50%,-50%);
+ box-shadow:0 0 14px var(--green);
+}
+
+.authTitle{
+ font-size:32px;
+ font-weight:800;
  letter-spacing:-1px;
+ margin:0;
 }
 
-.logo h1 span{
- color:#19E6A0;
+.authSubtitle{
+ color:var(--muted);
+ margin:7px 0 24px;
+ line-height:1.5;
 }
 
-.logo p{
- margin-top:7px;
- color:#7f8a99;
- font-size:13px;
-}
-
-.auth-tabs{
+.authTabs{
  display:grid;
  grid-template-columns:1fr 1fr;
- gap:5px;
- padding:5px;
- background:#0A0F15;
+ background:#07100c;
+ border:1px solid var(--border);
  border-radius:14px;
- margin-bottom:20px;
+ padding:4px;
+ margin-bottom:18px;
 }
 
-.auth-tab{
- padding:12px;
- border-radius:10px;
+.authTabs button{
+ padding:11px;
+ color:var(--muted);
  background:transparent;
- color:#788392;
- font-weight:700;
+ border-radius:11px;
 }
 
-.auth-tab.active{
- background:#19E6A0;
- color:#06100c;
+.authTabs button.active{
+ color:#02120b;
+ background:var(--green);
+ font-weight:800;
 }
 
 .field{
- margin-bottom:15px;
+ margin-bottom:13px;
 }
 
 .field label{
  display:block;
- color:#aab2bd;
- font-size:12px;
+ color:#bdd1c8;
+ font-size:13px;
  margin-bottom:7px;
 }
 
 .field input,
-.field textarea{
+.field textarea,
+.field select{
  width:100%;
- background:#0A0F15;
- color:#fff;
- border:1px solid #232c37;
+ border:1px solid var(--border);
  outline:none;
+ background:#07100c;
+ color:white;
  border-radius:14px;
- padding:14px;
+ padding:13px 14px;
+ transition:.2s;
 }
 
 .field input:focus,
-.field textarea:focus{
- border-color:#19E6A0;
- box-shadow:0 0 0 3px rgba(25,230,160,.08);
+.field textarea:focus,
+.field select:focus{
+ border-color:rgba(25,230,160,.55);
+ box-shadow:0 0 0 3px rgba(25,230,160,.07);
 }
 
-.auth-button{
+.primaryBtn{
  width:100%;
- padding:15px;
+ padding:14px;
  border-radius:14px;
- background:#19E6A0;
- color:#06100c;
- font-weight:800;
+ background:var(--green);
+ color:#02120b;
+ font-weight:850;
+ box-shadow:0 8px 25px rgba(25,230,160,.15);
+ transition:.2s;
 }
 
-.auth-button:disabled{
- opacity:.5;
+.primaryBtn:active{
+ transform:scale(.98);
 }
 
-.auth-message{
+.primaryBtn:disabled{
+ opacity:.55;
+ cursor:not-allowed;
+}
+
+.secondaryBtn{
+ width:100%;
+ padding:13px;
+ border-radius:14px;
+ background:#0b1711;
+ color:white;
+ border:1px solid var(--border);
+ margin-top:10px;
+}
+
+.authError{
  min-height:20px;
- text-align:center;
- color:#19E6A0;
+ color:var(--red);
  font-size:13px;
- margin:8px 0 13px;
+ margin:8px 0;
 }
 
-/* =========================
+.divider{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ color:var(--muted);
+ margin:18px 0;
+ font-size:12px;
+}
+
+.divider:before,
+.divider:after{
+ content:"";
+ height:1px;
+ background:var(--border);
+ flex:1;
+}
+
+.oauthRow{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:9px;
+}
+
+.oauthBtn{
+ padding:12px;
+ border-radius:13px;
+ background:#0a1510;
+ color:white;
+ border:1px solid var(--border);
+}
+
+
+/* =========================================================
    APP
-========================= */
+   ========================================================= */
 
-#appScreen{
- display:none;
- min-height:100vh;
- padding-bottom:90px;
- background:#080B10;
+#main{
+ width:100%;
+ height:100vh;
+ display:flex;
+ flex-direction:column;
+ overflow:hidden;
 }
 
-.app-header{
- position:sticky;
- top:0;
- z-index:30;
+.topbar{
+ height:70px;
+ min-height:70px;
  display:flex;
  align-items:center;
  justify-content:space-between;
- padding:17px 18px 12px;
- background:rgba(8,11,16,.9);
+ padding:0 17px;
+ border-bottom:1px solid var(--border);
+ background:rgba(5,8,6,.88);
  backdrop-filter:blur(18px);
+ z-index:30;
 }
 
 .brand{
- font-size:21px;
- font-weight:800;
+ display:flex;
+ align-items:center;
+ gap:10px;
 }
 
-.brand span{
- color:#19E6A0;
+.brandIcon{
+ width:39px;
+ height:39px;
+ border-radius:13px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border:1px solid rgba(25,230,160,.3);
+ background:rgba(25,230,160,.06);
 }
 
-.header-actions{
+.brandText{
+ font-weight:850;
+ letter-spacing:-.3px;
+}
+
+.brandText small{
+ display:block;
+ font-size:10px;
+ color:var(--green);
+ letter-spacing:1.5px;
+ margin-top:1px;
+}
+
+.topActions{
  display:flex;
  gap:8px;
 }
 
-.icon-btn{
- width:42px;
- height:42px;
+.iconBtn{
+ width:40px;
+ height:40px;
  border-radius:13px;
- background:#10151D;
- border:1px solid #202934;
- color:#fff;
+ background:#0b1510;
+ color:white;
+ border:1px solid var(--border);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:17px;
+}
+
+.content{
+ flex:1;
+ overflow-y:auto;
+ overflow-x:hidden;
+ padding:16px 15px 105px;
+ scroll-behavior:smooth;
 }
 
 .page{
  display:none;
- padding:8px 18px 25px;
+ animation:pageIn .22s ease;
 }
 
 .page.active{
  display:block;
 }
 
-.hero{
- padding:23px;
- border-radius:25px;
- background:
- radial-gradient(circle at 90% 5%,rgba(25,230,160,.17),transparent 38%),
- #10151D;
- border:1px solid #202934;
- margin-bottom:17px;
+@keyframes pageIn{
+ from{
+  opacity:0;
+  transform:translateY(7px);
+ }
+ to{
+  opacity:1;
+  transform:translateY(0);
+ }
 }
 
-.hero .eyebrow{
- color:#19E6A0;
+
+/* =========================================================
+   HOME
+   ========================================================= */
+
+.hero{
+ border:1px solid var(--border);
+ border-radius:25px;
+ padding:21px;
+ min-height:180px;
+ background:
+  radial-gradient(
+   circle at 90% 10%,
+   rgba(25,230,160,.18),
+   transparent 38%
+  ),
+  linear-gradient(
+   135deg,
+   #0d2118,
+   #08100c 60%
+  );
+ position:relative;
+ overflow:hidden;
+ box-shadow:var(--shadow);
+}
+
+.hero:after{
+ content:"";
+ position:absolute;
+ width:170px;
+ height:170px;
+ border-radius:50%;
+ border:1px solid rgba(25,230,160,.12);
+ right:-70px;
+ bottom:-80px;
+ box-shadow:
+  0 0 0 20px rgba(25,230,160,.03),
+  0 0 0 40px rgba(25,230,160,.02);
+}
+
+.heroLabel{
+ color:var(--green);
  font-size:11px;
  font-weight:800;
- letter-spacing:1.2px;
- margin-bottom:8px;
+ letter-spacing:2px;
 }
 
-.hero h2{
+.hero h1{
+ margin:8px 0 5px;
  font-size:27px;
- line-height:1.15;
+ letter-spacing:-.8px;
 }
 
 .hero p{
- margin-top:9px;
- color:#8994a3;
- font-size:14px;
+ margin:0;
+ color:var(--muted);
+ font-size:13px;
+ max-width:290px;
  line-height:1.5;
 }
 
-.card{
- background:#10151D;
- border:1px solid #202934;
- border-radius:19px;
- padding:17px;
- margin-bottom:12px;
-}
-
-.status-card{
- display:flex;
+.statusPill{
+ display:inline-flex;
  align-items:center;
- gap:12px;
-}
-
-.status-dot{
- width:11px;
- height:11px;
- flex:none;
- border-radius:50%;
- background:#4d5661;
-}
-
-.status-dot.on{
- background:#19E6A0;
- box-shadow:0 0 16px #19E6A0;
-}
-
-.status-info{
- flex:1;
-}
-
-.status-info strong{
- display:block;
- font-size:14px;
-}
-
-.status-info small{
- display:block;
- color:#75808e;
- margin-top:4px;
-}
-
-.primary{
- background:#19E6A0;
- color:#06100c;
- border-radius:12px;
- padding:11px 14px;
- font-weight:800;
-}
-
-.secondary{
- background:#171e27;
- color:#fff;
- border:1px solid #28323d;
- border-radius:12px;
- padding:11px 14px;
-}
-
-.section-title{
- font-size:17px;
- margin:21px 0 11px;
-}
-
-.list-btn{
- width:100%;
- text-align:left;
- background:#10151D;
- color:#fff;
- border:1px solid #202934;
- border-radius:17px;
- padding:16px;
- margin-bottom:10px;
-}
-
-.list-btn small{
- display:block;
- color:#778291;
- margin-top:5px;
-}
-
-.empty{
- text-align:center;
- padding:30px 15px;
- color:#687383;
- line-height:1.5;
-}
-
-/* =========================
-   MAP
-========================= */
-
-.map-box{
- min-height:330px;
- border-radius:23px;
- overflow:hidden;
- position:relative;
- background:
- radial-gradient(circle at 50% 45%,rgba(25,230,160,.12),transparent 22%),
- linear-gradient(135deg,#101820,#0a1117);
- border:1px solid #26313b;
-}
-
-.map-grid{
- position:absolute;
- inset:0;
- opacity:.35;
- background-image:
- linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
- linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
- background-size:45px 45px;
- transform:perspective(400px) rotateX(48deg) scale(1.4);
- transform-origin:center;
-}
-
-.radar{
- position:absolute;
- width:145px;
- height:145px;
- left:50%;
- top:50%;
- transform:translate(-50%,-50%);
- border:1px solid rgba(25,230,160,.35);
- border-radius:50%;
- box-shadow:
- 0 0 0 35px rgba(25,230,160,.025),
- 0 0 0 70px rgba(25,230,160,.018);
-}
-
-.radar:after{
- content:"";
- position:absolute;
- width:12px;
- height:12px;
- left:50%;
- top:50%;
- transform:translate(-50%,-50%);
- border-radius:50%;
- background:#19E6A0;
- box-shadow:0 0 25px #19E6A0;
-}
-
-.map-label{
- position:absolute;
- left:15px;
- top:15px;
- padding:8px 10px;
- border-radius:10px;
- background:rgba(8,11,16,.8);
- border:1px solid #28333e;
- color:#19E6A0;
+ gap:7px;
+ margin-top:18px;
+ padding:8px 11px;
+ border-radius:999px;
+ background:rgba(25,230,160,.08);
+ border:1px solid rgba(25,230,160,.16);
  font-size:11px;
 }
 
-/* =========================
-   AI
-========================= */
-
-.ai-shell{
- min-height:calc(100vh - 150px);
- display:flex;
- flex-direction:column;
-}
-
-.ai-header{
- padding:18px;
- border-radius:22px;
- background:
- radial-gradient(circle at 90% 0%,rgba(25,230,160,.15),transparent 38%),
- #10151D;
- border:1px solid #202934;
- margin-bottom:12px;
-}
-
-.ai-title{
- display:flex;
- align-items:center;
- gap:12px;
-}
-
-.ai-orb{
- width:45px;
- height:45px;
- border-radius:15px;
- display:flex;
- align-items:center;
- justify-content:center;
- background:rgba(25,230,160,.12);
- border:1px solid rgba(25,230,160,.3);
- box-shadow:0 0 25px rgba(25,230,160,.12);
-}
-
-.ai-title h2{
- font-size:19px;
-}
-
-.ai-title small{
- color:#75808e;
- display:block;
- margin-top:3px;
-}
-
-.ai-messages{
- flex:1;
- min-height:330px;
- max-height:55vh;
- overflow-y:auto;
- padding:7px 2px 15px;
-}
-
-.ai-message{
- max-width:88%;
- padding:13px 15px;
- border-radius:17px;
- margin-bottom:10px;
- font-size:14px;
- line-height:1.5;
- white-space:pre-wrap;
-}
-
-.ai-message.user{
- margin-left:auto;
- background:#19E6A0;
- color:#06100c;
- border-bottom-right-radius:5px;
-}
-
-.ai-message.bot{
- margin-right:auto;
- background:#151c25;
- border:1px solid #242e39;
- color:#fff;
- border-bottom-left-radius:5px;
-}
-
-.ai-input-row{
- display:flex;
- gap:8px;
- padding-top:8px;
-}
-
-.ai-input{
- flex:1;
- min-width:0;
- padding:14px;
- border-radius:14px;
- border:1px solid #27313c;
- background:#10151D;
- color:#fff;
- outline:none;
-}
-
-.ai-send{
- width:48px;
- border-radius:14px;
- background:#19E6A0;
- color:#06100c;
- font-size:18px;
- font-weight:900;
-}
-
-/* =========================
-   CHAT
-========================= */
-
-.chat-window{
- position:fixed;
- inset:0;
- z-index:500;
- display:none;
- flex-direction:column;
- background:#080B10;
-}
-
-.chat-window.show{
- display:flex;
-}
-
-.chat-head{
- display:flex;
- align-items:center;
- gap:11px;
- padding:15px;
- border-bottom:1px solid #202934;
- background:#10151D;
-}
-
-.chat-avatar{
- width:42px;
- height:42px;
+.statusDot{
+ width:7px;
+ height:7px;
  border-radius:50%;
- background:#19E6A0;
- color:#06100c;
+ background:var(--green);
+ box-shadow:0 0 10px var(--green);
+}
+
+.sectionHead{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ margin:22px 2px 11px;
+}
+
+.sectionHead h2{
+ margin:0;
+ font-size:17px;
+}
+
+.sectionHead button{
+ color:var(--green);
+ background:none;
+ font-size:12px;
+}
+
+.statsGrid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:9px;
+}
+
+.statCard{
+ padding:14px;
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:17px;
+}
+
+.statValue{
+ font-size:20px;
+ font-weight:800;
+}
+
+.statLabel{
+ color:var(--muted);
+ font-size:10px;
+ margin-top:4px;
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.card{
+ background:
+  linear-gradient(
+   145deg,
+   rgba(15,28,22,.95),
+   rgba(8,14,11,.95)
+  );
+ border:1px solid var(--border);
+ border-radius:19px;
+ padding:15px;
+ margin-bottom:10px;
+}
+
+.circleCard{
+ background:
+  radial-gradient(
+   circle at 100% 0,
+   rgba(25,230,160,.08),
+   transparent 35%
+  ),
+  var(--card);
+ border:1px solid var(--border);
+ border-radius:19px;
+ padding:15px;
+ margin-bottom:10px;
+}
+
+.avatarStack{
+ display:flex;
+ margin-top:12px;
+}
+
+.avatarStack .avatar{
+ margin-right:-7px;
+ border:2px solid #09110d;
+}
+
+.avatar{
+ width:38px;
+ height:38px;
+ min-width:38px;
+ border-radius:50%;
+ background:
+  linear-gradient(
+   145deg,
+   #153b2b,
+   #0c1c14
+  );
+ border:1px solid rgba(25,230,160,.18);
  display:flex;
  align-items:center;
  justify-content:center;
+ font-size:12px;
  font-weight:800;
  overflow:hidden;
 }
 
-.chat-avatar img{
+.avatar img{
  width:100%;
  height:100%;
  object-fit:cover;
 }
 
-.chat-user{
- flex:1;
-}
 
-.chat-user strong{
- display:block;
-}
+/* =========================================================
+   MAP
+   ========================================================= */
 
-.chat-user small{
- color:#19E6A0;
-}
-
-.chat-close{
- width:40px;
- height:40px;
- border-radius:12px;
- background:#1a222c;
- color:#fff;
-}
-
-.chat-body{
- flex:1;
- overflow-y:auto;
- padding:15px;
-}
-
-.message-row{
- display:flex;
- margin-bottom:10px;
-}
-
-.message-row.mine{
- justify-content:flex-end;
-}
-
-.bubble{
- max-width:78%;
- padding:10px 13px;
- border-radius:16px;
- background:#171e27;
- border:1px solid #242e39;
- color:#fff;
+.mapShell{
+ border-radius:22px;
  overflow:hidden;
+ border:1px solid var(--border);
+ height:390px;
+ position:relative;
+ background:#08110d;
 }
 
-.message-row.mine .bubble{
- background:#19E6A0;
- color:#06100c;
- border:0;
+#map{
+ width:100%;
+ height:100%;
 }
 
-.bubble img,
-.bubble video{
- max-width:100%;
- border-radius:11px;
- display:block;
-}
-
-.bubble audio{
- max-width:100%;
-}
-
-.chat-tools{
- padding:10px;
+.mapOverlay{
+ position:absolute;
+ top:12px;
+ left:12px;
+ right:12px;
+ z-index:500;
  display:flex;
- gap:7px;
- border-top:1px solid #202934;
- background:#10151D;
+ justify-content:space-between;
+ pointer-events:none;
 }
 
-.chat-tool{
+.mapPill{
+ pointer-events:auto;
+ padding:9px 12px;
+ border-radius:999px;
+ background:rgba(4,10,7,.86);
+ backdrop-filter:blur(14px);
+ border:1px solid rgba(25,230,160,.2);
+ font-size:11px;
+}
+
+.mapControls{
+ position:absolute;
+ right:12px;
+ bottom:12px;
+ z-index:500;
+ display:flex;
+ flex-direction:column;
+ gap:7px;
+}
+
+.mapControl{
  width:42px;
  height:42px;
- flex:none;
- border-radius:12px;
- background:#19212b;
- color:#fff;
+ border-radius:13px;
+ background:rgba(4,10,7,.9);
+ color:white;
+ border:1px solid rgba(25,230,160,.18);
 }
 
-.chat-input{
- flex:1;
- min-width:0;
- padding:11px;
- border-radius:12px;
- border:1px solid #28323d;
- background:#0a0f15;
- color:#fff;
+.leaflet-control-zoom a{
+ background:#08110d !important;
+ color:white !important;
+ border-color:rgba(25,230,160,.18) !important;
+}
+
+.leaflet-control-attribution{
+ background:rgba(4,8,6,.75) !important;
+ color:#71857c !important;
+}
+
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+
+.locationCard{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:15px;
+}
+
+.locationInfo{
+ display:flex;
+ align-items:center;
+ gap:11px;
+}
+
+.locationIcon{
+ width:43px;
+ height:43px;
+ border-radius:14px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:rgba(25,230,160,.08);
+ border:1px solid rgba(25,230,160,.16);
+}
+
+.switch{
+ width:48px;
+ height:28px;
+ border-radius:999px;
+ background:#16221c;
+ border:1px solid var(--border);
+ padding:3px;
+ transition:.2s;
+}
+
+.switch span{
+ display:block;
+ width:20px;
+ height:20px;
+ border-radius:50%;
+ background:#66746d;
+ transition:.2s;
+}
+
+.switch.on{
+ background:rgba(25,230,160,.18);
+ border-color:rgba(25,230,160,.4);
+}
+
+.switch.on span{
+ transform:translateX(19px);
+ background:var(--green);
+ box-shadow:0 0 12px rgba(25,230,160,.7);
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.searchBox{
+ position:relative;
+ margin-bottom:12px;
+}
+
+.searchBox input{
+ width:100%;
+ padding:14px 15px 14px 42px;
+ border-radius:15px;
+ border:1px solid var(--border);
+ background:#07100c;
+ color:white;
  outline:none;
 }
 
-/* =========================
-   NAV
-========================= */
-
-.bottom-nav{
- position:fixed;
- z-index:300;
- left:10px;
- right:10px;
- bottom:10px;
- height:67px;
- display:grid;
- grid-template-columns:repeat(5,1fr);
- background:rgba(16,21,29,.95);
- border:1px solid #222d38;
- border-radius:21px;
- backdrop-filter:blur(18px);
+.searchIcon{
+ position:absolute;
+ left:15px;
+ top:50%;
+ transform:translateY(-50%);
+ color:var(--muted);
 }
 
-.nav-item{
- background:transparent;
- color:#687383;
+.userResult{
  display:flex;
- flex-direction:column;
+ align-items:center;
+ gap:11px;
+ padding:12px 0;
+ border-bottom:1px solid rgba(255,255,255,.04);
+}
+
+.userResult:last-child{
+ border-bottom:0;
+}
+
+.userInfo{
+ flex:1;
+ min-width:0;
+}
+
+.userInfo b{
+ font-size:13px;
+}
+
+.addBtn{
+ padding:8px 13px;
+ border-radius:10px;
+ background:rgba(25,230,160,.1);
+ color:var(--green);
+ border:1px solid rgba(25,230,160,.18);
+ font-size:12px;
+}
+
+
+/* =========================================================
+   CHATS
+   ========================================================= */
+
+.chat{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:13px 3px;
+ border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.chatAvatar{
+ width:45px;
+ height:45px;
+ min-width:45px;
+ border-radius:50%;
+ display:flex;
  align-items:center;
  justify-content:center;
- gap:4px;
+ background:#123323;
+ color:var(--green);
+ border:1px solid rgba(25,230,160,.18);
+ font-weight:800;
+}
+
+.chatInfo{
+ flex:1;
+ min-width:0;
+}
+
+.chatName{
+ font-weight:750;
+ font-size:14px;
+}
+
+.chatPreview{
+ color:var(--muted);
+ font-size:12px;
+ margin-top:4px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+
+
+/* =========================================================
+   AI
+   ========================================================= */
+
+.aiShell{
+ min-height:calc(100vh - 200px);
+ display:flex;
+ flex-direction:column;
+}
+
+.aiHeader{
+ padding:18px;
+ border:1px solid var(--border);
+ border-radius:22px;
+ background:
+  radial-gradient(
+   circle at 90% 10%,
+   rgba(25,230,160,.15),
+   transparent 40%
+  ),
+  var(--card);
+}
+
+.aiBadge{
+ display:inline-flex;
+ gap:7px;
+ align-items:center;
+ color:var(--green);
+ font-size:11px;
+ font-weight:800;
+}
+
+.aiMessages{
+ flex:1;
+ overflow-y:auto;
+ padding:15px 0;
+ min-height:300px;
+ max-height:calc(100vh - 370px);
+}
+
+.aiMsg{
+ max-width:88%;
+ width:max-content;
+ padding:12px 14px;
+ margin:8px 0;
+ border-radius:16px 16px 16px 5px;
+ background:#0e1c15;
+ border:1px solid var(--border);
+ color:#eaf6f0;
+ line-height:1.5;
+ font-size:13px;
+ white-space:pre-wrap;
+}
+
+.aiMsg.user{
+ margin-left:auto;
+ border-radius:16px 16px 5px 16px;
+ background:
+  linear-gradient(
+   135deg,
+   rgba(25,230,160,.18),
+   rgba(25,230,160,.08)
+  );
+ border-color:rgba(25,230,160,.2);
+}
+
+.aiSuggestions{
+ display:flex;
+ gap:7px;
+ overflow-x:auto;
+ padding-bottom:10px;
+}
+
+.aiSuggestions button{
+ white-space:nowrap;
+ padding:8px 11px;
+ border-radius:999px;
+ background:#0b1711;
+ color:#bdd1c8;
+ border:1px solid var(--border);
+ font-size:11px;
+}
+
+.aiComposer{
+ display:flex;
+ gap:8px;
+ padding:9px;
+ border-radius:17px;
+ background:#09120d;
+ border:1px solid var(--border);
+}
+
+.aiComposer textarea{
+ flex:1;
+ resize:none;
+ border:0;
+ outline:none;
+ background:transparent;
+ color:white;
+ min-height:40px;
+ max-height:100px;
+ padding:9px;
+}
+
+.sendBtn{
+ width:43px;
+ height:43px;
+ border-radius:13px;
+ background:var(--green);
+ color:#03120b;
+ font-weight:900;
+}
+
+
+/* =========================================================
+   POSTS
+   ========================================================= */
+
+.postComposer{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:19px;
+ padding:13px;
+ margin-bottom:14px;
+}
+
+.postComposer textarea{
+ width:100%;
+ min-height:85px;
+ resize:none;
+ background:transparent;
+ border:0;
+ outline:0;
+ color:white;
+ padding:5px;
+}
+
+.postComposerBottom{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:8px;
+}
+
+.mediaButtons{
+ display:flex;
+ gap:5px;
+}
+
+.smallBtn{
+ padding:8px 10px;
+ border-radius:10px;
+ background:#0a1510;
+ color:#bcd0c7;
+ border:1px solid var(--border);
+ font-size:11px;
+}
+
+.publishBtn{
+ padding:9px 13px;
+ border-radius:10px;
+ background:var(--green);
+ color:#03120b;
+ font-weight:800;
+ font-size:11px;
+}
+
+.post{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:19px;
+ padding:15px;
+ margin-bottom:11px;
+}
+
+.postHead{
+ display:flex;
+ gap:10px;
+ align-items:center;
+}
+
+.postUserAvatar{
+ width:38px;
+ height:38px;
+ border-radius:50%;
+ background:#143a29;
+ color:var(--green);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-weight:800;
+ overflow:hidden;
+}
+
+.postUserAvatar img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+.postName{
+ font-size:13px;
+ font-weight:800;
+}
+
+.postTime{
+ color:var(--muted);
+ font-size:10px;
+ margin-top:2px;
+}
+
+.postText{
+ margin-top:13px;
+ line-height:1.55;
+ font-size:13px;
+ white-space:pre-wrap;
+}
+
+.actions{
+ display:flex;
+ gap:5px;
+ margin-top:14px;
+}
+
+.actions button{
+ flex:1;
+ padding:9px 4px;
+ border-radius:10px;
+ background:#09130e;
+ color:#9eb2a9;
+ border:1px solid rgba(255,255,255,.04);
  font-size:10px;
 }
 
-.nav-item .nav-icon{
- font-size:19px;
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+.profileCard{
+ text-align:center;
+ padding:24px 15px;
 }
 
-.nav-item.active{
- color:#19E6A0;
+.profilePic{
+ width:92px;
+ height:92px;
+ border-radius:50%;
+ margin:0 auto 12px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:#153a2b;
+ border:2px solid rgba(25,230,160,.25);
+ color:var(--green);
+ font-size:26px;
+ font-weight:800;
+ overflow:hidden;
 }
 
-/* =========================
-   MODALS
-========================= */
+.profilePic img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+.profileName{
+ font-size:20px;
+ font-weight:850;
+}
+
+.profileUsername{
+ color:var(--green);
+ font-size:12px;
+ margin-top:3px;
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
 
 .modal{
  position:fixed;
  inset:0;
- z-index:600;
+ z-index:2000;
+ background:rgba(0,0,0,.72);
+ backdrop-filter:blur(8px);
  display:none;
  align-items:flex-end;
  justify-content:center;
- padding:12px;
- background:rgba(0,0,0,.72);
+ padding:15px;
 }
 
 .modal.show{
  display:flex;
 }
 
-.modal-box{
- width:100%;
- max-width:500px;
+.modalBox{
+ width:min(500px,100%);
  max-height:90vh;
  overflow-y:auto;
- padding:21px;
+ background:
+  linear-gradient(
+   150deg,
+   #0e1c15,
+   #060b08
+  );
+ border:1px solid var(--border);
  border-radius:25px;
- background:#10151D;
- border:1px solid #29333e;
+ padding:18px;
+ box-shadow:0 -20px 70px rgba(0,0,0,.55);
 }
 
-.modal-head{
+.modalHeader{
  display:flex;
- align-items:center;
  justify-content:space-between;
- margin-bottom:18px;
-}
-
-.close{
- width:38px;
- height:38px;
- border-radius:11px;
- background:#1a222c;
- color:#fff;
- font-size:20px;
-}
-
-.file-input{
- display:none;
-}
-
-.profile-avatar{
- width:90px;
- height:90px;
- margin:0 auto 15px;
- border-radius:50%;
- background:#19E6A0;
- color:#06100c;
- display:flex;
  align-items:center;
- justify-content:center;
- overflow:hidden;
- font-size:30px;
- font-weight:800;
+ margin-bottom:17px;
 }
 
-.profile-avatar img{
- width:100%;
- height:100%;
- object-fit:cover;
+.modalHeader h3{
+ margin:0;
+ font-size:18px;
 }
 
-.toast{
- position:fixed;
- z-index:1000;
- left:50%;
- bottom:90px;
- transform:translateX(-50%) translateY(20px);
- max-width:90%;
- padding:12px 15px;
- border-radius:13px;
- background:#171f29;
- border:1px solid #293541;
- color:#fff;
- opacity:0;
- pointer-events:none;
- transition:.25s;
- font-size:13px;
+.closeBtn{
+ width:35px;
+ height:35px;
+ border-radius:10px;
+ background:#09130e;
+ color:white;
+ border:1px solid var(--border);
+}
+
+
+/* =========================================================
+   GIFT GRID
+   ========================================================= */
+
+.giftGrid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+}
+
+.gift{
+ padding:15px 7px;
+ border-radius:15px;
+ background:#09130e;
+ border:1px solid var(--border);
+ color:white;
  text-align:center;
 }
 
-.toast.show{
- opacity:1;
- transform:translateX(-50%) translateY(0);
+.giftEmoji{
+ font-size:27px;
+ display:block;
 }
+
+.giftPrice{
+ color:var(--green);
+ font-size:11px;
+ margin-top:5px;
+}
+
+
+/* =========================================================
+   BOTTOM NAV
+   ========================================================= */
+
+.nav{
+ position:fixed;
+ z-index:100;
+ bottom:0;
+ left:0;
+ right:0;
+ height:79px;
+ display:grid;
+ grid-template-columns:repeat(5,1fr);
+ padding:8px 7px 10px;
+ background:
+  linear-gradient(
+   180deg,
+   rgba(5,8,6,.72),
+   rgba(3,5,4,.98)
+  );
+ backdrop-filter:blur(20px);
+ border-top:1px solid var(--border);
+}
+
+.nav button{
+ background:transparent;
+ color:#6f8179;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:4px;
+ font-size:9px;
+ border-radius:13px;
+}
+
+.nav button span{
+ font-size:19px;
+ line-height:20px;
+}
+
+.nav button.active{
+ color:var(--green);
+ background:rgba(25,230,160,.06);
+}
+
+.nav button.active span{
+ filter:drop-shadow(0 0 7px rgba(25,230,160,.5));
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+#toast{
+ position:fixed;
+ z-index:5000;
+ left:50%;
+ bottom:95px;
+ transform:translate(-50%,20px);
+ opacity:0;
+ pointer-events:none;
+ padding:11px 15px;
+ border-radius:13px;
+ background:#102019;
+ border:1px solid rgba(25,230,160,.22);
+ color:white;
+ font-size:12px;
+ box-shadow:var(--shadow);
+ transition:.22s;
+ max-width:90%;
+ text-align:center;
+}
+
+#toast.show{
+ opacity:1;
+ transform:translate(-50%,0);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media(min-width:700px){
- .bottom-nav{
-  width:650px;
+
+ .content{
+  width:min(900px,100%);
+  margin:auto;
+ }
+
+ .nav{
   left:50%;
   right:auto;
+  width:min(650px,100%);
   transform:translateX(-50%);
+  border:1px solid var(--border);
+  border-bottom:0;
+  border-radius:22px 22px 0 0;
  }
-}
-</style>
-</head>
 
+ .topbar{
+  padding-left:calc((100% - min(900px,100%))/2 + 15px);
+  padding-right:calc((100% - min(900px,100%))/2 + 15px);
+ }
+
+}
+
+</style>
+
+</head>
 <body>
 
-<!-- AUTHENTICATION: OPENS IMMEDIATELY -->
-<section id="authScreen">
+<!-- =======================================================
+     AUTHENTICATION
+     ======================================================= -->
 
- <div class="auth-glow a"></div>
- <div class="auth-glow b"></div>
+<section id="auth">
 
- <div class="auth-card">
+ <div class="authGlow"></div>
+
+ <div class="authBox">
 
   <div class="logo">
-   <div class="logo-icon">◉</div>
-   <h1>Track <span>Circle</span></h1>
-   <p>Stay Connected. Stay Close.</p>
+   <div class="logoMark"></div>
   </div>
 
-  <div class="auth-tabs">
-   <button id="loginTab" class="auth-tab active">Sign In</button>
-   <button id="signupTab" class="auth-tab">Sign Up</button>
-  </div>
+  <h1 class="authTitle">
+   Track Circle
+  </h1>
 
-  <form id="authForm">
+  <p class="authSubtitle">
+   Stay Connected. Stay Close.
+   <br>
+   Real-time location, circles,
+   messaging and Track Circle AI.
+  </p>
 
-   <div id="nameField" class="field hidden">
-    <label>Display name</label>
-    <input id="authName" type="text" placeholder="Your name">
-   </div>
+  <div class="authTabs">
 
-   <div class="field">
-    <label>Email</label>
-    <input id="authEmail" type="email" placeholder="you@example.com" required>
-   </div>
+   <button
+    id="loginTab"
+    class="active"
+    onclick="setAuthMode('login')">
 
-   <div class="field">
-    <label>Password</label>
-    <input id="authPassword" type="password" placeholder="Minimum 6 characters" required>
-   </div>
+    Sign in
 
-   <div id="authMessage" class="auth-message"></div>
-
-   <button id="authSubmit" class="auth-button" type="submit">
-    Sign In
    </button>
 
-  </form>
+   <button
+    id="signupTab"
+    onclick="setAuthMode('signup')">
+
+    Create account
+
+   </button>
+
+  </div>
+
+
+  <div
+   id="nameField"
+   class="field hidden">
+
+   <label>
+    Full name
+   </label>
+
+   <input
+    id="authName"
+    type="text"
+    autocomplete="name"
+    placeholder="Your full name"
+   >
+
+  </div>
+
+
+  <div
+   id="usernameField"
+   class="field hidden">
+
+   <label>
+    Username
+   </label>
+
+   <input
+    id="authUsername"
+    type="text"
+    autocomplete="username"
+    placeholder="@username"
+   >
+
+  </div>
+
+
+  <div class="field">
+
+   <label>
+    Email
+   </label>
+
+   <input
+    id="authEmail"
+    type="email"
+    autocomplete="email"
+    placeholder="you@example.com"
+   >
+
+  </div>
+
+
+  <div class="field">
+
+   <label>
+    Password
+   </label>
+
+   <input
+    id="authPassword"
+    type="password"
+    autocomplete="current-password"
+    placeholder="Minimum 6 characters"
+   >
+
+  </div>
+
+
+  <div
+   id="authError"
+   class="authError">
+  </div>
+
+
+  <button
+   id="authButton"
+   class="primaryBtn"
+   onclick="submitAuth()">
+
+   Sign in
+
+  </button>
+
+
+  <div class="divider">
+   OR CONTINUE WITH
+  </div>
+
+
+  <div class="oauthRow">
+
+   <button
+    class="oauthBtn"
+    onclick="oauth('google')">
+
+    Google
+
+   </button>
+
+   <button
+    class="oauthBtn"
+    onclick="oauth('apple')">
+
+    Apple
+
+   </button>
+
+  </div>
 
  </div>
+
 </section>
 
 
-<!-- MAIN APP -->
-<section id="appScreen">
+<!-- =======================================================
+     MAIN APPLICATION
+     ======================================================= -->
 
-<header class="app-header">
+<section
+ id="main"
+ class="hidden">
 
- <div class="brand">
-  Track <span>Circle</span>
- </div>
+ <header class="topbar">
 
- <div class="header-actions">
-  <button id="aiHeaderButton" class="icon-btn">✦</button>
-  <button id="headerProfileButton" class="icon-btn">◯</button>
- </div>
+  <div class="brand">
 
-</header>
+   <div class="brandIcon">
 
-
-<!-- HOME -->
-<main id="homePage" class="page active">
-
- <div class="hero">
-  <div class="eyebrow">TRACK CIRCLE</div>
-  <h2 id="greetingTitle">Welcome.</h2>
-  <p id="greetingSmall">
-   Stay connected with the people who matter.
-  </p>
- </div>
-
- <div class="card status-card">
-
-  <div id="locationDot" class="status-dot"></div>
-
-  <div class="status-info">
-   <strong id="locationStatus">Location sharing OFF</strong>
-   <small id="locationDetail">
-    Your location is private.
-   </small>
-  </div>
-
-  <button id="locationToggle" class="primary">
-   Turn On
-  </button>
-
- </div>
-
- <h3 class="section-title">Your Circles</h3>
-
- <div id="homeCircleList">
-  <div class="empty">No circles yet.</div>
- </div>
-
- <button id="createCircleButton" class="list-btn">
-  ➕ Create a Circle
-  <small>Create a private group for family, friends or teams.</small>
- </button>
-
- <button id="joinCircleButton" class="list-btn">
-  🔗 Join a Circle
-  <small>Enter an invite code.</small>
- </button>
-
-</main>
-
-
-<!-- LIVE MAP -->
-<main id="mapPage" class="page">
-
- <div class="hero">
-  <div class="eyebrow">LIVE LOCATION</div>
-  <h2>Live Map</h2>
-  <p id="mapLocationTitle">
-   Your real device GPS can appear here.
-  </p>
- </div>
-
- <div class="map-box">
-
-  <div class="map-grid"></div>
-
-  <div class="radar"></div>
-
-  <div class="map-label">
-   ● LIVE GPS
-  </div>
-
- </div>
-
- <div class="card" style="margin-top:12px">
-  <strong>Your Coordinates</strong>
-  <p id="mapCoordinates"
-     style="color:#7d8795;margin-top:7px">
-   Waiting for GPS...
-  </p>
- </div>
-
- <button id="mapLocateButton" class="list-btn">
-  📍 Get My Location
-  <small>Use your device's real GPS.</small>
- </button>
-
- <button id="mapShareButton" class="list-btn">
-  🟢 Toggle Location Sharing
- </button>
-
-</main>
-
-
-<!-- CIRCLES -->
-<main id="circlesPage" class="page">
-
- <div class="hero">
-  <div class="eyebrow">YOUR GROUPS</div>
-  <h2>Circles</h2>
-  <p>Family, friends, school, teams and more.</p>
- </div>
-
- <div id="circleList">
-  <div class="empty">No circles yet.</div>
- </div>
-
- <button id="createCircleButton2" class="list-btn">
-  ➕ Create New Circle
- </button>
-
-</main>
-
-
-<!-- MESSAGES -->
-<main id="messagesPage" class="page">
-
- <div class="hero">
-  <div class="eyebrow">CONNECT</div>
-  <h2>Messages</h2>
-  <p>Private conversations with Track Circle users.</p>
- </div>
-
- <div class="field">
-  <input id="userSearchInput"
-         type="search"
-         placeholder="Search people by name...">
- </div>
-
- <div id="searchResults">
-  <div class="empty">
-   Search for someone to start a conversation.
-  </div>
- </div>
-
-</main>
-
-
-<!-- AI -->
-<main id="aiPage" class="page">
-
- <div class="ai-shell">
-
-  <div class="ai-header">
-
-   <div class="ai-title">
-
-    <div class="ai-orb">✦</div>
-
-    <div>
-     <h2>Track Circle AI</h2>
-     <small>Your intelligent assistant</small>
+    <div class="logoMark"
+     style="
+      width:22px;
+      height:22px;
+      border-width:2px;
+     ">
     </div>
 
    </div>
 
-  </div>
+   <div class="brandText">
 
-  <div id="aiMessages" class="ai-messages">
+    TRACK CIRCLE
 
-   <div class="ai-message bot">
-    Hey 👋 I'm Track Circle AI. Ask me anything.
+    <small>
+     STAY CONNECTED
+    </small>
+
    </div>
 
   </div>
 
-  <div class="ai-input-row">
 
-   <input id="aiInput"
-          class="ai-input"
-          type="text"
-          placeholder="Ask Track Circle AI...">
+  <div class="topActions">
 
-   <button id="aiSend" class="ai-send">
-    ↑
+   <button
+    class="iconBtn"
+    onclick="go('ai')">
+
+    ✦
+
+   </button>
+
+   <button
+    class="iconBtn"
+    onclick="go('profile')">
+
+    ◉
+
    </button>
 
   </div>
 
- </div>
-
-</main>
-
-
-<!-- PROFILE -->
-<main id="profilePage" class="page">
-
- <div class="hero">
-
-  <div id="profileAvatar"
-       class="profile-avatar">
-   👤
-  </div>
-
-  <h2 id="profileName">Profile</h2>
-
-  <p id="profileEmail">Loading...</p>
-
- </div>
-
- <div class="card">
-
-  <strong>Account ID</strong>
-
-  <p id="profileId"
-     style="color:#7d8795;margin-top:7px;word-break:break-all">
-   —
-  </p>
-
- </div>
-
- <button id="editProfileButton" class="list-btn">
-  ✏️ Edit Profile
- </button>
-
- <button id="changeAvatarButton" class="list-btn">
-  🖼️ Change Profile Photo
- </button>
-
- <button id="aiProfileButton" class="list-btn">
-  ✦ Open Track Circle AI
- </button>
-
- <button id="logoutButton" class="list-btn">
-  🚪 Sign Out
- </button>
-
- <input id="avatarFileInput"
-        class="file-input"
-        type="file"
-        accept="image/*">
-
-</main>
-
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-
- <button class="nav-item active" data-page="homePage">
-  <span class="nav-icon">⌂</span>
-  Home
- </button>
-
- <button class="nav-item" data-page="mapPage">
-  <span class="nav-icon">⌖</span>
-  Live Map
- </button>
-
- <button class="nav-item" data-page="circlesPage">
-  <span class="nav-icon">◉</span>
-  Circles
- </button>
-
- <button class="nav-item" data-page="messagesPage">
-  <span class="nav-icon">☵</span>
-  Messages
- </button>
-
- <button class="nav-item" data-page="profilePage">
-  <span class="nav-icon">♙</span>
-  Profile
- </button>
-
-</nav>
-
-</section>
-
-
-<!-- CREATE CIRCLE MODAL -->
-<div id="createCircleModal" class="modal">
-
- <div class="modal-box">
-
-  <div class="modal-head">
-   <h2>Create Circle</h2>
-   <button id="closeCreateCircle" class="close">×</button>
-  </div>
-
-  <div class="field">
-   <label>Circle name</label>
-   <input id="circleName" placeholder="Family Trip">
-  </div>
-
-  <div class="field">
-   <label>Type</label>
-   <input id="circleType" placeholder="Family / Friends / School">
-  </div>
-
-  <button id="confirmCreateCircle" class="auth-button">
-   Create Circle
-  </button>
-
- </div>
-
-</div>
-
-
-<!-- JOIN CIRCLE MODAL -->
-<div id="joinCircleModal" class="modal">
-
- <div class="modal-box">
-
-  <div class="modal-head">
-   <h2>Join Circle</h2>
-   <button id="closeJoinCircle" class="close">×</button>
-  </div>
-
-  <div class="field">
-   <label>Invite code</label>
-   <input id="joinCode" placeholder="TC-7K4P9">
-  </div>
-
-  <div id="joinMessage" class="auth-message"></div>
-
-  <button id="confirmJoinCircle" class="auth-button">
-   Join Circle
-  </button>
-
- </div>
-
-</div>
-
-
-<!-- EDIT PROFILE MODAL -->
-<div id="editProfileModal" class="modal">
-
- <div class="modal-box">
-
-  <div class="modal-head">
-   <h2>Edit Profile</h2>
-   <button id="closeEditProfile" class="close">×</button>
-  </div>
-
-  <div class="field">
-   <label>Display name</label>
-   <input id="editName">
-  </div>
-
-  <button id="saveProfile" class="auth-button">
-   Save Changes
-  </button>
-
- </div>
-
-</div>
-
-
-<!-- CHAT WINDOW -->
-<section id="chatWindow" class="chat-window">
-
- <header class="chat-head">
-
-  <div id="chatAvatar" class="chat-avatar">
-   👤
-  </div>
-
-  <div class="chat-user">
-   <strong id="chatName">Chat</strong>
-   <small id="chatStatus">Track Circle</small>
-  </div>
-
-  <button id="closeChat" class="chat-close">×</button>
-
  </header>
 
- <div id="chatBody" class="chat-body"></div>
 
- <div class="chat-tools">
+ <main class="content">
 
-  <button id="mediaButton" class="chat-tool">＋</button>
 
-  <button id="voiceButton" class="chat-tool">🎙</button>
+  <!-- =====================================================
+       HOME
+       ===================================================== -->
 
-  <input id="chatInput"
-         class="chat-input"
-         placeholder="Message...">
+  <section
+   id="home"
+   class="page active">
 
-  <button id="sendMessage" class="chat-tool">➤</button>
+   <div class="hero">
 
-  <input id="chatMediaInput"
-         class="file-input"
-         type="file"
-         accept="image/*,video/*">
+    <div
+     id="welcomeText"
+     class="heroLabel">
 
- </div>
+     WELCOME BACK
+
+    </div>
+
+    <h1 id="homeName">
+     Welcome.
+    </h1>
+
+    <p>
+     Your people, your circles,
+     your location — connected
+     in one place.
+    </p>
+
+    <div class="statusPill">
+
+     <span class="statusDot"></span>
+
+     Track Circle is ready
+
+    </div>
+
+   </div>
+
+
+   <div class="sectionHead">
+
+    <h2>
+     Your activity
+    </h2>
+
+   </div>
+
+
+   <div class="statsGrid">
+
+    <div class="statCard">
+
+     <div
+      id="circleCount"
+      class="statValue">
+
+      0
+
+     </div>
+
+     <div class="statLabel">
+      Circles
+     </div>
+
+    </div>
+
+    <div class="statCard">
+
+     <div
+      id="friendCount"
+      class="statValue">
+
+      0
+
+     </div>
+
+     <div class="statLabel">
+      Connections
+     </div>
+
+    </div>
+
+    <div class="statCard">
+
+     <div
+      id="locationCount"
+      class="statValue">
+
+      OFF
+
+     </div>
+
+     <div class="statLabel">
+      Location
+     </div>
+
+    </div>
+
+   </div>
+
+
+   <div class="sectionHead">
+
+    <h2>
+     Location sharing
+    </h2>
+
+    <button onclick="go('map')">
+     Open map
+    </button>
+
+   </div>
+
+
+   <div class="card locationCard">
+
+    <div class="locationInfo">
+
+     <div class="locationIcon">
+      ◉
+     </div>
+
+     <div>
+
+      <b>
+       <span id="locationStatus">
+        Location is off
+       </span>
+      </b>
+
+      <div class="muted"
+       style="
+        font-size:11px;
+        margin-top:4px;
+       ">
+
+       Share your live position
+       with your active circles.
+
+      </div>
+
+     </div>
+
+    </div>
+
+
+    <button
+     id="locationSwitch"
+     class="switch"
+     onclick="toggleLocation()">
+
+     <span></span>
+
+    </button>
+
+   </div>
+
+
+   <div class="sectionHead">
+
+    <h2>
+     Your circles
+    </h2>
+
+    <button onclick="go('circles')">
+     View all
+    </button>
+
+   </div>
+
+
+   <div id="homeCircles">
+
+    <div class="card">
+
+     <b>
+      Loading circles...
+     </b>
+
+    </div>
+
+   </div>
+
+
+   <div class="sectionHead">
+
+    <h2>
+     Quick actions
+    </h2>
+
+   </div>
+
+
+   <div class="statsGrid">
+
+    <button
+     class="statCard"
+     onclick="openModal('circleModal')">
+
+     <div class="statValue">
+      +
+     </div>
+
+     <div class="statLabel">
+      Create circle
+     </div>
+
+    </button>
+
+
+    <button
+     class="statCard"
+     onclick="openModal('joinModal')">
+
+     <div class="statValue">
+      ↗
+     </div>
+
+     <div class="statLabel">
+      Join circle
+     </div>
+
+    </button>
+
+
+    <button
+     class="statCard"
+     onclick="go('search')">
+
+     <div class="statValue">
+      @
+     </div>
+
+     <div class="statLabel">
+      Find people
+     </div>
+
+    </button>
+
+   </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       MAP
+       ===================================================== -->
+
+  <section
+   id="mapPage"
+   class="page">
+
+   <div class="sectionHead"
+    style="margin-top:0">
+
+    <h2>
+     Live Map
+    </h2>
+
+    <button onclick="centerOwnLocation()">
+     My location
+    </button>
+
+   </div>
+
+
+   <div class="mapShell">
+
+    <div
+     id="map">
+    </div>
+
+    <div class="mapOverlay">
+
+     <div class="mapPill">
+
+      <span class="statusDot"
+       style="
+        display:inline-block;
+        margin-right:5px;
+       ">
+      </span>
+
+      LIVE MAP
+
+     </div>
+
+     <div class="mapPill">
+
+      <span id="mapMemberCount">
+       0
+      </span>
+
+      members
+
+     </div>
+
+    </div>
+
+
+    <div class="mapControls">
+
+     <button
+      class="mapControl"
+      onclick="centerOwnLocation()">
+
+      ◎
+
+     </button>
+
+     <button
+      class="mapControl"
+      onclick="refreshMapMembers()">
+
+      ↻
+
+     </button>
+
+    </div>
+
+   </div>
+
+
+   <div class="sectionHead">
+
+    <h2>
+     Location sharing
+    </h2>
+
+   </div>
+
+
+   <div class="card locationCard">
+
+    <div class="locationInfo">
+
+     <div class="locationIcon">
+      ◎
+     </div>
+
+     <div>
+
+      <b>
+       Live location
+      </b>
+
+      <div
+       id="mapLocationText"
+       class="muted"
+       style="
+        font-size:11px;
+        margin-top:4px;
+       ">
+
+       Turn on location sharing.
+
+      </div>
+
+     </div>
+
+    </div>
+
+    <button
+     id="mapLocationSwitch"
+     class="switch"
+     onclick="toggleLocation()">
+
+     <span></span>
+
+    </button>
+
+   </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       CIRCLES
+       ===================================================== -->
+
+  <section
+   id="circles"
+   class="page">
+
+   <div class="sectionHead"
+    style="margin-top:0">
+
+    <h2>
+     My Circles
+    </h2>
+
+    <button
+     onclick="openModal('circleModal')">
+
+     + Create
+
+    </button>
+
+   </div>
+
+
+   <div class="card">
+
+    <div class="muted"
+     style="
+      font-size:12px;
+      line-height:1.5;
+     ">
+
+     Create private groups for family,
+     friends, trips, school teams,
+     football teams and more.
+
+    </div>
+
+    <button
+     class="secondaryBtn"
+     onclick="openModal('joinModal')">
+
+     Join with invite code
+
+    </button>
+
+   </div>
+
+
+   <div id="circleList">
+
+    <div class="card">
+     Loading circles...
+    </div>
+
+   </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       MESSAGES
+       ===================================================== -->
+
+  <section
+   id="messages"
+   class="page">
+
+   <div class="sectionHead"
+    style="margin-top:0">
+
+    <h2>
+     Messages
+    </h2>
+
+    <button onclick="go('search')">
+     New chat
+    </button>
+
+   </div>
+
+
+   <div class="searchBox">
+
+    <span class="searchIcon">
+     ⌕
+    </span>
+
+    <input
+     id="chatSearch"
+     type="search"
+     placeholder="Search conversations..."
+     oninput="filterChats(this.value)"
+    >
+
+   </div>
+
+
+   <div id="chatList">
+
+    <div class="card">
+     Loading conversations...
+    </div>
+
+   </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       SEARCH
+       ===================================================== -->
+
+  <section
+   id="search"
+   class="page">
+
+   <div class="sectionHead"
+    style="margin-top:0">
+
+    <h2>
+     Find People
+    </h2>
+
+   </div>
+
+
+   <div class="searchBox">
+
+    <span class="searchIcon">
+     @
+    </span>
+
+    <input
+     id="userSearch"
+     type="search"
+     placeholder="Search username..."
+     autocomplete="off"
+     oninput="searchUsers()"
+    >
+
+   </div>
+
+
+   <div class="card">
+
+    <div
+     id="userResults"
+     class="muted"
+     style="
+      font-size:12px;
+      line-height:1.5;
+     ">
+
+     Search for someone by username.
+
+    </div>
+
+   </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       AI
+       ===================================================== -->
+
+  <section
+   id="ai"
+   class="page">
+
+   <div class="aiShell">
+
+    <div class="aiHeader">
+
+     <div class="aiBadge">
+
+      <span class="statusDot"></span>
+
+      TRACK CIRCLE AI
+
+     </div>
+
+     <h2
+      style="
+       margin:8px 0 5px;
+      ">
+
+      Your AI assistant
+
+     </h2>
+
+     <div
+      class="muted"
+      style="
+       font-size:12px;
+       line-height:1.5;
+      ">
+
+      Ask questions, get explanations,
+      brainstorm ideas and use AI directly
+      inside Track Circle.
+
+     </div>
+
+    </div>
+
+
+    <div
+     id="aiMessages"
+     class="aiMessages">
+
+     <div class="aiMsg">
+
+      Hello. I'm Track Circle AI.
+      How can I help you?
+
+     </div>
+
+    </div>
+
+
+    <div class="aiSuggestions">
+
+     <button
+      onclick="askSuggestion('What can you help me with?')">
+
+      What can you do?
+
+     </button>
+
+     <button
+      onclick="askSuggestion('Give me an idea for my circle')">
+
+      Circle idea
+
+     </button>
+
+     <button
+      onclick="askSuggestion('Explain something to me simply')">
+
+      Explain something
+
+     </button>
+
+    </div>
+
+
+    <div class="aiComposer">
+
+     <textarea
+      id="aiInput"
+      placeholder="Message Track Circle AI..."
+      rows="1">
+     </textarea>
+
+     <button
+      class="sendBtn"
+      onclick="sendAI()">
+
+      ↑
+
+     </button>
+
+    </div>
+
+   </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       FEED
+       ===================================================== -->
+
+  <section
+   id="feed"
+   class="page">
+
+   <div class="sectionHead"
+    style="margin-top:0">
+
+    <h2>
+     Circle Feed
+    </h2>
+
+   </div>
+
+
+   <div class="postComposer">
+
+    <textarea
+     id="postText"
+     placeholder="Share something with your circles...">
+    </textarea>
+
+
+    <div class="postComposerBottom">
+
+     <div class="mediaButtons">
+
+      <button
+       class="smallBtn"
+       onclick="choosePostMedia('image')">
+
+       📷 Photo
+
+      </button>
+
+      <button
+       class="smallBtn"
+       onclick="choosePostMedia('video')">
+
+       🎥 Video
+
+      </button>
+
+     </div>
+
+
+     <button
+      class="publishBtn"
+      onclick="createPost()">
+
+      Post
+
+     </button>
+
+    </div>
+
+   </div>
+
+
+   <input
+    id="postMediaInput"
+    type="file"
+    accept="image/*,video/*"
+    hidden
+    onchange="handlePostMedia(event)"
+   >
+
+
+   <div id="feedList">
+
+    <div class="card">
+     Loading feed...
+    </div>
+
+   </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       PROFILE
+       ===================================================== -->
+
+  <section
+   id="profile"
+   class="page">
+
+   <div class="card profileCard">
+
+    <div
+     id="profilePic"
+     class="profilePic"
+     onclick="chooseProfilePhoto()">
+
+     TC
+
+    </div>
+
+
+    <div
+     id="profileName"
+     class="profileName">
+
+     Track Circle User
+
+    </div>
+
+
+    <div
+     id="profileUsername"
+     class="profileUsername">
+
+     @user
+
+    </div>
+
+
+    <button
+     class="secondaryBtn"
+     onclick="chooseProfilePhoto()">
+
+     Change profile picture
+
+    </button>
+
+
+    <input
+     id="profilePhotoInput"
+     type="file"
+     accept="image/*"
+     hidden
+     onchange="uploadProfilePhoto(event)"
+    >
+
+   </div>
+
+
+   <div class="card">
+
+    <div class="sectionHead"
+     style="margin:0 0 12px">
+
+     <h2>
+      Account
+     </h2>
+
+    </div>
+
+    <div class="muted"
+     id="profileEmail"
+     style="font-size:12px">
+
+     Loading...
+
+    </div>
+
+   </div>
+
+
+   <button
+    class="secondaryBtn"
+    style="
+     color:var(--red);
+     border-color:rgba(255,94,108,.15);
+    "
+    onclick="signOut()">
+
+    Sign out
+
+   </button>
+
+  </section>
+
+
+ </main>
+
+
+ <!-- =====================================================
+      NAVIGATION
+      ===================================================== -->
+
+ <nav class="nav">
+
+  <button
+   data-page="home"
+   class="active"
+   onclick="go('home')">
+
+   <span>⌂</span>
+   Home
+
+  </button>
+
+
+  <button
+   data-page="mapPage"
+   onclick="go('mapPage')">
+
+   <span>◎</span>
+   Live Map
+
+  </button>
+
+
+  <button
+   data-page="circles"
+   onclick="go('circles')">
+
+   <span>◉</span>
+   Circles
+
+  </button>
+
+
+  <button
+   data-page="messages"
+   onclick="go('messages')">
+
+   <span>▱</span>
+   Messages
+
+  </button>
+
+
+  <button
+   data-page="profile"
+   onclick="go('profile')">
+
+   <span>●</span>
+   Profile
+
+  </button>
+
+ </nav>
 
 </section>
 
 
-<div id="toast" class="toast"></div>
+<!-- =======================================================
+     CREATE CIRCLE MODAL
+     ======================================================= -->
+
+<div
+ id="circleModal"
+ class="modal"
+ onclick="modalBackgroundClose(event,'circleModal')">
+
+ <div class="modalBox">
+
+  <div class="modalHeader">
+
+   <h3>
+    Create a Circle
+   </h3>
+
+   <button
+    class="closeBtn"
+    onclick="closeModal('circleModal')">
+
+    ×
+
+   </button>
+
+  </div>
+
+
+  <div class="field">
+
+   <label>
+    Circle name
+   </label>
+
+   <input
+    id="circleName"
+    placeholder="Family Trip"
+   >
+
+  </div>
+
+
+  <div class="field">
+
+   <label>
+    Circle type
+   </label>
+
+   <select id="circleType">
+
+    <option value="Family">
+     Family
+    </option>
+
+    <option value="Friends">
+     Friends
+    </option>
+
+    <option value="School Group">
+     School Group
+    </option>
+
+    <option value="Football Team">
+     Football Team
+    </option>
+
+    <option value="Trip">
+     Trip
+    </option>
+
+    <option value="Other">
+     Other
+    </option>
+
+   </select>
+
+  </div>
+
+
+  <button
+   class="primaryBtn"
+   onclick="createCircle()">
+
+   Create Circle
+
+  </button>
+
+ </div>
+
+</div>
+
+
+<!-- =======================================================
+     JOIN CIRCLE MODAL
+     ======================================================= -->
+
+<div
+ id="joinModal"
+ class="modal"
+ onclick="modalBackgroundClose(event,'joinModal')">
+
+ <div class="modalBox">
+
+  <div class="modalHeader">
+
+   <h3>
+    Join a Circle
+   </h3>
+
+   <button
+    class="closeBtn"
+    onclick="closeModal('joinModal')">
+
+    ×
+
+   </button>
+
+  </div>
+
+
+  <div class="field">
+
+   <label>
+    Invite code
+   </label>
+
+   <input
+    id="joinCode"
+    placeholder="TC-7K4P9"
+    style="
+     text-transform:uppercase;
+    "
+   >
+
+  </div>
+
+
+  <button
+   class="primaryBtn"
+   onclick="joinCircle()">
+
+   Join Circle
+
+  </button>
+
+ </div>
+
+</div>
+
+
+<!-- =======================================================
+     GIFT MODAL
+     ======================================================= -->
+
+<div
+ id="giftModal"
+ class="modal"
+ onclick="modalBackgroundClose(event,'giftModal')">
+
+ <div class="modalBox">
+
+  <div class="modalHeader">
+
+   <h3>
+    Send a Gift
+   </h3>
+
+   <button
+    class="closeBtn"
+    onclick="closeModal('giftModal')">
+
+    ×
+
+   </button>
+
+  </div>
+
+
+  <div class="giftGrid">
+
+   <button
+    class="gift"
+    onclick="selectGift('❤️',500)">
+
+    <span class="giftEmoji">
+     ❤️
+    </span>
+
+    <span class="giftPrice">
+     ₦500
+    </span>
+
+   </button>
+
+
+   <button
+    class="gift"
+    onclick="selectGift('🔥',5000)">
+
+    <span class="giftEmoji">
+     🔥
+    </span>
+
+    <span class="giftPrice">
+     ₦5,000
+    </span>
+
+   </button>
+
+
+   <button
+    class="gift"
+    onclick="selectGift('💎',10000)">
+
+    <span class="giftEmoji">
+     💎
+    </span>
+
+    <span class="giftPrice">
+     ₦10,000
+    </span>
+
+   </button>
+
+
+   <button
+    class="gift"
+    onclick="selectGift('👑',50000)">
+
+    <span class="giftEmoji">
+     👑
+    </span>
+
+    <span class="giftPrice">
+     ₦50,000
+    </span>
+
+   </button>
+
+
+   <button
+    class="gift"
+    onclick="selectGift('🚀',100000)">
+
+    <span class="giftEmoji">
+     🚀
+    </span>
+
+    <span class="giftPrice">
+     ₦100,000
+    </span>
+
+   </button>
+
+
+   <button
+    class="gift"
+    onclick="selectGift('💚',430000)">
+
+    <span class="giftEmoji">
+     💚
+    </span>
+
+    <span class="giftPrice">
+     ₦430,000
+    </span>
+
+   </button>
+
+  </div>
+
+
+  <button
+   class="secondaryBtn"
+   onclick="customGift()">
+
+   Custom amount
+
+  </button>
+
+
+  <div
+   id="giftInfo"
+   class="card"
+   style="
+    margin-top:10px;
+    text-align:center;
+   ">
+
+   Select a gift.
+
+  </div>
+
+
+  <button
+   class="primaryBtn"
+   onclick="sendSelectedGift()">
+
+   Continue to payment
+
+  </button>
+
+ </div>
+
+</div>
+
+
+<div id="toast"></div>
 <script>
 
-/* =====================================================
-   TRACK CIRCLE CORE
-===================================================== */
+/* =========================================================
+   TRACK CIRCLE — CONFIGURATION
+   ========================================================= */
 
 const SUPABASE_URL =
-"https://olivaregvcejjghrjdio.supabase.co";
+ "https://olivaregvcejjghrjdio.supabase.co";
 
 const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiIjoib2xpdmFyZWd2Y2VqamdocmpkaW8iLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc5MDI4MTgzNSwiZXhwIjoyMTA1ODU3ODM1fQ.r1aukPMLnShXSFjuE47AIaGKmgwHrFuaWl8-2r8Su0Y";
-
-let supabaseClient;
-let currentUser = null;
-let currentChatUser = null;
-let locationWatchId = null;
-let locationSharing = false;
-let mediaRecorder = null;
-let voiceChunks = [];
-let searchTimer = null;
-
-function $(id){
- return document.getElementById(id);
-}
-
-function toast(message){
- const t = $("toast");
- t.textContent = message;
- t.classList.add("show");
-
- clearTimeout(window.__toastTimer);
-
- window.__toastTimer =
- setTimeout(()=>{
-  t.classList.remove("show");
- },2800);
-}
-
-function escapeHtml(value){
- return String(value ?? "")
-  .replace(/&/g,"&amp;")
-  .replace(/</g,"&lt;")
-  .replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;")
-  .replace(/'/g,"&#039;");
-}
+ "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9saXZhcmVndmNlampnaHJqZGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyODE4MzUsImV4cCI6MjEwNTg1NzgzNX0.r1aukPMLnShXSFjuE47AIaGKmgwHrFuaWl8-2r8Su0Y";
 
 
-/* =====================================================
+let supabaseClient=null;
+
+let currentUser=null;
+
+let currentProfile=null;
+
+let currentAuthMode="login";
+
+let selectedGift=null;
+
+let locationWatcher=null;
+
+let locationEnabled=false;
+
+let map=null;
+
+let ownMarker=null;
+
+let memberMarkers=[];
+
+let searchTimer=null;
+
+let toastTimer=null;
+
+let startupComplete=false;
+
+
+/* =========================================================
    SUPABASE
-===================================================== */
+   ========================================================= */
 
-function initSupabase(){
-
- if(!window.supabase){
-  $("authMessage").textContent =
-   "Supabase failed to load. Check your internet connection.";
-  return false;
- }
+function initializeSupabase(){
 
  try{
 
-  supabaseClient =
+  if(
+   !window.supabase ||
+   typeof window.supabase.createClient!=="function"
+  ){
+
+   console.error(
+    "Supabase library did not load."
+   );
+
+   return false;
+
+  }
+
+  supabaseClient=
    window.supabase.createClient(
     SUPABASE_URL,
-    SUPABASE_ANON_KEY
+    SUPABASE_ANON_KEY,
+    {
+     auth:{
+      persistSession:true,
+      autoRefreshToken:true,
+      detectSessionInUrl:true
+     }
+    }
    );
 
   return true;
 
  }catch(error){
 
-  console.error(error);
+  console.error(
+   "Supabase initialization failed:",
+   error
+  );
 
-  $("authMessage").textContent =
-   "Supabase initialization failed.";
+  supabaseClient=null;
 
   return false;
+
  }
+
 }
 
 
-/* =====================================================
-   AUTH
-===================================================== */
+/* =========================================================
+   TIMEOUT HELPER
+   ========================================================= */
 
-let authMode = "login";
+function withTimeout(
+ promise,
+ milliseconds=8000
+){
+
+ return Promise.race([
+
+  promise,
+
+  new Promise((resolve,reject)=>{
+
+   setTimeout(()=>{
+
+    reject(
+     new Error(
+      "Request timed out. Please try again."
+     )
+    );
+
+   },milliseconds);
+
+  })
+
+ ]);
+
+}
+
+
+/* =========================================================
+   AUTH SCREEN
+   ========================================================= */
+
+function showAuth(){
+
+ const auth=
+  document.getElementById("auth");
+
+ const main=
+  document.getElementById("main");
+
+ if(main){
+
+  main.classList.add("hidden");
+
+ }
+
+ if(auth){
+
+  auth.classList.remove("hidden");
+
+ }
+
+}
+
+
+function showMain(){
+
+ const auth=
+  document.getElementById("auth");
+
+ const main=
+  document.getElementById("main");
+
+ if(auth){
+
+  auth.classList.add("hidden");
+
+ }
+
+ if(main){
+
+  main.classList.remove("hidden");
+
+ }
+
+ updateProfileUI();
+
+}
+
+
+/* =========================================================
+   AUTH MODE
+   ========================================================= */
 
 function setAuthMode(mode){
 
- authMode = mode;
+ currentAuthMode=mode;
 
- $("loginTab").classList.toggle(
-  "active",
-  mode === "login"
- );
+ const loginTab=
+  document.getElementById("loginTab");
 
- $("signupTab").classList.toggle(
-  "active",
-  mode === "signup"
- );
+ const signupTab=
+  document.getElementById("signupTab");
 
- $("nameField").classList.toggle(
-  "hidden",
-  mode === "login"
- );
+ const nameField=
+  document.getElementById("nameField");
 
- $("authSubmit").textContent =
-  mode === "login"
-   ? "Sign In"
-   : "Create Account";
+ const usernameField=
+  document.getElementById("usernameField");
 
- $("authMessage").textContent = "";
+ const button=
+  document.getElementById("authButton");
+
+ const error=
+  document.getElementById("authError");
+
+ if(mode==="signup"){
+
+  loginTab?.classList.remove("active");
+
+  signupTab?.classList.add("active");
+
+  nameField?.classList.remove("hidden");
+
+  usernameField?.classList.remove("hidden");
+
+  if(button)
+   button.textContent="Create account";
+
+ }else{
+
+  loginTab?.classList.add("active");
+
+  signupTab?.classList.remove("active");
+
+  nameField?.classList.add("hidden");
+
+  usernameField?.classList.add("hidden");
+
+  if(button)
+   button.textContent="Sign in";
+
+ }
+
+ if(error){
+
+  error.textContent="";
+
+  error.style.color="var(--red)";
+
+ }
+
 }
 
-async function handleAuth(event){
 
- event.preventDefault();
+function toggleAuth(){
 
- const email =
-  $("authEmail").value.trim();
+ setAuthMode(
+  currentAuthMode==="login"
+   ? "signup"
+   : "login"
+ );
 
- const password =
-  $("authPassword").value;
+}
 
- const name =
-  $("authName").value.trim();
 
- if(!email || !password){
-  $("authMessage").textContent =
-   "Enter your email and password.";
-  return;
+/* =========================================================
+   AUTH SUBMISSION
+   ========================================================= */
+
+async function submitAuth(){
+
+ const errorBox=
+  document.getElementById("authError");
+
+ const button=
+  document.getElementById("authButton");
+
+ const email=
+  document.getElementById("authEmail")
+   ?.value
+   .trim();
+
+ const password=
+  document.getElementById("authPassword")
+   ?.value;
+
+ const name=
+  document.getElementById("authName")
+   ?.value
+   .trim();
+
+ const username=
+  document.getElementById("authUsername")
+   ?.value
+   .trim()
+   .replace(/^@/,"")
+   .toLowerCase();
+
+
+ if(errorBox){
+
+  errorBox.textContent="";
+
+  errorBox.style.color="var(--red)";
+
  }
 
- if(authMode === "signup" && !name){
-  $("authMessage").textContent =
-   "Enter your display name.";
+
+ if(!supabaseClient){
+
+  errorBox.textContent=
+   "Supabase is not connected.";
+
   return;
+
  }
 
- $("authSubmit").disabled = true;
 
- $("authSubmit").textContent =
-  authMode === "login"
-   ? "Signing in..."
-   : "Creating account...";
+ if(!email){
+
+  errorBox.textContent=
+   "Enter your email address.";
+
+  return;
+
+ }
+
+
+ if(!password || password.length<6){
+
+  errorBox.textContent=
+   "Password must contain at least 6 characters.";
+
+  return;
+
+ }
+
+
+ if(currentAuthMode==="signup"){
+
+  if(!name){
+
+   errorBox.textContent=
+    "Enter your full name.";
+
+   return;
+
+  }
+
+  if(!username){
+
+   errorBox.textContent=
+    "Choose a username.";
+
+   return;
+
+  }
+
+ }
+
 
  try{
 
-  if(authMode === "signup"){
+  if(button){
 
-   const result =
-    await supabaseClient.auth.signUp({
-     email,
-     password,
-     options:{
-      data:{
-       display_name:name
+   button.disabled=true;
+
+   button.textContent=
+    currentAuthMode==="signup"
+     ? "Creating..."
+     : "Signing in...";
+
+  }
+
+
+  if(currentAuthMode==="signup"){
+
+   const result=
+    await withTimeout(
+
+     supabaseClient.auth.signUp({
+
+      email:email,
+
+      password:password,
+
+      options:{
+       data:{
+        display_name:name,
+        username:username
+       }
       }
-     }
-    });
+
+     }),
+
+     12000
+
+    );
+
 
    if(result.error)
     throw result.error;
 
-   if(result.data.user){
 
-    currentUser =
+   if(result.data?.user){
+
+    currentUser=
      result.data.user;
 
-    await saveProfile(
-     name
+   }
+
+
+   if(result.data?.session){
+
+    currentUser=
+     result.data.session.user;
+
+    await createOrUpdateProfile({
+
+     id:currentUser.id,
+
+     display_name:name,
+
+     username:username
+
+    });
+
+    await loadCurrentProfile();
+
+    showMain();
+
+    await loadAppData();
+
+    toast(
+     "Account created."
     );
 
-    if(result.data.session){
+   }else{
 
-     await openApp();
+    errorBox.style.color=
+     "var(--green)";
 
-    }else{
+    errorBox.textContent=
+     "Account created. Check your email if confirmation is required.";
 
-     $("authMessage").textContent =
-      "Account created. Check your email if confirmation is enabled.";
-    }
    }
 
   }else{
 
-   const result =
-    await supabaseClient.auth.signInWithPassword({
-     email,
-     password
-    });
+
+   const result=
+    await withTimeout(
+
+     supabaseClient.auth.signInWithPassword({
+
+      email:email,
+
+      password:password
+
+     }),
+
+     12000
+
+    );
+
 
    if(result.error)
     throw result.error;
 
-   currentUser =
-    result.data.user;
 
-   await openApp();
+   if(!result.data?.session)
+    throw new Error(
+     "No active session was created."
+    );
+
+
+   currentUser=
+    result.data.session.user;
+
+
+   await loadCurrentProfile();
+
+   showMain();
+
+   await loadAppData();
+
+   toast(
+    "Welcome back."
+   );
+
   }
 
  }catch(error){
 
-  console.error(error);
+  console.error(
+   "Authentication:",
+   error
+  );
 
-  $("authMessage").textContent =
-   error.message ||
+  errorBox.textContent=
+   error?.message||
    "Authentication failed.";
 
  }finally{
 
-  $("authSubmit").disabled = false;
+  if(button){
 
-  $("authSubmit").textContent =
-   authMode === "login"
-    ? "Sign In"
-    : "Create Account";
+   button.disabled=false;
+
+   button.textContent=
+    currentAuthMode==="signup"
+     ? "Create account"
+     : "Sign in";
+
+  }
+
  }
+
 }
 
 
-/* =====================================================
-   PROFILE
-===================================================== */
+/* =========================================================
+   OAUTH
+   ========================================================= */
 
-async function saveProfile(displayName){
+async function oauth(provider){
 
- if(!currentUser)
+ if(!supabaseClient){
+
+  toast(
+   "Supabase is not connected."
+  );
+
   return;
 
- const result =
-  await supabaseClient
-   .from("profiles")
-   .upsert({
+ }
+
+ try{
+
+  const result=
+   await withTimeout(
+
+    supabaseClient.auth.signInWithOAuth({
+
+     provider:provider,
+
+     options:{
+      redirectTo:
+       window.location.href.split("#")[0]
+     }
+
+    }),
+
+    10000
+
+   );
+
+
+  if(result.error)
+   throw result.error;
+
+ }catch(error){
+
+  document.getElementById(
+   "authError"
+  ).textContent=
+   error.message||
+   "Social sign in failed.";
+
+ }
+
+}
+
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+async function createOrUpdateProfile(profile){
+
+ if(!supabaseClient || !profile?.id)
+  return;
+
+ try{
+
+  const result=
+   await withTimeout(
+
+    supabaseClient
+     .from("profiles")
+     .upsert({
+
+      id:profile.id,
+
+      display_name:
+       profile.display_name||
+       "Track Circle User",
+
+      username:
+       profile.username||
+       null
+
+     },{
+      onConflict:"id"
+     }),
+
+    8000
+
+   );
+
+
+  if(result.error){
+
+   console.warn(
+    "Profile upsert:",
+    result.error.message
+   );
+
+  }
+
+ }catch(error){
+
+  console.warn(
+   "Profile upsert failed:",
+   error
+  );
+
+ }
+
+}
+
+
+async function loadCurrentProfile(){
+
+ if(!supabaseClient || !currentUser)
+  return null;
+
+ try{
+
+  const result=
+   await withTimeout(
+
+    supabaseClient
+     .from("profiles")
+     .select("*")
+     .eq(
+      "id",
+      currentUser.id
+     )
+     .maybeSingle(),
+
+    7000
+
+   );
+
+
+  if(result.error){
+
+   console.warn(
+    "Profile:",
+    result.error.message
+   );
+
+   return null;
+
+  }
+
+
+  currentProfile=
+   result.data||null;
+
+
+  if(!currentProfile){
+
+   await createOrUpdateProfile({
+
     id:currentUser.id,
+
     display_name:
-     displayName ||
-     currentUser.user_metadata?.display_name ||
+     currentUser.user_metadata?.display_name||
+     currentUser.email?.split("@")[0]||
      "Track Circle User",
-    email:currentUser.email,
-    updated_at:
-     new Date().toISOString()
+
+    username:
+     currentUser.user_metadata?.username||
+     null
+
    });
 
- if(result.error)
-  console.warn("Profile:",result.error);
-}
 
-async function loadProfile(){
+   const retry=
+    await supabaseClient
+     .from("profiles")
+     .select("*")
+     .eq(
+      "id",
+      currentUser.id
+     )
+     .maybeSingle();
 
- if(!currentUser)
-  return;
 
- const result =
-  await supabaseClient
-   .from("profiles")
-   .select("*")
-   .eq("id",currentUser.id)
-   .maybeSingle();
+   currentProfile=
+    retry.data||null;
 
- if(result.error){
-  console.warn(result.error);
-  return;
+  }
+
+
+  updateProfileUI();
+
+  return currentProfile;
+
+ }catch(error){
+
+  console.warn(
+   "Profile load failed:",
+   error
+  );
+
+  return null;
+
  }
 
- const profile =
-  result.data || {};
+}
 
- const name =
-  profile.display_name ||
-  currentUser.user_metadata?.display_name ||
-  currentUser.email?.split("@")[0] ||
+
+function updateProfileUI(){
+
+ const name=
+  currentProfile?.display_name||
+  currentUser?.user_metadata?.display_name||
+  currentUser?.email?.split("@")[0]||
   "Track Circle User";
 
- $("profileName").textContent = name;
 
- $("profileEmail").textContent =
-  currentUser.email || "";
+ const username=
+  currentProfile?.username||
+  currentUser?.user_metadata?.username||
+  "user";
 
- $("profileId").textContent =
-  currentUser.id;
 
- $("greetingTitle").textContent =
-  getGreeting()+", "+name+".";
+ const avatar=
+  currentProfile?.avatar_url;
 
- $("greetingSmall").textContent =
-  "Stay connected with your circle.";
 
- if(profile.avatar_url){
+ const homeName=
+  document.getElementById("homeName");
 
-  $("profileAvatar").innerHTML =
-   `<img src="${escapeHtml(profile.avatar_url)}">`;
+ if(homeName)
+  homeName.textContent=
+   "Welcome, "+name+".";
+
+
+ const profileName=
+  document.getElementById("profileName");
+
+ if(profileName)
+  profileName.textContent=name;
+
+
+ const profileUsername=
+  document.getElementById("profileUsername");
+
+ if(profileUsername)
+  profileUsername.textContent=
+   "@"+username;
+
+
+ const profileEmail=
+  document.getElementById("profileEmail");
+
+ if(profileEmail)
+  profileEmail.textContent=
+   currentUser?.email||
+   "";
+
+
+ const pic=
+  document.getElementById("profilePic");
+
+ if(pic){
+
+  if(avatar){
+
+   pic.innerHTML=
+    `<img src="${escapeAttr(avatar)}">`;
+
+  }else{
+
+   pic.textContent=
+    name
+     .charAt(0)
+     .toUpperCase();
+
+  }
 
  }
-}
 
-function getGreeting(){
-
- const hour =
-  new Date().getHours();
-
- if(hour < 12)
-  return "Good morning";
-
- if(hour < 17)
-  return "Good afternoon";
-
- return "Good evening";
 }
 
 
-/* =====================================================
-   OPEN APP
-===================================================== */
+/* =========================================================
+   APP DATA
+   ========================================================= */
 
-async function openApp(){
+async function loadAppData(){
 
- $("authScreen").style.display =
-  "none";
+ await Promise.allSettled([
 
- $("appScreen").style.display =
-  "block";
+  loadHomeData(),
 
- await loadProfile();
+  loadCircles(),
 
- await loadCircles();
+  loadChats(),
 
- subscribeRealtime();
+  loadPosts(),
+
+  loadFriendCount()
+
+ ]);
+
 }
 
 
-/* =====================================================
+/* =========================================================
+   HOME
+   ========================================================= */
+
+async function loadHomeData(){
+
+ const welcome=
+  document.getElementById("welcomeText");
+
+ if(welcome){
+
+  const hour=
+   new Date().getHours();
+
+  welcome.textContent=
+   hour<12
+    ? "GOOD MORNING"
+    : hour<18
+     ? "GOOD AFTERNOON"
+     : "GOOD EVENING";
+
+ }
+
+ updateLocationUI();
+
+}
+
+
+/* =========================================================
    NAVIGATION
-===================================================== */
+   ========================================================= */
 
-function navigate(pageId){
+function go(page){
 
  document
   .querySelectorAll(".page")
-  .forEach(page=>{
-   page.classList.remove("active");
+  .forEach(section=>{
+
+   section.classList.remove("active");
+
   });
 
- const page =
-  $(pageId);
 
- if(page)
-  page.classList.add("active");
+ const target=
+  document.getElementById(page);
+
+ if(target)
+  target.classList.add("active");
+
 
  document
-  .querySelectorAll(".nav-item")
-  .forEach(item=>{
-   item.classList.toggle(
+  .querySelectorAll(".nav button")
+  .forEach(button=>{
+
+   button.classList.toggle(
     "active",
-    item.dataset.page === pageId
+    button.dataset.page===page
    );
-  });
-}
 
-
-/* =====================================================
-   CIRCLES
-===================================================== */
-
-function inviteCode(){
-
- const chars =
- "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
- let code = "TC-";
-
- for(let i=0;i<5;i++){
-
-  code +=
-   chars[
-    Math.floor(
-     Math.random()*chars.length
-    )
-   ];
- }
-
- return code;
-}
-
-async function createCircle(){
-
- const name =
-  $("circleName").value.trim();
-
- const type =
-  $("circleType").value.trim() ||
-  "Friends";
-
- if(!name){
-
-  toast("Enter a circle name.");
-  return;
- }
-
- const code =
-  inviteCode();
-
- const result =
-  await supabaseClient
-   .from("circles")
-   .insert({
-    name,
-    type,
-    invite_code:code,
-    owner_id:currentUser.id
-   })
-   .select()
-   .single();
-
- if(result.error){
-
-  console.error(result.error);
-
-  toast(
-   "Could not create circle: "+
-   result.error.message
-  );
-
-  return;
- }
-
- await supabaseClient
-  .from("circle_members")
-  .insert({
-   circle_id:result.data.id,
-   user_id:currentUser.id
   });
 
- $("createCircleModal")
-  .classList.remove("show");
 
- $("circleName").value="";
- $("circleType").value="";
+ const content=
+  document.querySelector(".content");
 
- toast(
-  "Circle created. Invite code: "+
-  code
- );
+ if(content)
+  content.scrollTop=0;
 
- await loadCircles();
-}
 
-async function loadCircles(){
+ if(page==="mapPage"){
 
- if(!currentUser)
-  return;
+  setTimeout(()=>{
 
- const result =
-  await supabaseClient
-   .from("circle_members")
-   .select(`
-    circle_id,
-    circles(
-     id,
-     name,
-     type,
-     invite_code
-    )
-   `)
-   .eq(
-    "user_id",
-    currentUser.id
-   );
+   initializeMap();
 
- if(result.error){
+   if(map)
+    map.invalidateSize();
 
-  console.warn(
-   "Circles:",
-   result.error
-  );
+   refreshMapMembers();
 
-  return;
+  },100);
+
  }
 
- const circles =
-  (result.data || [])
-   .map(row=>row.circles)
-   .filter(Boolean);
 
- renderCircles(circles);
-}
+ if(page==="feed")
+  loadPosts();
 
-function renderCircles(circles){
 
- const containers = [
-  $("circleList"),
-  $("homeCircleList")
- ];
+ if(page==="messages")
+  loadChats();
 
- containers.forEach(container=>{
 
-  if(!container)
-   return;
+ if(page==="circles")
+  loadCircles();
 
-  if(!circles.length){
 
-   container.innerHTML =
-    `<div class="empty">
-      No circles yet.
-     </div>`;
+ if(page==="profile")
+  updateProfileUI();
 
-   return;
-  }
-
-  container.innerHTML =
-   circles.map(circle=>`
-
-    <div class="card">
-
-     <strong>
-      ${escapeHtml(circle.name)}
-     </strong>
-
-     <p style="
-      color:#7d8795;
-      margin-top:5px;
-     ">
-      ${escapeHtml(
-       circle.type || "Circle"
-      )}
-     </p>
-
-     <p style="
-      color:#19E6A0;
-      margin-top:8px;
-      font-size:12px;
-     ">
-      Invite code:
-      ${escapeHtml(circle.invite_code)}
-     </p>
-
-    </div>
-
-   `).join("");
- });
-}
-
-async function joinCircle(){
-
- const code =
-  $("joinCode")
-   .value
-   .trim()
-   .toUpperCase();
-
- if(!code){
-  $("joinMessage").textContent =
-   "Enter an invite code.";
-  return;
- }
-
- const result =
-  await supabaseClient
-   .from("circles")
-   .select("*")
-   .eq(
-    "invite_code",
-    code
-   )
-   .maybeSingle();
-
- if(result.error){
-
-  $("joinMessage").textContent =
-   result.error.message;
-
-  return;
- }
-
- if(!result.data){
-
-  $("joinMessage").textContent =
-   "Circle not found.";
-
-  return;
- }
-
- const membership =
-  await supabaseClient
-   .from("circle_members")
-   .insert({
-    circle_id:result.data.id,
-    user_id:currentUser.id
-   });
-
- if(membership.error){
-
-  $("joinMessage").textContent =
-   membership.error.message;
-
-  return;
- }
-
- $("joinCircleModal")
-  .classList.remove("show");
-
- $("joinCode").value="";
-
- toast(
-  "Joined "+result.data.name
- );
-
- await loadCircles();
 }
 
 
-/* =====================================================
-   USER SEARCH
-===================================================== */
-
-function searchUsers(){
-
- clearTimeout(searchTimer);
-
- searchTimer =
-  setTimeout(
-   performSearch,
-   350
-  );
-}
-
-async function performSearch(){
-
- const query =
-  $("userSearchInput")
-   .value
-   .trim();
-
- const box =
-  $("searchResults");
-
- if(!query){
-
-  box.innerHTML =
-   `<div class="empty">
-    Search for someone to start a conversation.
-   </div>`;
-
-  return;
- }
-
- const result =
-  await supabaseClient
-   .from("profiles")
-   .select(
-    "id,display_name,email,avatar_url"
-   )
-   .ilike(
-    "display_name",
-    "%"+query+"%"
-   )
-   .limit(20);
-
- if(result.error){
-
-  box.innerHTML =
-   `<div class="empty">
-    Search failed.
-   </div>`;
-
-  return;
- }
-
- const users =
-  (result.data || [])
-   .filter(
-    user=>
-     user.id !== currentUser.id
-   );
-
- if(!users.length){
-
-  box.innerHTML =
-   `<div class="empty">
-    No users found.
-   </div>`;
-
-  return;
- }
-
- box.innerHTML =
-  users.map(user=>`
-
-   <button
-    class="list-btn"
-    onclick="openChat('${user.id}')">
-
-    <div style="
-     display:flex;
-     align-items:center;
-     gap:11px;
-    ">
-
-     <div class="chat-avatar">
-
-      ${
-       user.avatar_url
-       ?
-       `<img src="${escapeHtml(user.avatar_url)}">`
-       :
-       "👤"
-      }
-
-     </div>
-
-     <div>
-      <strong>
-       ${escapeHtml(
-        user.display_name ||
-        "Track Circle User"
-       )}
-      </strong>
-
-      <small>
-       Tap to message
-      </small>
-     </div>
-
-    </div>
-
-   </button>
-
-  `).join("");
-}
-
-
-/* =====================================================
-   CHAT
-===================================================== */
-
-async function openChat(userId){
-
- const result =
-  await supabaseClient
-   .from("profiles")
-   .select("*")
-   .eq("id",userId)
-   .maybeSingle();
-
- if(result.error){
-
-  toast("Could not open chat.");
-  return;
- }
-
- currentChatUser =
-  result.data;
-
- $("chatName").textContent =
-  currentChatUser.display_name ||
-  "Track Circle User";
-
- $("chatAvatar").innerHTML =
-  currentChatUser.avatar_url
-  ?
-  `<img src="${escapeHtml(currentChatUser.avatar_url)}">`
-  :
-  "👤";
-
- $("chatWindow")
-  .classList.add("show");
-
- await loadMessages();
-}
-
-async function loadMessages(){
-
- if(!currentChatUser)
-  return;
-
- const result =
-  await supabaseClient
-   .from("messages")
-   .select("*")
-   .or(
-    `and(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChatUser.id}),and(sender_id.eq.${currentChatUser.id},receiver_id.eq.${currentUser.id})`
-   )
-   .order(
-    "created_at",
-    {ascending:true}
-   );
-
- if(result.error){
-
-  console.warn(result.error);
-
-  $("chatBody").innerHTML =
-   `<div class="empty">
-    Start your conversation.
-   </div>`;
-
-  return;
- }
-
- renderMessages(
-  result.data || []
- );
-}
-
-function renderMessages(messages){
-
- const body =
-  $("chatBody");
-
- if(!messages.length){
-
-  body.innerHTML =
-   `<div class="empty">
-    No messages yet.<br>
-    Say hello 👋
-   </div>`;
-
-  return;
- }
-
- body.innerHTML =
-  messages.map(message=>{
-
-   const mine =
-    message.sender_id ===
-    currentUser.id;
-
-   const content =
-    message.content || "";
-
-   let html = "";
-
-   if(
-    content.startsWith("TCMEDIA_IMAGE:")
-   ){
-
-    const url =
-     content.replace(
-      "TCMEDIA_IMAGE:",
-      ""
-     );
-
-    html =
-     `<img src="${escapeHtml(url)}"
-           alt="Image">`;
-
-   }else if(
-    content.startsWith("TCMEDIA_VIDEO:")
-   ){
-
-    const url =
-     content.replace(
-      "TCMEDIA_VIDEO:",
-      ""
-     );
-
-    html =
-     `<video src="${escapeHtml(url)}"
-            controls></video>`;
-
-   }else if(
-    content.startsWith("TCMEDIA_AUDIO:")
-   ){
-
-    const url =
-     content.replace(
-      "TCMEDIA_AUDIO:",
-      ""
-     );
-
-    html =
-     `<audio src="${escapeHtml(url)}"
-            controls></audio>`;
-
-   }else{
-
-    html =
-     escapeHtml(content);
-   }
-
-   return `
-
-    <div class="message-row ${mine?"mine":""}">
-
-     <div class="bubble">
-      ${html}
-     </div>
-
-    </div>
-
-   `;
-
-  }).join("");
-
- body.scrollTop =
-  body.scrollHeight;
-}
-
-async function sendTextMessage(){
-
- if(!currentChatUser)
-  return;
-
- const input =
-  $("chatInput");
-
- const text =
-  input.value.trim();
-
- if(!text)
-  return;
-
- input.disabled = true;
-
- const result =
-  await supabaseClient
-   .from("messages")
-   .insert({
-    sender_id:currentUser.id,
-    receiver_id:currentChatUser.id,
-    content:text
-   });
-
- input.disabled = false;
-
- if(result.error){
-
-  toast(
-   "Message failed: "+
-   result.error.message
-  );
-
-  return;
- }
-
- input.value="";
-
- await loadMessages();
-}
-
-
-/* =====================================================
-   REAL-TIME MESSAGES
-===================================================== */
-
-function subscribeRealtime(){
-
- if(!currentUser)
-  return;
-
- supabaseClient
-  .channel(
-   "track-circle-messages-"+currentUser.id
-  )
-  .on(
-   "postgres_changes",
-   {
-    event:"INSERT",
-    schema:"public",
-    table:"messages"
-   },
-   payload=>{
-
-    const message =
-     payload.new;
-
-    if(
-     currentChatUser &&
-     (
-      (
-       message.sender_id ===
-       currentChatUser.id &&
-       message.receiver_id ===
-       currentUser.id
-      ) ||
-      (
-       message.sender_id ===
-       currentUser.id &&
-       message.receiver_id ===
-       currentChatUser.id
-      )
-     )
-    ){
-
-     loadMessages();
-    }
-
-   }
-  )
-  .subscribe();
-}
-
-
-/* =====================================================
+/* =========================================================
    LOCATION
-===================================================== */
+   ========================================================= */
+
+function toggleLocation(){
+
+ if(locationEnabled){
+
+  stopLocation();
+
+ }else{
+
+  startLocation();
+
+ }
+
+}
+
 
 function startLocation(){
 
  if(!navigator.geolocation){
 
   toast(
-   "GPS is not supported by this browser."
+   "Location is not supported on this device."
   );
 
   return;
+
  }
 
+
  navigator.geolocation.getCurrentPosition(
-  ()=>{
-   beginLocationWatch();
+
+  position=>{
+
+   locationEnabled=true;
+
+   updateLocationUI();
+
+   updateOwnLocation(
+
+    position.coords.latitude,
+
+    position.coords.longitude
+
+   );
+
+
+   updateOwnMapPosition(
+
+    position.coords.latitude,
+
+    position.coords.longitude
+
+   );
+
+
+   if(!locationWatcher){
+
+    locationWatcher=
+     navigator.geolocation.watchPosition(
+
+      position=>{
+
+       updateOwnLocation(
+
+        position.coords.latitude,
+
+        position.coords.longitude
+
+       );
+
+
+       updateOwnMapPosition(
+
+        position.coords.latitude,
+
+        position.coords.longitude
+
+       );
+
+      },
+
+      error=>{
+
+       console.warn(
+        "Location watcher:",
+        error
+       );
+
+      },
+
+      {
+       enableHighAccuracy:true,
+       maximumAge:10000,
+       timeout:15000
+      }
+
+     );
+
+   }
+
+
+   toast(
+    "Location sharing is ON."
+   );
+
   },
+
   error=>{
-   console.error(error);
+
+   console.warn(
+    "Location permission:",
+    error
+   );
+
    toast(
     "Please allow location permission."
    );
+
   },
+
   {
    enableHighAccuracy:true,
    timeout:15000,
    maximumAge:0
   }
+
  );
+
 }
 
-function beginLocationWatch(){
-
- if(locationWatchId !== null)
-  return;
-
- locationSharing = true;
-
- updateLocationUI();
-
- locationWatchId =
-  navigator.geolocation.watchPosition(
-   position=>{
-
-    const latitude =
-     position.coords.latitude;
-
-    const longitude =
-     position.coords.longitude;
-
-    const accuracy =
-     position.coords.accuracy;
-
-    $("mapCoordinates").textContent =
-     latitude.toFixed(6)+
-     ", "+
-     longitude.toFixed(6)+
-     " • ±"+
-     Math.round(accuracy)+
-     "m";
-
-    $("mapLocationTitle").textContent =
-     "Your device GPS is active.";
-
-    saveLocation(
-     latitude,
-     longitude,
-     accuracy
-    );
-
-   },
-   error=>{
-    console.error(error);
-    toast(
-     "GPS error: "+error.message
-    );
-    stopLocation();
-   },
-   {
-    enableHighAccuracy:true,
-    timeout:20000,
-    maximumAge:10000
-   }
-  );
-}
 
 function stopLocation(){
 
- if(locationWatchId !== null){
+ if(locationWatcher!==null){
 
   navigator.geolocation.clearWatch(
-   locationWatchId
+   locationWatcher
   );
 
-  locationWatchId=null;
+  locationWatcher=null;
+
  }
 
- locationSharing=false;
+ locationEnabled=false;
 
  updateLocationUI();
+
+ toast(
+  "Location sharing is OFF."
+ );
+
 }
+
 
 function updateLocationUI(){
 
- const on =
-  locationSharing;
-
- $("locationDot")
-  .classList.toggle(
-   "on",
-   on
+ const status=
+  document.getElementById(
+   "locationStatus"
   );
 
- $("locationStatus").textContent =
-  on
-  ?
-  "Location sharing ON"
-  :
-  "Location sharing OFF";
-
- $("locationDetail").textContent =
-  on
-  ?
-  "Your device is sharing GPS location."
-  :
-  "Your location is private.";
-
- $("locationToggle").textContent =
-  on
-  ?
-  "Turn Off"
-  :
-  "Turn On";
-}
-
-let lastLocationWrite = 0;
-
-async function saveLocation(
- latitude,
- longitude,
- accuracy
-){
-
- if(!currentUser)
-  return;
-
- /* Don't write to Supabase every GPS tick. */
- const now =
-  Date.now();
-
- if(now-lastLocationWrite < 15000)
-  return;
-
- lastLocationWrite=now;
-
- const result =
-  await supabaseClient
-   .from("user_locations")
-   .upsert({
-    user_id:currentUser.id,
-    latitude,
-    longitude,
-    accuracy,
-    updated_at:
-     new Date().toISOString()
-   });
-
- if(result.error)
-  console.warn(
-   "Location:",
-   result.error
-  );
-}
-
-
-/* =====================================================
-   PROFILE AVATAR
-===================================================== */
-
-async function uploadAvatar(file){
-
- if(!file || !currentUser)
-  return;
-
- const extension =
-  file.name.split(".").pop() ||
-  "jpg";
-
- const path =
-  currentUser.id+
-  "/avatar-"+Date.now()+
-  "."+
-  extension;
-
- toast("Uploading profile photo...");
-
- const upload =
-  await supabaseClient
-   .storage
-   .from("avatars")
-   .upload(
-    path,
-    file,
-    {
-     upsert:true,
-     contentType:file.type
-    }
-   );
-
- if(upload.error){
-
-  toast(
-   "Avatar upload failed: "+
-   upload.error.message
+ const homeSwitch=
+  document.getElementById(
+   "locationSwitch"
   );
 
-  return;
+ const mapSwitch=
+  document.getElementById(
+   "mapLocationSwitch"
+  );
+
+ const count=
+  document.getElementById(
+   "locationCount"
+  );
+
+ const mapText=
+  document.getElementById(
+   "mapLocationText"
+  );
+
+
+ if(status){
+
+  status.textContent=
+   locationEnabled
+    ? "Location sharing is ON"
+    : "Location is off";
+
  }
 
- const publicUrl =
-  supabaseClient
-   .storage
-   .from("avatars")
-   .getPublicUrl(path)
-   .data.publicUrl;
 
- const result =
-  await supabaseClient
-   .from("profiles")
-   .update({
-    avatar_url:publicUrl,
-    updated_at:
-     new Date().toISOString()
-   })
-   .eq(
-    "id",
-    currentUser.id
-   );
+ if(mapText){
 
- if(result.error){
+  mapText.textContent=
+   locationEnabled
+    ? "Your live position is being shared."
+    : "Turn on location sharing.";
 
-  toast(
-   "Could not save avatar."
-  );
-
-  return;
  }
 
- $("profileAvatar").innerHTML =
-  `<img src="${escapeHtml(publicUrl)}">`;
 
- toast("Profile photo updated.");
-}
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-
-async function logout(){
-
- stopLocation();
-
- if(supabaseClient)
-  await supabaseClient.auth.signOut();
-
- currentUser=null;
-
- $("appScreen").style.display="none";
- $("authScreen").style.display="flex";
-
- setAuthMode("login");
-
- toast("Signed out.");
-}
-  /* =====================================================
-   CHAT MEDIA
-===================================================== */
-
-async function uploadChatMedia(file){
-
- if(!file || !currentUser || !currentChatUser)
-  return;
-
- const isVideo =
-  file.type.startsWith("video/");
-
- const folder =
-  isVideo
-  ? "videos"
-  : "images";
-
- const extension =
-  file.name.split(".").pop() ||
-  (isVideo ? "mp4" : "jpg");
-
- const path =
-  currentUser.id+
-  "/"+
-  folder+
-  "/"+
-  Date.now()+
-  "."+
-  extension;
-
- toast(
-  isVideo
-  ? "Uploading video..."
-  : "Uploading photo..."
+ homeSwitch?.classList.toggle(
+  "on",
+  locationEnabled
  );
 
- const upload =
-  await supabaseClient
-   .storage
-   .from("chat-media")
-   .upload(
-    path,
-    file,
-    {
-     upsert:false,
-     contentType:file.type
-    }
-   );
 
- if(upload.error){
+ mapSwitch?.classList.toggle(
+  "on",
+  locationEnabled
+ );
 
-  toast(
-   "Media upload failed: "+
-   upload.error.message
-  );
 
-  return;
- }
+ if(count)
+  count.textContent=
+   locationEnabled
+    ? "ON"
+    : "OFF";
 
- const publicUrl =
-  supabaseClient
-   .storage
-   .from("chat-media")
-   .getPublicUrl(path)
-   .data.publicUrl;
-
- const prefix =
-  isVideo
-  ? "TCMEDIA_VIDEO:"
-  : "TCMEDIA_IMAGE:";
-
- const result =
-  await supabaseClient
-   .from("messages")
-   .insert({
-    sender_id:currentUser.id,
-    receiver_id:currentChatUser.id,
-    content:prefix+publicUrl
-   });
-
- if(result.error){
-
-  toast(
-   "Could not send media: "+
-   result.error.message
-  );
-
-  return;
- }
-
- await loadMessages();
 }
 
 
-/* =====================================================
-   VOICE NOTES
-===================================================== */
+async function updateOwnLocation(
+ lat,
+ lng
+){
 
-async function startVoiceRecording(){
-
- if(!navigator.mediaDevices ||
-    !navigator.mediaDevices.getUserMedia){
-
-  toast(
-   "Voice recording isn't supported here."
-  );
-
+ if(!supabaseClient || !currentUser)
   return;
- }
 
  try{
 
-  const stream =
-   await navigator.mediaDevices
-    .getUserMedia({
-     audio:true
-    });
+  const result=
+   await withTimeout(
 
-  voiceChunks=[];
+    supabaseClient
+     .from("profiles")
+     .update({
 
-  mediaRecorder =
-   new MediaRecorder(stream);
+      latitude:lat,
 
-  mediaRecorder.ondataavailable =
-   event=>{
+      longitude:lng,
 
-    if(event.data.size>0)
-     voiceChunks.push(
-      event.data
-     );
-   };
+      location_updated_at:
+       new Date().toISOString()
 
-  mediaRecorder.onstop =
-   async ()=>{
+     })
+     .eq(
+      "id",
+      currentUser.id
+     ),
 
-    stream
-     .getTracks()
-     .forEach(
-      track=>track.stop()
-     );
+    5000
 
-    const blob =
-     new Blob(
-      voiceChunks,
-      {
-       type:
-        mediaRecorder.mimeType ||
-        "audio/webm"
-      }
-     );
+   );
 
-    await uploadVoiceNote(blob);
-   };
 
-  mediaRecorder.start();
+  if(result.error){
 
-  $("voiceButton").textContent="⏹";
+   console.warn(
+    "Location update:",
+    result.error.message
+   );
 
-  toast(
-   "Recording... tap again to stop."
-  );
+  }
 
  }catch(error){
 
-  console.error(error);
-
-  toast(
-   "Microphone permission is required."
-  );
- }
-}
-
-function stopVoiceRecording(){
-
- if(
-  mediaRecorder &&
-  mediaRecorder.state !== "inactive"
- ){
-
-  mediaRecorder.stop();
-
-  $("voiceButton").textContent="🎙";
- }
-}
-
-async function uploadVoiceNote(blob){
-
- if(!currentUser || !currentChatUser)
-  return;
-
- const path =
-  currentUser.id+
-  "/voice/"+
-  Date.now()+
-  ".webm";
-
- toast("Uploading voice note...");
-
- const upload =
-  await supabaseClient
-   .storage
-   .from("chat-media")
-   .upload(
-    path,
-    blob,
-    {
-     upsert:false,
-     contentType:
-      blob.type ||
-      "audio/webm"
-    }
-   );
-
- if(upload.error){
-
-  toast(
-   "Voice upload failed: "+
-   upload.error.message
+  console.warn(
+   "Location update failed:",
+   error
   );
 
-  return;
  }
 
- const publicUrl =
-  supabaseClient
-   .storage
-   .from("chat-media")
-   .getPublicUrl(path)
-   .data.publicUrl;
-
- const result =
-  await supabaseClient
-   .from("messages")
-   .insert({
-    sender_id:currentUser.id,
-    receiver_id:currentChatUser.id,
-    content:
-     "TCMEDIA_AUDIO:"+
-     publicUrl
-   });
-
- if(result.error){
-
-  toast(
-   "Could not send voice note."
-  );
-
-  return;
- }
-
- await loadMessages();
 }
 
 
-/* =====================================================
-   TRACK CIRCLE AI
-===================================================== */
+/* =========================================================
+   MAP
+   ========================================================= */
 
-async function sendAiMessage(){
+function initializeMap(){
 
- const input =
-  $("aiInput");
-
- const text =
-  input.value.trim();
-
- if(!text)
+ if(map)
   return;
 
- addAiMessage(
-  text,
-  "user"
+
+ const element=
+  document.getElementById("map");
+
+ if(!element)
+  return;
+
+
+ map=
+  L.map(
+   element,
+   {
+    zoomControl:true
+   }
+  ).setView(
+   [6.5244,3.3792],
+   11
+  );
+
+
+ L.tileLayer(
+
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+  {
+   maxZoom:19,
+
+   attribution:
+    "&copy; OpenStreetMap contributors"
+  }
+
+ ).addTo(map);
+
+
+ setTimeout(()=>{
+
+  map.invalidateSize();
+
+ },200);
+
+}
+
+
+function updateOwnMapPosition(
+ lat,
+ lng
+){
+
+ initializeMap();
+
+ if(!map)
+  return;
+
+
+ if(!ownMarker){
+
+  ownMarker=
+   L.marker([lat,lng])
+    .addTo(map)
+    .bindPopup(
+     "You are here"
+    );
+
+ }else{
+
+  ownMarker.setLatLng(
+   [lat,lng]
+  );
+
+ }
+
+
+ map.setView(
+  [lat,lng],
+  Math.max(
+   map.getZoom(),
+   14
+  )
  );
 
- input.value="";
 
- const thinking =
-  addAiMessage(
-   "Thinking...",
-   "bot"
+ const mapText=
+  document.getElementById(
+   "mapLocationText"
   );
+
+ if(mapText){
+
+  mapText.textContent=
+   "Live position: "+
+   lat.toFixed(5)+
+   ", "+
+   lng.toFixed(5);
+
+ }
+
+}
+
+
+function centerOwnLocation(){
+
+ if(!ownMarker){
+
+  if(!locationEnabled){
+
+   toast(
+    "Turn on location first."
+   );
+
+   return;
+
+  }
+
+  toast(
+   "Waiting for your GPS position..."
+  );
+
+  return;
+
+ }
+
+
+ initializeMap();
+
+ map.setView(
+  ownMarker.getLatLng(),
+  16
+ );
+
+}
+
+
+async function refreshMapMembers(){
+
+ initializeMap();
+
+ if(!supabaseClient)
+  return;
+
 
  try{
 
-  const result =
-   await supabaseClient.functions.invoke(
-    "track-circle-ai",
-    {
-     body:{
-      message:text,
-      history:[]
-     }
-    }
+  const result=
+   await withTimeout(
+
+    supabaseClient
+     .from("profiles")
+     .select(
+      "id,display_name,username,avatar_url,latitude,longitude,location_updated_at"
+     )
+     .not("latitude","is",null)
+     .not("longitude","is",null)
+     .limit(100),
+
+    7000
+
    );
+
 
   if(result.error)
    throw result.error;
 
-  const data =
-   result.data;
 
-  let answer =
-   data?.reply ||
-   data?.response ||
-   data?.message ||
-   data?.text;
-
-  /*
-   Some AI functions return:
-   { response: { candidates: [...] } }
-  */
-
-  if(!answer &&
-     data?.candidates?.[0]
-     ?.content?.parts?.[0]?.text){
-
-   answer =
-    data.candidates[0]
-     .content.parts[0].text;
-  }
-
-  if(!answer &&
-     data?.response?.candidates?.[0]
-     ?.content?.parts?.[0]?.text){
-
-   answer =
-    data.response
-     .candidates[0]
-     .content.parts[0].text;
-  }
-
-  if(!answer){
-
-   answer =
-    "I received a response, but I couldn't read the AI text.";
-  }
-
-  thinking.remove();
-
-  addAiMessage(
-   answer,
-   "bot"
-  );
-
- }catch(error){
-
-  console.error(
-   "Track Circle AI:",
-   error
-  );
-
-  thinking.remove();
-
-  addAiMessage(
-   "Track Circle AI couldn't connect right now.\n\n"+
-   (
-    error.message ||
-    "Please check the Edge Function."
-   ),
-   "bot"
-  );
- }
-}
-
-function addAiMessage(
- text,
- type
-){
-
- const area =
-  $("aiMessages");
-
- const div =
-  document.createElement("div");
-
- div.className =
-  "ai-message "+
-  type;
-
- div.textContent =
-  text;
-
- area.appendChild(div);
-
- area.scrollTop =
-  area.scrollHeight;
-
- return div;
-}
-
-
-/* =====================================================
-   EVENTS
-===================================================== */
-
-function setupEvents(){
-
- $("loginTab")
-  .addEventListener(
-   "click",
-   ()=>setAuthMode("login")
-  );
-
- $("signupTab")
-  .addEventListener(
-   "click",
-   ()=>setAuthMode("signup")
-  );
-
- $("authForm")
-  .addEventListener(
-   "submit",
-   handleAuth
+  memberMarkers.forEach(
+   marker=>map.removeLayer(marker)
   );
 
 
- /* NAV */
+  memberMarkers=[];
 
- document
-  .querySelectorAll(".nav-item")
-  .forEach(button=>{
 
-   button.addEventListener(
-    "click",
-    ()=>navigate(
-     button.dataset.page
-    )
+  const members=
+   (result.data||[])
+    .filter(
+     user=>
+      user.id!==currentUser?.id &&
+      Number.isFinite(
+       Number(user.latitude)
+      ) &&
+      Number.isFinite(
+       Number(user.longitude)
+      )
+    );
+
+
+  members.forEach(user=>{
+
+   const marker=
+    L.circleMarker(
+
+     [
+      Number(user.latitude),
+      Number(user.longitude)
+     ],
+
+     {
+      radius:8,
+      color:"#19e6a0",
+      fillColor:"#19e6a0",
+      fillOpacity:.7,
+      weight:2
+     }
+
+    ).addTo(map);
+
+
+   marker.bindPopup(
+
+    `<b>${escapeHtml(
+     user.display_name||
+     "Track Circle User"
+    )}</b><br>@${escapeHtml(
+     user.username||
+     "user"
+    )}`
+
    );
+
+
+   memberMarkers.push(marker);
 
   });
 
 
- /* AI */
+  const count=
+   document.getElementById(
+    "mapMemberCount"
+   );
 
- $("aiHeaderButton")
-  .addEventListener(
-   "click",
-   ()=>navigate("aiPage")
+  if(count)
+   count.textContent=
+    members.length+
+    (
+     locationEnabled
+      ? 1
+      : 0
+    );
+
+
+ }catch(error){
+
+  console.warn(
+   "Map members:",
+   error
   );
 
- $("aiProfileButton")
-  .addEventListener(
-   "click",
-   ()=>navigate("aiPage")
-  );
-
- $("aiSend")
-  .addEventListener(
-   "click",
-   sendAiMessage
-  );
-
- $("aiInput")
-  .addEventListener(
-   "keydown",
-   event=>{
-
-    if(event.key==="Enter"){
-
-     event.preventDefault();
-
-     sendAiMessage();
-    }
-   }
-  );
-
-
- /* LOCATION */
-
- $("locationToggle")
-  .addEventListener(
-   "click",
-   ()=>{
-
-    if(locationSharing)
-     stopLocation();
-    else
-     startLocation();
-
-   }
-  );
-
- $("mapLocateButton")
-  .addEventListener(
-   "click",
-   ()=>{
-
-    navigate("mapPage");
-
-    if(!locationSharing)
-     startLocation();
-
-   }
-  );
-
- $("mapShareButton")
-  .addEventListener(
-   "click",
-   ()=>{
-
-    if(locationSharing)
-     stopLocation();
-    else
-     startLocation();
-
-   }
-  );
-
-
- /* CIRCLES */
-
- $("createCircleButton")
-  .addEventListener(
-   "click",
-   ()=>{
-    $("createCircleModal")
-     .classList.add("show");
-   }
-  );
-
- $("createCircleButton2")
-  .addEventListener(
-   "click",
-   ()=>{
-    $("createCircleModal")
-     .classList.add("show");
-   }
-  );
-
- $("closeCreateCircle")
-  .addEventListener(
-   "click",
-   ()=>{
-    $("createCircleModal")
-     .classList.remove("show");
-   }
-  );
-
- $("confirmCreateCircle")
-  .addEventListener(
-   "click",
-   createCircle
-  );
-
- $("joinCircleButton")
-  .addEventListener(
-   "click",
-   ()=>{
-    $("joinCircleModal")
-     .classList.add("show");
-   }
-  );
-
- $("closeJoinCircle")
-  .addEventListener(
-   "click",
-   ()=>{
-    $("joinCircleModal")
-     .classList.remove("show");
-   }
-  );
-
- $("confirmJoinCircle")
-  .addEventListener(
-   "click",
-   joinCircle
-  );
-
-
- /* SEARCH */
-
- $("userSearchInput")
-  .addEventListener(
-   "input",
-   searchUsers
-  );
-
-
- /* CHAT */
-
- $("closeChat")
-  .addEventListener(
-   "click",
-   ()=>{
-    $("chatWindow")
-     .classList.remove("show");
-   }
-  );
-
- $("sendMessage")
-  .addEventListener(
-   "click",
-   sendTextMessage
-  );
-
- $("chatInput")
-  .addEventListener(
-   "keydown",
-   event=>{
-
-    if(event.key==="Enter"){
-
-     event.preventDefault();
-
-     sendTextMessage();
-    }
-   }
-  );
-
- $("mediaButton")
-  .addEventListener(
-   "click",
-   ()=>{
-    $("chatMediaInput").click();
-   }
-  );
-
- $("chatMediaInput")
-  .addEventListener(
-   "change",
-   event=>{
-
-    const file =
-     event.target.files[0];
-
-    if(file)
-     uploadChatMedia(file);
-
-    event.target.value="";
-   }
-  );
-
- $("voiceButton")
-  .addEventListener(
-   "click",
-   ()=>{
-
-    if(
-     mediaRecorder &&
-     mediaRecorder.state === "recording"
-    ){
-
-     stopVoiceRecording();
-
-    }else{
-
-     startVoiceRecording();
-    }
-
-   }
-  );
-
-
- /* PROFILE */
-
- $("headerProfileButton")
-  .addEventListener(
-   "click",
-   ()=>navigate("profilePage")
-  );
-
- $("editProfileButton")
-  .addEventListener(
-   "click",
-   ()=>{
-
-    $("editName").value =
-     $("profileName").textContent;
-
-    $("editProfileModal")
-     .classList.add("show");
-   }
-  );
-
- $("closeEditProfile")
-  .addEventListener(
-   "click",
-   ()=>{
-    $("editProfileModal")
-     .classList.remove("show");
-   }
-  );
-
- $("saveProfile")
-  .addEventListener(
-   "click",
-   async ()=>{
-
-    const name =
-     $("editName")
-      .value
-      .trim();
-
-    if(!name){
-
-     toast("Enter your name.");
-     return;
-    }
-
-    const result =
-     await supabaseClient
-      .from("profiles")
-      .update({
-       display_name:name,
-       updated_at:
-        new Date().toISOString()
-      })
-      .eq(
-       "id",
-       currentUser.id
-      );
-
-    if(result.error){
-
-     toast(
-      "Could not update profile."
-     );
-
-     return;
-    }
-
-    $("editProfileModal")
-     .classList.remove("show");
-
-    await loadProfile();
-
-    toast("Profile updated.");
-   }
-  );
-
- $("changeAvatarButton")
-  .addEventListener(
-   "click",
-   ()=>{
-    $("avatarFileInput").click();
-   }
-  );
-
- $("avatarFileInput")
-  .addEventListener(
-   "change",
-   event=>{
-
-    const file =
-     event.target.files[0];
-
-    if(file)
-     uploadAvatar(file);
-
-    event.target.value="";
-   }
-  );
-
- $("logoutButton")
-  .addEventListener(
-   "click",
-   logout
-  );
-}
-
-
-/* =====================================================
-   SESSION
-===================================================== */
-
-async function checkExistingSession(){
-
- const result =
-  await supabaseClient.auth.getSession();
-
- if(
-  result.data &&
-  result.data.session
- ){
-
-  currentUser =
-   result.data.session.user;
-
-  await openApp();
-
- }else{
-
-  $("authScreen").style.display =
-   "flex";
-
-  $("appScreen").style.display =
-   "none";
  }
+
 }
 
-supabaseClient = null;
+
+/* =========================================================
+   FRIENDS SEARCH
+   ========================================================= */
+
+function searchUsers(){
+
+ clearTimeout(searchTimer);
 
 
-/* =====================================================
-   STARTUP
-===================================================== */
+ searchTimer=
+  setTimeout(
+   performUserSearch,
+   300
+  );
 
-window.addEventListener(
- "DOMContentLoaded",
- async ()=>{
+}
 
-  /*
-   IMPORTANT:
-   There is deliberately NO splash screen.
-   Authentication appears immediately.
-  */
 
-  const ready =
-   initSupabase();
+async function performUserSearch(){
 
-  if(!ready)
+ const input=
+  document.getElementById(
+   "userSearch"
+  );
+
+ const result=
+  document.getElementById(
+   "userResults"
+  );
+
+
+ if(!input || !result)
+  return;
+
+
+ const q=
+  input.value
+   .trim()
+   .replace(/^@/,"")
+   .toLowerCase();
+
+
+ if(q.length<2){
+
+  result.innerHTML=
+   `<div class="muted">
+    Type at least 2 characters.
+   </div>`;
+
+  return;
+
+ }
+
+
+ if(!supabaseClient){
+
+  result.innerHTML=
+   `<div class="card">
+    Supabase is not connected.
+   </div>`;
+
+  return;
+
+ }
+
+
+ try{
+
+  const response=
+   await withTimeout(
+
+    supabaseClient
+     .from("profiles")
+     .select(
+      "id,display_name,username,avatar_url"
+     )
+     .ilike(
+      "username",
+      "%"+q+"%"
+     )
+     .limit(30),
+
+    7000
+
+   );
+
+
+  if(response.error)
+   throw response.error;
+
+
+  const users=
+   (response.data||[])
+    .filter(
+     user=>
+      !currentUser||
+      user.id!==currentUser.id
+    );
+
+
+  if(!users.length){
+
+   result.innerHTML=
+    `<div class="card">
+     No users found.
+    </div>`;
+
    return;
 
-  setupEvents();
-
-  setAuthMode("login");
-
-  await checkExistingSession();
- }
-);
+  }
 
 
-/* =====================================================
-   AUTH STATE
-===================================================== */
+  result.innerHTML=
+   users.map(user=>`
 
-window.addEventListener(
- "error",
- event=>{
-  console.error(
-   "Track Circle error:",
-   event.error ||
-   event.message
-  );
- }
-);
+    <div class="userResult">
 
-window.addEventListener(
- "unhandledrejection",
- event=>{
-  console.error(
-   "Track Circle promise error:",
-   event.reason
-  );
- }
-);
+     <div class="avatar">
 
-</script>
+      ${
+       user.avatar_url
+        ?
+       `<img
+        src="${escapeAttr(
+         user.avatar_url
+        )}"
+       >`
+        :
+       escapeHtml(
+        (
+         user.display_name||
+         "U"
+        )
+        .charAt(0)
+        .toUpperCase()
+       )
+      }
 
-</body>
-</html>
+     </div>
+
+
+     <div class="userInfo">
+
+      <b>
+       ${escapeHtml(
+        user.display_name||
+        "Track Circle User"
+       )}
+      </b>
+
+      <div class="muted">
+       @${escapeHtml(
+        user.username||
+        "user"
+       )
