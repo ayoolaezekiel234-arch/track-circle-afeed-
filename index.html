@@ -1,100 +1,2541 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07110d"><title>Track Circle</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
-:root{--b:#070c0b;--s:#101917;--s2:#17231f;--m:#19e6a0;--t:#f3f8f6;--u:#83918d;--l:#ffffff12;--r:#ff5870}*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow:hidden;background:var(--b);color:var(--t);font-family:Inter,system-ui,Arial}button,input,textarea{font:inherit}button{border:0;cursor:pointer}input,textarea{outline:0}.app{height:100dvh;position:relative;background:radial-gradient(circle at 90% 0,#19e6a014,transparent 30%),var(--b)}.hide{display:none!important}
-#splash{position:absolute;inset:0;z-index:1000;display:grid;place-items:center;background:linear-gradient(#75d8ff,#c8f1ff 30%,#347452 65%,#06120c);transition:opacity .5s}#splash.hide{opacity:0;pointer-events:none}#splash:after{content:"";position:absolute;bottom:0;width:110%;height:38%;background:#07140d;clip-path:polygon(0 45%,15% 24%,28% 39%,40% 15%,55% 36%,70% 13%,83% 32%,100% 12%,100% 100%,0 100%)}.splashIn{position:relative;z-index:2;text-align:center}.logo{width:90px;height:90px;margin:auto;border:3px solid var(--m);border-radius:30px;display:grid;place-items:center;box-shadow:0 0 55px #19e6a066}.logo:before{content:"";width:42px;height:42px;border:3px solid var(--m);border-radius:50%}.logo:after{content:"";position:absolute;width:11px;height:11px;background:var(--m);border-radius:50%}#splash h1{margin-top:20px;font-size:29px;letter-spacing:2px}#splash span,.brand span{color:var(--m)}#splash p{font-size:12px;margin-top:7px}
-#auth{position:absolute;inset:0;z-index:900;background:var(--b);display:grid;place-items:center;padding:20px;overflow:auto}.authbox{width:min(430px,100%)}.authlogo{width:58px;height:58px;border:2px solid var(--m);border-radius:18px;display:grid;place-items:center;margin-bottom:18px}.authlogo:after{content:"";width:24px;height:24px;border:2px solid var(--m);border-radius:50%}.authbox h1{font-size:28px}.authbox p{color:var(--u);font-size:12px;margin-top:6px}.tabs{display:flex;background:var(--s);padding:4px;border-radius:15px;margin:22px 0 13px}.tabs button{flex:1;padding:11px;border-radius:11px;background:0;color:var(--u)}.tabs .on{background:#19e6a014;color:var(--m)}.field{margin-bottom:9px}.field input{width:100%;padding:14px;border-radius:14px;background:var(--s);border:1px solid var(--l);color:var(--t)}.primary{width:100%;padding:14px;border-radius:14px;background:var(--m);color:#03120c;font-weight:900}.switch{text-align:center;color:var(--u);font-size:12px;margin-top:13px}.switch button{background:0;color:var(--m)}
-#main{height:100%;display:flex;flex-direction:column}.content{flex:1;overflow:auto;padding:calc(env(safe-area-inset-top) + 17px) 15px 104px}.content::-webkit-scrollbar{display:none}.page{display:none;animation:in .2s}.page.active{display:block}@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:19px}.brand{font-size:15px;font-weight:900;letter-spacing:1px}.icons{display:flex;gap:7px}.icon{width:40px;height:40px;border-radius:13px;background:var(--s);border:1px solid var(--l);color:var(--t)}h1{font-size:25px}.muted{color:var(--u);font-size:11px}.card{background:var(--s);border:1px solid var(--l);border-radius:21px;padding:16px;margin-top:14px}.location{margin-top:16px;padding:17px;border-radius:21px;border:1px solid #19e6a026;background:linear-gradient(145deg,#19e6a012,var(--s));display:flex;align-items:center;justify-content:space-between}.loc{display:flex;gap:11px;align-items:center}.locIcon{width:43px;height:43px;border-radius:14px;background:#19e6a015;color:var(--m);display:grid;place-items:center;font-size:20px}.dot{width:9px;height:9px;border-radius:50%;background:var(--u)}.dot.on{background:var(--m);box-shadow:0 0 14px var(--m)}.section{margin-top:23px}.sectionHead{display:flex;justify-content:space-between;margin-bottom:10px}.sectionHead button{background:0;color:var(--m);font-size:11px}.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.quick button{padding:12px 3px;border-radius:17px;background:var(--s);border:1px solid var(--l);color:var(--t);font-size:10px}.qi{width:34px;height:34px;border-radius:11px;background:#19e6a012;color:var(--m);display:grid;place-items:center;margin:auto auto 6px;font-weight:900}.ai{padding:19px;border-radius:21px;margin-top:15px;border:1px solid #19e6a026;background:radial-gradient(circle at 100% 0,#19e6a022,transparent 45%),var(--s)}.btn{margin-top:11px;padding:10px 14px;border-radius:12px;background:var(--m);color:#03120c;font-weight:900;font-size:11px}
-.tabs2{display:flex;gap:4px;background:var(--s);padding:4px;border-radius:14px;margin-bottom:12px}.tabs2 button{flex:1;padding:9px;border-radius:10px;background:0;color:var(--u);font-size:11px}.tabs2 .on{background:#19e6a012;color:var(--m)}.create,.post{background:var(--s);border:1px solid var(--l);border-radius:19px;margin-bottom:12px}.create{padding:13px}.create textarea{width:100%;height:68px;background:0;border:0;resize:none;color:var(--t)}.createfoot{display:flex;align-items:center;justify-content:space-between}.media{background:#19e6a012;color:var(--m);padding:8px 10px;border-radius:11px;font-size:11px}.postgo{background:var(--m);padding:9px 14px;border-radius:11px;font-weight:900;font-size:11px}.post{overflow:hidden}.posthead{display:flex;align-items:center;gap:10px;padding:13px}.ava{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#20312d;display:grid;place-items:center;color:var(--m);font-weight:900}.pinfo{flex:1}.pname{font-size:12px;font-weight:800}.ptime{font-size:9px;color:var(--u)}.posttext{padding:0 13px 12px;font-size:13px;line-height:1.5}.mediaout{width:100%;max-height:450px;display:block;object-fit:cover;background:#050807}.actions{display:flex;border-top:1px solid var(--l)}.actions button{flex:1;padding:12px;background:0;color:var(--u);font-size:11px}.actions .liked{color:var(--r)}.comment{display:flex;gap:6px;padding:8px;border-top:1px solid var(--l)}.comment input{flex:1;background:var(--b);border:0;border-radius:10px;padding:9px;color:white;font-size:11px}.comment button{background:var(--m);border-radius:10px;padding:0 11px}
-.map{height:420px;border-radius:22px;overflow:hidden;border:1px solid var(--l);position:relative;background:radial-gradient(circle,#19e6a014,transparent 25%),repeating-linear-gradient(30deg,#17231f 0 20px,#121b18 21px 22px)}.road{position:absolute;width:130%;height:6px;background:#30433c;top:45%;left:-15%;transform:rotate(24deg)}.road2{position:absolute;width:6px;height:130%;background:#30433c;left:54%;top:-15%;transform:rotate(18deg)}.me{position:absolute;left:50%;top:50%;width:20px;height:20px;transform:translate(-50%,-50%);border-radius:50%;background:#55aaff;border:4px solid white;box-shadow:0 0 0 13px #55aaff22,0 0 30px #55aaff}.member{position:absolute;width:46px;height:46px;border:3px solid var(--m);border-radius:50%;background:#17241f;display:grid;place-items:center;overflow:hidden}.member img{width:100%;height:100%;object-fit:cover}.a{left:18%;top:25%}.b{right:15%;top:35%}.c{left:30%;bottom:18%}.maplabel{position:absolute;top:10px;left:10px;padding:8px 10px;border-radius:11px;background:#07100ddd;font-size:10px}.mapbtns{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px}.mapbtns button{width:40px;height:40px;border-radius:12px;background:#07100dee;color:white;border:1px solid var(--l)}
-.search{width:100%;padding:13px;border-radius:14px;background:var(--s);border:1px solid var(--l);color:white}.row{display:flex;align-items:center;gap:10px;padding:12px 3px;border-bottom:1px solid var(--l)}.row .info{flex:1}.name{font-size:12px;font-weight:800}.small{font-size:10px;color:var(--u)}.profile{text-align:center}.profile .ava{width:98px;height:98px;margin:auto;border:3px solid var(--m);font-size:25px}.stats{display:flex;justify-content:center;gap:30px;margin:17px}.stats strong{display:block}.stats small{color:var(--u);font-size:9px}.profileActions{display:flex;gap:7px}.profileActions button{flex:1;padding:11px;border-radius:12px;background:var(--s);color:white;border:1px solid var(--l)}.profileActions .primary{background:var(--m);color:#03120c}.aiMsgs{min-height:330px}.msg{max-width:86%;padding:12px 13px;border-radius:16px;background:var(--s);border:1px solid var(--l);font-size:12px;line-height:1.5;margin-bottom:8px}.msg.user{margin-left:auto;background:var(--m);color:#03120c;border:0}.suggest{display:flex;gap:6px;overflow:auto;margin:12px 0}.suggest button{white-space:nowrap;padding:8px 10px;border-radius:11px;background:var(--s);border:1px solid var(--l);color:var(--u);font-size:10px}.aiinput{display:flex;gap:7px;position:sticky;bottom:0;padding:8px 0;background:linear-gradient(transparent,var(--b) 25%)}.aiinput input{flex:1;padding:13px;border-radius:15px;background:var(--s);border:1px solid var(--l);color:white}.aiinput button{width:50px;border-radius:15px;background:var(--m)}
-.nav{position:absolute;z-index:60;left:9px;right:9px;bottom:calc(env(safe-area-inset-bottom) + 8px);height:71px;padding:5px;display:grid;grid-template-columns:repeat(6,1fr);background:#101917ee;backdrop-filter:blur(20px);border:1px solid var(--l);border-radius:23px}.nav button{background:0;color:var(--u);border-radius:17px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.nav button.on{background:#19e6a012;color:var(--m)}.nav small{font-size:8px}.modal{position:absolute;inset:0;z-index:300;display:none;align-items:flex-end;background:#000a;backdrop-filter:blur(5px)}.modal.show{display:flex}.modalcard{width:100%;max-height:90%;overflow:auto;background:var(--s);border-radius:27px 27px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom) + 20px)}.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.close{width:35px;height:35px;border-radius:11px;background:var(--s2);color:white}.modalcard input,.modalcard textarea{width:100%;padding:13px;margin-bottom:9px;border-radius:13px;background:var(--b);border:1px solid var(--l);color:white}.modalgo{width:100%;padding:13px;border-radius:13px;background:var(--m);color:#03120c;font-weight:900}.gifts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gift{padding:13px 5px;border-radius:16px;background:var(--s2);border:1px solid var(--l);color:white}.gift b{display:block;font-size:22px}.gift small{color:var(--u)}#call{position:absolute;inset:0;z-index:800;display:none;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(circle at 50% 35%,#19e6a02b,transparent 25%),#06100c}#call.show{display:flex}#call img{width:110px;height:110px;border-radius:50%;object-fit:cover;border:3px solid var(--m)}#call h2{margin-top:13px}.callbuttons{display:flex;gap:15px;margin-top:35px}.callbuttons button{width:55px;height:55px;border-radius:50%;background:#18251f;color:white}.callbuttons .end{background:var(--r)}#toast{position:absolute;z-index:2000;left:50%;bottom:94px;transform:translate(-50%,15px);opacity:0;background:#17221e;border:1px solid var(--l);padding:11px 14px;border-radius:13px;font-size:11px;transition:.2s;pointer-events:none;white-space:nowrap}#toast.show{opacity:1;transform:translate(-50%,0)}@media(min-width:700px){.content{max-width:620px;width:100%;margin:auto}.nav{width:600px;left:50%;right:auto;transform:translateX(-50%)}}
-</style></head><body><div class="app">
-<div id="splash"><div class="splashIn"><div class="logo"></div><h1>TRACK <span>CIRCLE</span></h1><p>Stay Connected. Stay Close.</p></div></div>
-<div id="auth" class="hide"><div class="authbox"><div class="authlogo"></div><h1>TRACK <span>CIRCLE</span></h1><p>Stay connected. Stay close.</p><div class="tabs"><button id="loginTab" class="on" onclick="mode('login')">Sign in</button><button id="signupTab" onclick="mode('signup')">Create account</button></div><div id="nameField" class="field hide"><input id="name" placeholder="Display name"></div><div class="field"><input id="username" placeholder="Username"></div><div class="field"><input id="email" type="email" placeholder="Email address"></div><div class="field"><input id="password" type="password" placeholder="Password"></div><button id="authBtn" class="primary" onclick="auth()">Sign in</button><div class="switch"><span id="switchText">Don't have an account?</span> <button onclick="toggleMode()">Create one</button></div></div></div><div id="main" class="hide"><main class="content">
-<section class="page active" id="home"><div class="header"><div class="brand">TRACK <span>CIRCLE</span></div><div class="icons"><button class="icon" onclick="go('people')">⌕</button><button class="icon" onclick="toast('Notifications will appear here')">♢</button></div></div><div class="muted" id="greet">Welcome back</div><h1>Stay connected.</h1><div class="location"><div class="loc"><div class="locIcon">⌖</div><div><b>Location sharing</b><div class="muted" id="locText">Off — your location is private</div></div></div><button class="icon" onclick="toggleLocation()" id="locBtn">ON</button></div><div class="section"><div class="sectionHead"><h3>Quick actions</h3></div><div class="quick"><button onclick="toggleLocation()"><div class="qi">⌖</div>Location</button><button onclick="openM('circleModal')"><div class="qi">+</div>Circle</button><button onclick="go('ai')"><div class="qi">AI</div>AI</button><button onclick="go('feed')"><div class="qi">✦</div>Post</button></div></div><div class="section"><div class="sectionHead"><h3>Your circles</h3><button onclick="go('circles')">View all</button></div><div id="homeCircles" class="card">Loading…</div></div><div class="ai"><b>Track Circle AI</b><p class="muted" style="margin-top:6px;line-height:1.5">Your built-in assistant for questions, learning, writing and planning.</p><button class="btn" onclick="go('ai')">Open AI</button></div></section>
-<section class="page" id="mapPage"><div class="header"><div><div class="muted">LIVE LOCATION</div><h1>Live Map</h1></div><button class="icon" onclick="toggleLocation()">⌖</button></div><div class="map"><div class="maplabel">Track Circle • map fallback</div><div class="road"></div><div class="road2"></div><div class="me"></div><div class="member a">A</div><div class="member b">B</div><div class="member c">C</div><div class="mapbtns"><button onclick="toggleLocation()">⌖</button><button onclick="toast('Google Maps can be connected later')">＋</button></div></div><div class="card"><b>Location privacy</b><p class="muted" style="margin-top:6px;line-height:1.5">GPS can be turned on/off at any time. Google Maps is intentionally not required for this build.</p></div></section>
-<section class="page" id="circles"><div class="header"><div><div class="muted">COMMUNITY</div><h1>Circles</h1></div><button class="icon" onclick="openM('circleModal')">+</button></div><div id="circleList"></div><div class="card"><b>Join a circle</b><p class="muted" style="margin:6px 0 10px">Enter an invitation code.</p><input class="search" id="joinCode" placeholder="TC-XXXXXX"><button class="btn" onclick="joinCircle()">Join</button></div></section>
-<section class="page" id="feed"><div class="header"><div><div class="muted">SOCIAL</div><h1>Circle Feed</h1></div><button class="icon" onclick="loadPosts()">↻</button></div><div class="tabs2"><button class="on">For You</button><button>Following</button><button>Circles</button></div><div class="create"><textarea id="postText" placeholder="What's happening?"></textarea><div class="createfoot"><label class="media">＋ Photo / Video<input id="postFile" hidden type="file" accept="image/*,video/*" onchange="fileName()"></label><span id="fileName" class="muted"></span><button class="postgo" onclick="post()">Post</button></div></div><div id="posts"></div></section>
-<section class="page" id="people"><div class="header"><div><div class="muted">DISCOVER</div><h1>People</h1></div></div><input class="search" id="personSearch" placeholder="Search username…" oninput="people()"><div id="peopleList"></div></section>
-<section class="page" id="messages"><div class="header"><div><div class="muted">PRIVATE & GROUP</div><h1>Messages</h1></div></div><div id="chats"><div class="card">Search a username from People to start building conversations.</div></div></section>
-<section class="page" id="ai"><div class="header"><div><b>Track Circle AI</b><div class="muted">Your assistant</div></div></div><div class="suggest"><button onclick="ask('What can you do?')">What can you do?</button><button onclick="ask('Help me plan a trip')">Plan a trip</button><button onclick="ask('Teach me something useful')">Teach me</button></div><div class="aiMsgs" id="aiMsgs"><div class="msg">Hi! I'm Track Circle AI. Ask me anything.</div></div><div class="aiinput"><input id="aiText" placeholder="Message Track Circle AI…" onkeydown="if(event.key==='Enter')sendAI()"><button onclick="sendAI()">➤</button></div></section>
-<section class="page" id="profile"><div class="profile"><img id="profilePic" class="ava" src=""><input id="avatarFile" hidden type="file" accept="image/*" onchange="avatarUpload()"><button class="btn" onclick="$('avatarFile').click()">Change photo</button><h2 id="profileName" style="margin-top:10px">Track Circle</h2><div class="muted" id="handle">@username</div><div class="stats"><div><strong id="pc">0</strong><small>Posts</small></div><div><strong id="fc">0</strong><small>Friends</small></div><div><strong id="cc">0</strong><small>Circles</small></div></div><div class="profileActions"><button onclick="openM('settingsModal')">Settings</button><button class="primary" onclick="logout()">Sign out</button></div></div></section>
-</main><nav class="nav"><button class="on" data-p="home" onclick="go('home')">⌂<small>Home</small></button><button data-p="mapPage" onclick="go('mapPage')">⌖<small>Map</small></button><button data-p="circles" onclick="go('circles')">◎<small>Circles</small></button><button data-p="feed" onclick="go('feed')">✦<small>Feed</small></button><button data-p="messages" onclick="go('messages')">◌<small>Chats</small></button><button data-p="profile" onclick="go('profile')">●<small>Profile</small></button></nav></div>
-<div class="modal" id="circleModal"><div class="modalcard"><div class="modalhead"><h2>Create circle</h2><button class="close" onclick="closeM('circleModal')">×</button></div><input id="circleName" placeholder="Circle name"><input id="circleDesc" placeholder="Description"><button class="modalgo" onclick="createCircle()">Create circle</button></div></div>
-<div class="modal" id="userModal"><div class="modalcard"><div class="modalhead"><h2>User</h2><button class="close" onclick="closeM('userModal')">×</button></div><div id="userBox"></div></div></div>
-<div class="modal" id="giftModal"><div class="modalcard"><div class="modalhead"><h2>Send a gift 🎁</h2><button class="close" onclick="closeM('giftModal')">×</button></div><p class="muted" style="margin-bottom:12px">Gift UI is ready. Real-money purchase/settlement must be secured by a payment Edge Function.</p><div class="gifts"><button class="gift" onclick="gift('💚',500)"><b>💚</b><small>₦500</small></button><button class="gift" onclick="gift('🌹',1000)"><b>🌹</b><small>₦1,000</small></button><button class="gift" onclick="gift('🚀',5000)"><b>🚀</b><small>₦5,000</small></button><button class="gift" onclick="gift('👑',10000)"><b>👑</b><small>₦10,000</small></button><button class="gift" onclick="gift('💎',25000)"><b>💎</b><small>₦25,000</small></button><button class="gift" onclick="gift('✨',50000)"><b>✨</b><small>₦50,000</small></button></div><button class="modalgo" style="margin-top:10px" onclick="closeM('giftModal');toast('Custom ₦25,000 gift selected')">Customize ₦25,000 gift</button></div></div>
-<div class="modal" id="settingsModal"><div class="modalcard"><div class="modalhead"><h2>Profile settings</h2><button class="close" onclick="closeM('settingsModal')">×</button></div><input id="editName" placeholder="Display name"><input id="editUser" placeholder="Username"><button class="modalgo" onclick="saveProfile()">Save</button></div></div>
-<div id="call"><img id="callPic"><h2 id="callName">Track Circle</h2><div class="muted" id="callStatus">Connecting…</div><div class="callbuttons"><button>🎙</button><button class="end" onclick="endCall()">☎</button></div></div><div id="toast"></div></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06130f">
+<title>Track Circle</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+ --bg:#050b09;
+ --bg2:#08130f;
+ --card:#0d1b16;
+ --card2:#12251e;
+ --green:#19e6a0;
+ --green2:#65ffbf;
+ --white:#f4fff9;
+ --muted:#8ba39a;
+ --red:#ff5268;
+ --border:rgba(255,255,255,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{
+ font-family:Inter,Arial,sans-serif;
+ background:var(--bg);
+ color:var(--white);
+}
+button,input,textarea{font:inherit}
+button{border:0}
+input,textarea{outline:none}
+
+.hidden{display:none!important}
+
+#app{
+ width:100%;
+ height:100dvh;
+ position:relative;
+ overflow:hidden;
+}
+
+/* SPLASH */
+#splash{
+ position:absolute;
+ inset:0;
+ z-index:9999;
+ overflow:hidden;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:
+ linear-gradient(180deg,rgba(4,30,24,.25),rgba(2,9,7,.9)),
+ radial-gradient(circle at 50% 25%,#36f5ae55,transparent 38%),
+ linear-gradient(180deg,#63e9c2 0%,#143e34 38%,#06100c 100%);
+ transition:opacity .7s ease;
+}
+#splash.hide{
+ opacity:0;
+ pointer-events:none;
+}
+.skyGlow{
+ position:absolute;
+ width:500px;
+ height:500px;
+ border-radius:50%;
+ background:#4dffd022;
+ filter:blur(35px);
+ top:-170px;
+}
+.mountain{
+ position:absolute;
+ bottom:-40px;
+ width:120%;
+ height:48%;
+ background:
+ linear-gradient(145deg,transparent 0 28%,#06150f 28% 45%,transparent 45%),
+ linear-gradient(35deg,#071a12 0 43%,transparent 43%);
+ opacity:.95;
+ transform:skewX(-8deg);
+}
+.forest{
+ position:absolute;
+ bottom:0;
+ width:100%;
+ height:32%;
+ background:
+ radial-gradient(ellipse at 10% 100%,#020806 0 16%,transparent 17%),
+ radial-gradient(ellipse at 28% 100%,#03100a 0 20%,transparent 21%),
+ radial-gradient(ellipse at 48% 100%,#020806 0 18%,transparent 19%),
+ radial-gradient(ellipse at 70% 100%,#03110b 0 21%,transparent 22%),
+ radial-gradient(ellipse at 92% 100%,#020806 0 18%,transparent 19%);
+}
+.splashContent{
+ position:relative;
+ z-index:4;
+ text-align:center;
+}
+.logoMark{
+ width:92px;
+ height:92px;
+ margin:auto;
+ border:3px solid var(--green);
+ border-radius:30px;
+ position:relative;
+ display:grid;
+ place-items:center;
+ box-shadow:0 0 70px #19e6a055;
+}
+.logoMark:before{
+ content:"";
+ width:45px;
+ height:45px;
+ border:3px solid var(--green2);
+ border-radius:50%;
+}
+.logoMark:after{
+ content:"";
+ position:absolute;
+ width:12px;
+ height:12px;
+ border-radius:50%;
+ background:var(--green2);
+ box-shadow:0 0 25px var(--green);
+}
+.splashTitle{
+ margin-top:22px;
+ font-size:30px;
+ font-weight:1000;
+ letter-spacing:3px;
+ text-shadow:0 0 30px #19e6a044;
+}
+.splashTitle span{color:var(--green2)}
+.splashSub{
+ margin-top:8px;
+ color:#d6fff0;
+ font-size:12px;
+ letter-spacing:1px;
+}
+.loader{
+ width:100px;
+ height:3px;
+ margin:25px auto 0;
+ background:#ffffff22;
+ overflow:hidden;
+ border-radius:9px;
+}
+.loader i{
+ display:block;
+ height:100%;
+ width:45%;
+ background:var(--green);
+ animation:load 1.1s infinite;
+}
+@keyframes load{
+ from{transform:translateX(-120%)}
+ to{transform:translateX(240%)}
+}
+
+/* AUTH */
+#auth{
+ position:absolute;
+ inset:0;
+ z-index:9000;
+ overflow:auto;
+ padding:25px 20px;
+ background:
+ radial-gradient(circle at 50% -10%,#19e6a022,transparent 40%),
+ var(--bg);
+}
+.authBox{
+ width:100%;
+ max-width:440px;
+ margin:auto;
+ padding-top:5vh;
+}
+.authLogo{
+ width:58px;
+ height:58px;
+ border:2px solid var(--green);
+ border-radius:19px;
+ display:grid;
+ place-items:center;
+ box-shadow:0 0 30px #19e6a033;
+}
+.authLogo:after{
+ content:"";
+ width:27px;
+ height:27px;
+ border:2px solid var(--green);
+ border-radius:50%;
+}
+.authTitle{
+ margin-top:20px;
+ font-size:28px;
+ font-weight:950;
+}
+.authTitle span{color:var(--green)}
+.authSub{
+ color:var(--muted);
+ font-size:13px;
+ margin-top:7px;
+ line-height:1.5;
+}
+.authTabs{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:4px;
+ background:var(--card);
+ padding:4px;
+ border-radius:15px;
+ margin:24px 0 13px;
+}
+.authTabs button{
+ padding:11px;
+ background:none;
+ color:var(--muted);
+ border-radius:11px;
+}
+.authTabs .active{
+ background:#19e6a018;
+ color:var(--green);
+}
+.field{margin-bottom:10px}
+.field input{
+ width:100%;
+ padding:15px;
+ background:var(--card);
+ color:white;
+ border:1px solid var(--border);
+ border-radius:14px;
+}
+.primary{
+ width:100%;
+ padding:15px;
+ border-radius:14px;
+ background:var(--green);
+ color:#02110b;
+ font-weight:900;
+}
+.oauth{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:8px;
+ margin-top:9px;
+}
+.oauth button{
+ padding:13px;
+ border-radius:13px;
+ color:white;
+ background:var(--card);
+ border:1px solid var(--border);
+}
+.divider{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ color:var(--muted);
+ font-size:10px;
+ margin:15px 0;
+}
+.divider:before,.divider:after{
+ content:"";
+ height:1px;
+ background:var(--border);
+ flex:1;
+}
+.authSwitch{
+ text-align:center;
+ color:var(--muted);
+ font-size:12px;
+ margin-top:15px;
+}
+.authSwitch button{
+ color:var(--green);
+ background:none;
+}
+.error{
+ color:var(--red);
+ font-size:11px;
+ margin:7px 0;
+ min-height:15px;
+}
+
+/* APP */
+#main{
+ position:absolute;
+ inset:0;
+ display:flex;
+ flex-direction:column;
+ background:
+ radial-gradient(circle at 80% -20%,#19e6a00b,transparent 35%),
+ var(--bg);
+}
+.content{
+ flex:1;
+ overflow-y:auto;
+ padding:18px 15px 105px;
+}
+.content::-webkit-scrollbar{display:none}
+.page{display:none}
+.page.active{display:block}
+.header{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ margin-bottom:20px;
+}
+.brand{
+ font-weight:950;
+ letter-spacing:1.5px;
+}
+.brand span{color:var(--green)}
+.iconBtn{
+ width:41px;
+ height:41px;
+ border-radius:13px;
+ color:white;
+ background:var(--card);
+ border:1px solid var(--border);
+}
+.headerBtns{display:flex;gap:7px}
+.smallLabel{
+ color:var(--muted);
+ font-size:10px;
+ letter-spacing:1px;
+}
+h1{font-size:26px}
+.card{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:21px;
+ padding:16px;
+ margin-bottom:13px;
+}
+.muted{color:var(--muted);font-size:11px}
+.green{color:var(--green)}
+
+.locationCard{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:17px;
+ background:linear-gradient(135deg,#19e6a018,var(--card));
+ border:1px solid #19e6a022;
+ border-radius:21px;
+ margin-bottom:17px;
+}
+.locationLeft{display:flex;align-items:center;gap:12px}
+.locationIcon{
+ width:44px;
+ height:44px;
+ display:grid;
+ place-items:center;
+ background:#19e6a014;
+ border-radius:14px;
+ color:var(--green);
+ font-size:20px;
+}
+.switch{
+ width:50px;
+ height:28px;
+ padding:3px;
+ border-radius:30px;
+ background:#26342f;
+}
+.switch i{
+ display:block;
+ width:22px;
+ height:22px;
+ border-radius:50%;
+ background:#82938c;
+ transition:.2s;
+}
+.switch.on{background:var(--green)}
+.switch.on i{
+ transform:translateX(22px);
+ background:#03130d;
+}
+.quickGrid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:8px;
+ margin:12px 0 23px;
+}
+.quick{
+ padding:12px 3px;
+ border-radius:16px;
+ background:var(--card);
+ border:1px solid var(--border);
+ color:white;
+}
+.quickIcon{
+ width:34px;
+ height:34px;
+ margin:auto auto 7px;
+ display:grid;
+ place-items:center;
+ border-radius:11px;
+ background:#19e6a012;
+ color:var(--green);
+}
+.quick span{font-size:9px;color:var(--muted)}
+.sectionTitle{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:10px;
+}
+.sectionTitle h2{font-size:17px}
+.sectionTitle button{
+ background:none;
+ color:var(--green);
+ font-size:11px;
+}
+.circleCard{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:20px;
+ padding:16px;
+ margin-bottom:10px;
+}
+.avatarStack{display:flex;margin-top:13px}
+.avatar{
+ width:39px;
+ height:39px;
+ border-radius:50%;
+ border:2px solid var(--card);
+ margin-left:-7px;
+ background:#213b32;
+ display:grid;
+ place-items:center;
+ color:var(--green);
+ font-weight:900;
+ overflow:hidden;
+}
+.avatar:first-child{margin-left:0}
+.avatar img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+/* FEED */
+.createPost{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:20px;
+ padding:14px;
+ margin-bottom:13px;
+}
+.createPost textarea{
+ width:100%;
+ min-height:75px;
+ resize:none;
+ background:none;
+ color:white;
+ border:0;
+}
+.mediaButtons{
+ display:flex;
+ gap:7px;
+ margin-top:8px;
+}
+.mediaButtons button{
+ flex:1;
+ padding:10px;
+ background:#19e6a010;
+ color:var(--green);
+ border-radius:12px;
+ font-size:11px;
+}
+.post{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:20px;
+ overflow:hidden;
+ margin-bottom:13px;
+}
+.postHead{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ padding:13px;
+}
+.postUserAvatar{
+ width:41px;
+ height:41px;
+ border-radius:50%;
+ background:#213b32;
+ overflow:hidden;
+ display:grid;
+ place-items:center;
+ color:var(--green);
+ font-weight:900;
+}
+.postUserAvatar img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+.postName{font-size:12px;font-weight:900}
+.postTime{font-size:9px;color:var(--muted)}
+.postText{
+ padding:0 14px 13px;
+ font-size:13px;
+ line-height:1.5;
+}
+.postMedia{
+ width:100%;
+ max-height:500px;
+ object-fit:cover;
+ background:#020504;
+}
+.actions{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ border-top:1px solid var(--border);
+}
+.actions button{
+ padding:12px 4px;
+ color:var(--muted);
+ background:none;
+ font-size:11px;
+}
+.actions button.liked{color:var(--red)}
+
+/* SEARCH */
+.searchBox{
+ display:flex;
+ gap:8px;
+ margin-bottom:15px;
+}
+.searchBox input,.fullInput{
+ flex:1;
+ padding:14px;
+ background:var(--card);
+ color:white;
+ border:1px solid var(--border);
+ border-radius:14px;
+}
+.userResult{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:13px 2px;
+ border-bottom:1px solid var(--border);
+}
+.userResult .avatar{margin:0}
+.userInfo{flex:1}
+.addBtn{
+ padding:8px 12px;
+ border-radius:10px;
+ color:#03130d;
+ background:var(--green);
+ font-size:10px;
+ font-weight:900;
+}
+
+/* MESSAGES */
+.chat{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:13px 2px;
+ border-bottom:1px solid var(--border);
+}
+.chatAvatar{
+ width:48px;
+ height:48px;
+ border-radius:50%;
+ background:#213b32;
+ display:grid;
+ place-items:center;
+ overflow:hidden;
+ color:var(--green);
+ font-weight:900;
+}
+.chatAvatar img{width:100%;height:100%;object-fit:cover}
+.chatInfo{flex:1}
+.chatName{font-size:13px;font-weight:900}
+.chatPreview{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* AI */
+.aiHero{
+ text-align:center;
+ padding:30px 10px 18px;
+}
+.aiLogo{
+ width:70px;
+ height:70px;
+ margin:auto;
+ border:2px solid var(--green);
+ border-radius:50%;
+ display:grid;
+ place-items:center;
+ color:var(--green);
+ box-shadow:0 0 40px #19e6a033;
+}
+.aiMessages{
+ min-height:360px;
+}
+.aiMsg{
+ max-width:86%;
+ padding:12px 14px;
+ border-radius:17px;
+ background:var(--card);
+ border:1px solid var(--border);
+ margin-bottom:8px;
+ font-size:12px;
+ line-height:1.5;
+}
+.aiMsg.user{
+ margin-left:auto;
+ background:var(--green);
+ color:#03130d;
+ border:0;
+}
+.aiInput{
+ display:flex;
+ gap:7px;
+ position:sticky;
+ bottom:0;
+ background:linear-gradient(transparent,var(--bg) 25%);
+ padding:9px 0;
+}
+.aiInput input{
+ flex:1;
+ padding:14px;
+ background:var(--card);
+ border:1px solid var(--border);
+ color:white;
+ border-radius:15px;
+}
+.aiInput button{
+ width:50px;
+ border-radius:15px;
+ background:var(--green);
+ font-weight:900;
+}
+
+/* PROFILE */
+.profileTop{text-align:center}
+.profilePic{
+ width:105px;
+ height:105px;
+ border-radius:50%;
+ margin:10px auto;
+ border:3px solid var(--green);
+ background:#213b32;
+ display:grid;
+ place-items:center;
+ font-size:30px;
+ font-weight:900;
+ overflow:hidden;
+}
+.profilePic img{width:100%;height:100%;object-fit:cover}
+.stats{
+ display:flex;
+ justify-content:center;
+ gap:35px;
+ margin:15px;
+}
+.stat strong{display:block}
+.stat span{font-size:9px;color:var(--muted)}
+.profileActions{
+ display:flex;
+ gap:8px;
+ margin-bottom:18px;
+}
+.profileActions button{
+ flex:1;
+ padding:12px;
+ border-radius:13px;
+ background:var(--card);
+ color:white;
+ border:1px solid var(--border);
+}
+.profileActions .primary{background:var(--green);color:#03130d}
+
+/* MAP */
+.fakeMap{
+ height:440px;
+ border-radius:23px;
+ overflow:hidden;
+ position:relative;
+ background:
+ radial-gradient(circle at 50% 50%,#19e6a01c,transparent 30%),
+ repeating-linear-gradient(35deg,#10251d 0 24px,#0b1c16 25px 27px),
+ repeating-linear-gradient(110deg,transparent 0 70px,#25443a 71px 76px);
+ border:1px solid var(--border);
+}
+.road{
+ position:absolute;
+ background:#38564d;
+ opacity:.7;
+}
+.road.one{width:140%;height:7px;top:48%;left:-20%;transform:rotate(18deg)}
+.road.two{width:7px;height:140%;top:-20%;left:52%;transform:rotate(22deg)}
+.mapPin{
+ position:absolute;
+ width:45px;
+ height:45px;
+ border-radius:50%;
+ background:#142c24;
+ border:3px solid var(--green);
+ color:var(--green);
+ display:grid;
+ place-items:center;
+ font-weight:900;
+ box-shadow:0 0 25px #19e6a055;
+}
+.pin1{top:20%;left:20%}
+.pin2{top:30%;right:17%}
+.pin3{bottom:19%;left:32%}
+.myPin{
+ position:absolute;
+ left:50%;
+ top:50%;
+ width:22px;
+ height:22px;
+ transform:translate(-50%,-50%);
+ background:#4db8ff;
+ border:4px solid white;
+ border-radius:50%;
+ box-shadow:0 0 0 14px #4db8ff20;
+}
+.mapNote{
+ position:absolute;
+ top:12px;
+ left:12px;
+ padding:9px 11px;
+ background:#050b09dd;
+ border-radius:12px;
+ font-size:10px;
+}
+
+/* NAV */
+.nav{
+ position:absolute;
+ z-index:100;
+ left:8px;
+ right:8px;
+ bottom:8px;
+ height:70px;
+ display:grid;
+ grid-template-columns:repeat(7,1fr);
+ padding:5px;
+ background:#0d1915ee;
+ backdrop-filter:blur(20px);
+ border:1px solid var(--border);
+ border-radius:23px;
+}
+.nav button{
+ background:none;
+ color:var(--muted);
+ border-radius:16px;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:3px;
+}
+.nav button.active{
+ color:var(--green);
+ background:#19e6a010;
+}
+.navIcon{font-size:17px}
+.navText{font-size:7px}
+
+/* MODAL */
+.modal{
+ position:absolute;
+ inset:0;
+ z-index:500;
+ background:#000a;
+ display:none;
+ align-items:flex-end;
+ backdrop-filter:blur(5px);
+}
+.modal.show{display:flex}
+.modalCard{
+ width:100%;
+ background:var(--card);
+ border-radius:27px 27px 0 0;
+ padding:20px 17px 25px;
+ max-height:90%;
+ overflow:auto;
+}
+.modalHeader{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:15px;
+}
+.close{
+ width:35px;
+ height:35px;
+ border-radius:11px;
+ background:var(--card2);
+ color:white;
+}
+.modalInput{
+ width:100%;
+ padding:14px;
+ background:var(--bg);
+ color:white;
+ border:1px solid var(--border);
+ border-radius:13px;
+ margin-bottom:8px;
+}
+.modalAction{
+ width:100%;
+ padding:14px;
+ border-radius:13px;
+ background:var(--green);
+ color:#03130d;
+ font-weight:900;
+}
+.giftGrid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+}
+.gift{
+ padding:13px 4px;
+ border-radius:15px;
+ background:var(--bg);
+ border:1px solid var(--border);
+ color:white;
+ text-align:center;
+}
+.giftEmoji{font-size:27px}
+.giftPrice{font-size:9px;color:var(--green);margin-top:5px}
+
+/* TOAST */
+#toast{
+ position:absolute;
+ z-index:10000;
+ left:50%;
+ bottom:92px;
+ transform:translate(-50%,20px);
+ opacity:0;
+ pointer-events:none;
+ background:#16251f;
+ border:1px solid var(--border);
+ padding:11px 15px;
+ border-radius:13px;
+ font-size:11px;
+ transition:.25s;
+ white-space:nowrap;
+}
+#toast.show{
+ opacity:1;
+ transform:translate(-50%,0);
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+<!-- SPLASH -->
+<div id="splash">
+ <div class="skyGlow"></div>
+ <div class="mountain"></div>
+ <div class="forest"></div>
+
+ <div class="splashContent">
+  <div class="logoMark"></div>
+  <div class="splashTitle">TRACK <span>CIRCLE</span></div>
+  <div class="splashSub">STAY CONNECTED. STAY CLOSE.</div>
+  <div class="loader"><i></i></div>
+ </div>
+</div>
+
+<!-- AUTH -->
+<div id="auth" class="hidden">
+ <div class="authBox">
+
+  <div class="authLogo"></div>
+
+  <div class="authTitle">TRACK <span>CIRCLE</span></div>
+  <div class="authSub">
+   Connect with your people, share moments, message,
+   locate your circle and talk to Track Circle AI.
+  </div>
+
+  <div class="authTabs">
+   <button id="loginTab" class="active" onclick="setAuthMode('login')">Sign in</button>
+   <button id="signupTab" onclick="setAuthMode('signup')">Create account</button>
+  </div>
+
+  <div id="nameField" class="field hidden">
+   <input id="authName" placeholder="Full name">
+  </div>
+
+  <div class="field">
+   <input id="authUsername" placeholder="@username">
+  </div>
+
+  <div class="field">
+   <input id="authEmail" type="email" placeholder="Email address">
+  </div>
+
+  <div class="field">
+   <input id="authPassword" type="password" placeholder="Password">
+  </div>
+
+  <div id="authError" class="error"></div>
+
+  <button class="primary" onclick="submitAuth()" id="authButton">
+   Sign in
+  </button>
+
+  <div class="divider">OR</div>
+
+  <div class="oauth">
+   <button onclick="oauth('google')">G Google</button>
+   <button onclick="oauth('apple')"> Apple</button>
+  </div>
+
+  <div class="authSwitch">
+   <span id="switchText">Don't have an account?</span>
+   <button onclick="toggleAuth()">Create one</button>
+  </div>
+
+ </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main" class="hidden">
+
+ <main class="content">
+
+  <!-- HOME -->
+  <section class="page active" id="home">
+
+   <div class="header">
+    <div class="brand">TRACK <span>CIRCLE</span></div>
+    <div class="headerBtns">
+     <button class="iconBtn" onclick="go('search')">⌕</button>
+     <button class="iconBtn" onclick="toast('Notifications coming from your activity')">♢</button>
+    </div>
+   </div>
+
+   <div class="smallLabel" id="welcomeText">WELCOME BACK</div>
+   <h1 id="homeName">Stay connected.</h1>
+
+   <div class="locationCard">
+    <div class="locationLeft">
+     <div class="locationIcon">⌖</div>
+     <div>
+      <b>Location sharing</b>
+      <div class="muted" id="locationStatus">Location is off</div>
+     </div>
+    </div>
+    <button class="switch" id="locationSwitch" onclick="toggleLocation()">
+     <i></i>
+    </button>
+   </div>
+
+   <div class="sectionTitle"><h2>Quick actions</h2></div>
+
+   <div class="quickGrid">
+    <button class="quick" onclick="toggleLocation()">
+     <div class="quickIcon">⌖</div><span>Location</span>
+    </button>
+    <button class="quick" onclick="openModal('circleModal')">
+     <div class="quickIcon">+</div><span>Circle</span>
+    </button>
+    <button class="quick" onclick="go('ai')">
+     <div class="quickIcon">AI</div><span>AI</span>
+    </button>
+    <button class="quick" onclick="go('feed')">
+     <div class="quickIcon">✦</div><span>Post</span>
+    </button>
+   </div>
+
+   <div class="sectionTitle">
+    <h2>Your circles</h2>
+    <button onclick="go('circles')">View all</button>
+   </div>
+
+   <div id="homeCircles">
+    <div class="circleCard">
+     <b>No circles yet</b>
+     <div class="muted" style="margin-top:5px">
+      Create or join your first circle.
+     </div>
+    </div>
+   </div>
+
+   <div class="card">
+    <div class="green" style="font-weight:900">✦ Track Circle AI</div>
+    <div style="margin-top:7px;font-size:14px;font-weight:800">
+     Your AI inside Track Circle
+    </div>
+    <div class="muted" style="margin-top:5px;line-height:1.5">
+     Ask questions, learn, write, plan trips, translate,
+     brainstorm and get help.
+    </div>
+    <button class="primary" style="margin-top:13px" onclick="go('ai')">
+     Open Track Circle AI
+    </button>
+   </div>
+
+  </section>
+
+  <!-- MAP -->
+  <section class="page" id="mapPage">
+
+   <div class="header">
+    <div>
+     <div class="smallLabel">LIVE LOCATION</div>
+     <h1>Live Map</h1>
+    </div>
+    <button class="iconBtn" onclick="toggleLocation()">⌖</button>
+   </div>
+
+   <div class="fakeMap">
+    <div class="road one"></div>
+    <div class="road two"></div>
+    <div class="mapNote">Track Circle Live Location</div>
+    <div class="myPin"></div>
+    <div class="mapPin pin1">A</div>
+    <div class="mapPin pin2">B</div>
+    <div class="mapPin pin3">C</div>
+   </div>
+
+   <div class="card" style="margin-top:12px">
+    <b>Location privacy</b>
+    <div class="muted" style="margin-top:6px;line-height:1.5">
+     Turn location sharing on or off whenever you want.
+     Exact location is intended to be shared only with
+     people/circles you authorize.
+    </div>
+   </div>
+
+  </section>
+
+  <!-- CIRCLES -->
+  <section class="page" id="circles">
+
+   <div class="header">
+    <div>
+     <div class="smallLabel">COMMUNITIES</div>
+     <h1>Circles</h1>
+    </div>
+    <button class="iconBtn" onclick="openModal('circleModal')">+</button>
+   </div>
+
+   <div id="circleList"></div>
+
+   <div class="card">
+    <b>Join a circle</b>
+    <div class="muted" style="margin:6px 0 12px">
+     Enter the invitation code you received.
+    </div>
+    <input class="fullInput" id="joinCode" placeholder="TC-XXXXXX">
+    <button class="primary" style="margin-top:8px" onclick="joinCircle()">
+     Join Circle
+    </button>
+   </div>
+
+  </section>
+
+  <!-- FEED -->
+  <section class="page" id="feed">
+
+   <div class="header">
+    <div>
+     <div class="smallLabel">SOCIAL</div>
+     <h1>Circle Feed</h1>
+    </div>
+    <button class="iconBtn" onclick="go('search')">⌕</button>
+   </div>
+
+   <div class="createPost">
+    <textarea id="postText" placeholder="What's happening?"></textarea>
+
+    <input id="postImage" type="file" accept="image/*" hidden>
+    <input id="postVideo" type="file" accept="video/*" hidden>
+
+    <div class="mediaButtons">
+     <button onclick="document.getElementById('postImage').click()">📷 Photo</button>
+     <button onclick="document.getElementById('postVideo').click()">🎥 Video</button>
+     <button onclick="createPost()">Post</button>
+    </div>
+
+    <div id="selectedMedia" class="muted" style="margin-top:8px"></div>
+   </div>
+
+   <div id="feedList">
+    <div class="card">Loading posts...</div>
+   </div>
+
+  </section>
+
+  <!-- SEARCH / FRIENDS -->
+  <section class="page" id="search">
+
+   <div class="header">
+    <div>
+     <div class="smallLabel">SOCIAL</div>
+     <h1>Find people</h1>
+    </div>
+   </div>
+
+   <div class="searchBox">
+    <input id="userSearch" placeholder="Search username..." oninput="searchUsers()">
+   </div>
+
+   <div id="userResults"></div>
+
+  </section>
+
+  <!-- MESSAGES -->
+  <section class="page" id="messages">
+
+   <div class="header">
+    <div>
+     <div class="smallLabel">PRIVATE & GROUP</div>
+     <h1>Messages</h1>
+    </div>
+    <button class="iconBtn" onclick="toast('Search someone to start a conversation')">+</button>
+   </div>
+
+   <input class="fullInput" placeholder="Search conversations..." oninput="filterChats(this.value)">
+
+   <div id="chatList" style="margin-top:10px"></div>
+
+  </section>
+
+  <!-- AI -->
+  <section class="page" id="ai">
+
+   <div class="aiHero">
+    <div class="aiLogo">AI</div>
+    <h1 style="margin-top:12px">Track Circle AI</h1>
+    <div class="muted" style="margin-top:5px">
+     Your assistant inside Track Circle
+    </div>
+   </div>
+
+   <div class="aiMessages" id="aiMessages">
+    <div class="aiMsg">
+     Hi! I'm Track Circle AI. Ask me anything.
+    </div>
+   </div>
+
+   <div class="aiInput">
+    <input id="aiInput" placeholder="Message Track Circle AI..."
+     onkeydown="if(event.key==='Enter')sendAI()">
+    <button onclick="sendAI()">➤</button>
+   </div>
+
+  </section>
+
+  <!-- PROFILE -->
+  <section class="page" id="profile">
+
+   <div class="profileTop">
+
+    <div class="profilePic" id="profilePic">
+     TC
+    </div>
+
+    <input id="avatarInput" type="file" accept="image/*" hidden>
+
+    <button class="iconBtn" style="margin:auto"
+     onclick="document.getElementById('avatarInput').click()">
+     📷
+    </button>
+
+    <h2 id="profileName">Track Circle User</h2>
+    <div class="muted" id="profileUsername">@username</div>
+
+    <div class="stats">
+     <div class="stat"><strong id="postCount">0</strong><span>Posts</span></div>
+     <div class="stat"><strong>0</strong><span>Friends</span></div>
+     <div class="stat"><strong>0</strong><span>Circles</span></div>
+    </div>
+
+   </div>
+
+   <div class="profileActions">
+    <button onclick="openModal('editProfileModal')">Edit profile</button>
+    <button class="primary" onclick="openModal('giftModal')">🎁 Gifts</button>
+   </div>
+
+   <div class="card">
+    <b>Account</b>
+    <div class="muted" style="margin-top:7px" id="profileEmail"></div>
+   </div>
+
+   <button class="primary" style="background:#ff5268;color:white"
+    onclick="signOut()">
+    Sign out
+   </button>
+
+  </section>
+
+ </main>
+
+ <!-- NAV -->
+ <nav class="nav">
+  <button class="active" data-page="home" onclick="go('home')">
+   <span class="navIcon">⌂</span><span class="navText">Home</span>
+  </button>
+  <button data-page="mapPage" onclick="go('mapPage')">
+   <span class="navIcon">⌖</span><span class="navText">Map</span>
+  </button>
+  <button data-page="circles" onclick="go('circles')">
+   <span class="navIcon">◉</span><span class="navText">Circles</span>
+  </button>
+  <button data-page="feed" onclick="go('feed')">
+   <span class="navIcon">✦</span><span class="navText">Feed</span>
+  </button>
+  <button data-page="messages" onclick="go('messages')">
+   <span class="navIcon">◌</span><span class="navText">Chat</span>
+  </button>
+  <button data-page="ai" onclick="go('ai')">
+   <span class="navIcon">AI</span><span class="navText">AI</span>
+  </button>
+  <button data-page="profile" onclick="go('profile')">
+   <span class="navIcon">●</span><span class="navText">Profile</span>
+  </button>
+ </nav>
+
+</div>
+
+<!-- CIRCLE MODAL -->
+<div class="modal" id="circleModal">
+ <div class="modalCard">
+  <div class="modalHeader">
+   <h2>Create circle</h2>
+   <button class="close" onclick="closeModal('circleModal')">×</button>
+  </div>
+
+  <input class="modalInput" id="circleName" placeholder="Circle name">
+  <input class="modalInput" id="circleType" placeholder="Family, Friends, School, Team...">
+
+  <button class="modalAction" onclick="createCircle()">
+   Create Circle
+  </button>
+ </div>
+</div>
+
+<!-- EDIT PROFILE -->
+<div class="modal" id="editProfileModal">
+ <div class="modalCard">
+  <div class="modalHeader">
+   <h2>Edit profile</h2>
+   <button class="close" onclick="closeModal('editProfileModal')">×</button>
+  </div>
+
+  <input class="modalInput" id="editName" placeholder="Display name">
+  <input class="modalInput" id="editUsername" placeholder="@username">
+  <textarea class="modalInput" id="editBio" placeholder="Bio"></textarea>
+
+  <button class="modalAction" onclick="saveProfile()">
+   Save profile
+  </button>
+ </div>
+</div>
+
+<!-- GIFTS -->
+<div class="modal" id="giftModal">
+ <div class="modalCard">
+  <div class="modalHeader">
+   <div>
+    <h2>Send a gift</h2>
+    <div class="muted">Gifts can be used in chats and circles.</div>
+   </div>
+   <button class="close" onclick="closeModal('giftModal')">×</button>
+  </div>
+
+  <div class="giftGrid">
+
+   <button class="gift" onclick="selectGift('❤️',500)">
+    <div class="giftEmoji">❤️</div>
+    <div class="giftPrice">₦500</div>
+   </button>
+
+   <button class="gift" onclick="selectGift('🌹',1000)">
+    <div class="giftEmoji">🌹</div>
+    <div class="giftPrice">₦1,000</div>
+   </button>
+
+   <button class="gift" onclick="selectGift('💎',5000)">
+    <div class="giftEmoji">💎</div>
+    <div class="giftPrice">₦5,000</div>
+   </button>
+
+   <button class="gift" onclick="selectGift('👑',10000)">
+    <div class="giftEmoji">👑</div>
+    <div class="giftPrice">₦10,000</div>
+   </button>
+
+   <button class="gift" onclick="selectGift('🚀',50000)">
+    <div class="giftEmoji">🚀</div>
+    <div class="giftPrice">₦50,000</div>
+   </button>
+
+   <button class="gift" onclick="customGift()">
+    <div class="giftEmoji">✨</div>
+    <div class="giftPrice">CUSTOM</div>
+   </button>
+
+  </div>
+
+  <div id="giftInfo" class="muted" style="margin-top:14px;text-align:center">
+   Select a gift to continue.
+  </div>
+ </div>
+</div>
+
+<div id="toast"></div>
+
+</div>
+
 <script>
-const URL="https://olivaregvcejjghrjdio.supabase.co",KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9saXZhcmVndmNlampnaHJqZGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyODE4MzUsImV4cCI6MjEwNTg1NzgzNX0.r1aukPMLnShXSFjuE47AIaGKmgwHrFuaWl8-2r8Su0Y",sb=supabase.createClient(URL,KEY);let user=null,profile=null,modeNow="login",watch=null,giftTarget=null;$=id=>document.getElementById(id);
+/* =========================================================
+   TRACK CIRCLE
+   Replace ONLY these two values with your Supabase project
+   URL and anon/publishable key.
+   ========================================================= */
 
-function toast(x){let t=$("toast");t.textContent=x;t.classList.add("show");clearTimeout(window.toastT);window.toastT=setTimeout(()=>t.classList.remove("show"),2600)}
-function esc(x){return String(x??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function avatar(n){return 'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="#20312d"/><text x="50%" y="55%" text-anchor="middle" fill="#19e6a0" font-size="42">${(n||'T')[0].toUpperCase()}</text></svg>`)}
-function openM(x){$(x).classList.add('show')}
-function closeM(x){$(x).classList.remove('show')}
+const SUPABASE_URL="YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY";
 
-function mode(x){modeNow=x;$("loginTab").classList.toggle('on',x==='login');$("signupTab").classList.toggle('on',x==='signup');$("nameField").classList.toggle('hide',x!=='signup');$("authBtn").textContent=x==='signup'?'Create account':'Sign in';$("switchText").textContent=x==='signup'?'Already have an account?':"Don't have an account?";document.querySelector('.switch button').textContent=x==='signup'?'Sign in':'Create one'}
-function toggleMode(){mode(modeNow==='login'?'signup':'login')}
+let supabaseClient=null;
 
-async function auth(){let email=$("email").value.trim(),password=$("password").value,username=$("username").value.trim().toLowerCase(),name=$("name").value.trim()||username;if(!email||!password)return toast('Enter email and password');try{if(modeNow==='signup'){if(!username)return toast('Choose a username');let r=await sb.auth.signUp({email,password,options:{data:{username,display_name:name}}});if(r.error)throw r.error;if(r.data.user){await sb.from('profiles').upsert({id:r.data.user.id,username,display_name:name},{onConflict:'id'});toast(r.data.session?'Account created':'Account created. Confirm email if required.')}}else{let r=await sb.auth.signInWithPassword({email,password});if(r.error)throw r.error}}catch(e){toast(e.message)}}
-
-async function boot(){
-setTimeout(()=>{$("splash").classList.add('hide')},1700);
-try{
-let r=await Promise.race([
-sb.auth.getSession(),
-new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),5000))
-]);
-if(r.data.session){user=r.data.session.user;await loadProfile();enter()}
-else $("auth").classList.remove('hide');
-}catch(e){
-$("auth").classList.remove('hide');
-toast('Ready — please sign in');
+if(
+ SUPABASE_URL &&
+ SUPABASE_ANON_KEY &&
+ !SUPABASE_URL.includes("YOUR_") &&
+ !SUPABASE_ANON_KEY.includes("YOUR_")
+){
+ supabaseClient=supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+ );
 }
-sb.auth.onAuthStateChange(async(e,s)=>{
-if(s&&!user){user=s.user;await loadProfile();enter()}
+
+let authMode="login";
+let currentUser=null;
+let profile=null;
+let locationOn=false;
+let selectedGift=null;
+
+/* ---------- STARTUP ---------- */
+
+window.addEventListener("load",async()=>{
+
+ /*
+  The splash ALWAYS ends.
+  This prevents the previous infinite-loading problem.
+ */
+ setTimeout(async()=>{
+  document.getElementById("splash").classList.add("hide");
+
+  if(!supabaseClient){
+   showAuth();
+   return;
+  }
+
+  try{
+   const {data}=await supabaseClient.auth.getSession();
+
+   if(data && data.session){
+    currentUser=data.session.user;
+    await enterApp();
+   }else{
+    showAuth();
+   }
+
+  }catch(e){
+   showAuth();
+  }
+
+ },1800);
+
+ document.getElementById("postImage")
+  .addEventListener("change",showSelectedMedia);
+
+ document.getElementById("postVideo")
+  .addEventListener("change",showSelectedMedia);
+
+ document.getElementById("avatarInput")
+  .addEventListener("change",uploadAvatar);
+
 });
+
+/* ---------- AUTH ---------- */
+
+function showAuth(){
+ document.getElementById("auth").classList.remove("hidden");
+ document.getElementById("main").classList.add("hidden");
 }
 
-async function enter(){$("auth").classList.add('hide');$("main").classList.remove('hide');$("greet").textContent=(new Date().getHours()<12?'Good morning':new Date().getHours()<18?'Good afternoon':'Good evening')+', '+(profile?.display_name||'there');loadPosts();loadCircles()}
+function showMain(){
+ document.getElementById("auth").classList.add("hidden");
+ document.getElementById("main").classList.remove("hidden");
+}
 
-async function loadProfile(){if(!user)return;let r=await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();profile=r.data||{display_name:'Track Circle User',username:'user'};$("profileName").textContent=profile.display_name||'Track Circle User';$("handle").textContent='@'+(profile.username||'user');$("profilePic").src=profile.avatar_url||avatar(profile.display_name);$("editName").value=profile.display_name||'';$("editUser").value=profile.username||'';let c=await sb.from('posts').select('*',{count:'exact',head:true}).eq('user_id',user.id);$("pc").textContent=c.count||0}
+function setAuthMode(mode){
 
-async function avatarUpload(){let f=$("avatarFile").files[0];if(!f)return;let p=user.id+'/'+Date.now()+'_'+f.name.replace(/[^a-z0-9._-]/gi,'_');let r=await sb.storage.from('avatars').upload(p,f,{upsert:true,contentType:f.type});if(r.error)return toast(r.error.message);let url=sb.storage.from('avatars').getPublicUrl(p).data.publicUrl;r=await sb.from('profiles').update({avatar_url:url}).eq('id',user.id);if(r.error)return toast(r.error.message);$("profilePic").src=url;toast('Profile photo updated')}
+ authMode=mode;
 
-async function saveProfile(){let display_name=$("editName").value.trim(),username=$("editUser").value.trim().toLowerCase();let r=await sb.from('profiles').update({display_name,username}).eq('id',user.id);if(r.error)return toast(r.error.message);await loadProfile();closeM('settingsModal');toast('Profile saved')}
+ const login=document.getElementById("loginTab");
+ const signup=document.getElementById("signupTab");
+ const name=document.getElementById("nameField");
+ const button=document.getElementById("authButton");
+ const switchText=document.getElementById("switchText");
 
-function fileName(){$("fileName").textContent=$("postFile").files[0]?.name||''}
+ if(mode==="signup"){
+  login.classList.remove("active");
+  signup.classList.add("active");
+  name.classList.remove("hidden");
+  button.textContent="Create account";
+  switchText.textContent="Already have an account?";
+ }else{
+  signup.classList.remove("active");
+  login.classList.add("active");
+  name.classList.add("hidden");
+  button.textContent="Sign in";
+  switchText.textContent="Don't have an account?";
+ }
+}
 
-async function post(){let text=$("postText").value.trim(),f=$("postFile").files[0];if(!text&&!f)return toast('Write something or add media');let media_url=null,media_type=null;try{if(f){let p=user.id+'/'+Date.now()+'_'+f.name.replace(/[^a-z0-9._-]/gi,'_');let r=await sb.storage.from('track-media').upload(p,f,{upsert:false,contentType:f.type});if(r.error)throw r.error;media_url=sb.storage.from('track-media').getPublicUrl(p).data.publicUrl;media_type=f.type.startsWith('video')?'video':'image'}let r=await sb.from('posts').insert({user_id:user.id,content:text,media_url,media_type});if(r.error)throw r.error;$("postText").value='';$("postFile").value='';fileName();toast('Posted');loadPosts()}catch(e){toast(e.message)}}
+function toggleAuth(){
+ setAuthMode(authMode==="login"?"signup":"login");
+}
 
-async function loadPosts(){let box=$("posts");box.innerHTML='<div class="card">Loading posts…</div>';let r=await sb.from('posts').select('*,profiles(username,display_name,avatar_url)').order('created_at',{ascending:false}).limit(50);if(r.error){box.innerHTML='<div class="card">'+esc(r.error.message)+'</div>';return}if(!r.data?.length){box.innerHTML='<div class="card"><b>No posts yet</b><p class="muted" style="margin-top:5px">Be the first to post.</p></div>';return}box.innerHTML=r.data.map(p=>{let pr=p.profiles||{},n=pr.display_name||pr.username||'User',a=pr.avatar_url||avatar(n),media=p.media_url?(p.media_type==='video'?`<video class="mediaout" controls playsinline src="${esc(p.media_url)}"></video>`:`<img class="mediaout" src="${esc(p.media_url)}">`):'';return `<article class="post"><div class="posthead"><img class="ava" src="${esc(a)}"><div class="pinfo"><div class="pname">@${esc(pr.username||'user')}</div><div class="ptime">${new Date(p.created_at).toLocaleString()}</div></div><button class="icon" onclick="userView('${p.user_id}')">•••</button></div>${p.content?`<div class="posttext">${esc(p.content)}</div>`:''}${media}<div class="actions"><button onclick="like('${p.id}',this)">♡ Like</button><button onclick="toast('Comments are enabled when the comments table is present')">💬 Comment</button><button onclick="openGift('${p.user_id}')">🎁 Gift</button></div></article>`}).join('')}
+async function submitAuth(){
 
-async function like(id,b){let q=await sb.from('post_likes').select('id').eq('post_id',id).eq('user_id',user.id).maybeSingle();if(q.data){await sb.from('post_likes').delete().eq('id',q.data.id);b.classList.remove('liked')}else{let r=await sb.from('post_likes').insert({post_id:id,user_id:user.id});if(r.error)toast(r.error.message);else b.classList.add('liked')}}
+ const error=document.getElementById("authError");
+ error.textContent="";
 
-async function people(){let q=$("personSearch").value.trim().toLowerCase(),box=$("peopleList");if(!q){box.innerHTML='<div class="card">Search for a username.</div>';return}let r=await sb.from('profiles').select('id,username,display_name,avatar_url').ilike('username','%'+q+'%').limit(20);if(r.error)return box.innerHTML='<div class="card">'+esc(r.error.message)+'</div>';box.innerHTML=r.data.filter(x=>x.id!==user.id).map(p=>`<div class="row"><img class="ava" src="${esc(p.avatar_url||avatar(p.display_name))}"><div class="info"><div class="name">${esc(p.display_name||p.username)}</div><div class="small">@${esc(p.username)}</div></div><button class="btn" style="margin:0" onclick="follow('${p.id}')">Add</button></div>`).join('')||'<div class="card">No users found.</div>'}
+ const email=document.getElementById("authEmail").value.trim();
+ const password=document.getElementById("authPassword").value;
+ const name=document.getElementById("authName").value.trim();
+ const username=document.getElementById("authUsername").value.trim().replace(/^@/,"");
 
-async function follow(id){let r=await sb.from('follows').upsert({follower_id:user.id,following_id:id},{onConflict:'follower_id,following_id'});toast(r.error?r.error.message:'Added')}
+ if(!email || !password){
+  error.textContent="Enter your email and password.";
+  return;
+ }
 
-async function userView(id){let r=await sb.from('profiles').select('*').eq('id',id).maybeSingle();if(!r.data)return;let p=r.data;$("userBox").innerHTML=`<div style="text-align:center"><img class="ava" style="width:90px;height:90px;margin:auto" src="${esc(p.avatar_url||avatar(p.display_name))}"><h2 style="margin-top:10px">${esc(p.display_name||p.username)}</h2><div class="muted">@${esc(p.username)}</div><button class="modalgo" style="margin-top:14px" onclick="callUser('${p.id}','${esc(p.display_name||p.username)}','${esc(p.avatar_url||avatar(p.display_name))}')">📞 Call</button><button class="modalgo" style="margin-top:7px" onclick="openGift('${p.id}')">🎁 Gift</button></div>`;openM('userModal')}
+ if(!supabaseClient){
+  error.textContent="Supabase is not connected yet.";
+  return;
+ }
 
-async function loadCircles(){let box=$("circleList");let r=await sb.from('circle_members').select('circle_id,circles(*)').eq('user_id',user.id);if(r.error){box.innerHTML='<div class="card">'+esc(r.error.message)+'</div>';return}if(!r.data?.length){box.innerHTML='<div class="card">No circles yet.</div>';$("homeCircles").textContent='No circles yet';return}box.innerHTML=r.data.map(x=>`<div class="card"><b>${esc(x.circles?.name||'Circle')}</b><p class="muted" style="margin-top:5px">${esc(x.circles?.description||'Track Circle community')}</p><p style="margin-top:7px;color:var(--m);font-size:10px">INVITE: ${esc(x.circles?.invite_code||'')}</p></div>`).join('');$("homeCircles").innerHTML=box.innerHTML.slice(0,1000)}
+ try{
 
-async function createCircle(){let name=$("circleName").value.trim();if(!name)return toast('Enter a circle name');let code='TC-'+Math.random().toString(36).slice(2,8).toUpperCase(),r=await sb.from('circles').insert({name,description:$("circleDesc").value.trim(),invite_code:code,owner_id:user.id}).select().single();if(r.error)return toast(r.error.message);let m=await sb.from('circle_members').insert({circle_id:r.data.id,user_id:user.id});if(m.error)return toast(m.error.message);closeM('circleModal');toast('Circle created • '+code);loadCircles()}
+  if(authMode==="signup"){
 
-async function joinCircle(){let code=$("joinCode").value.trim().toUpperCase(),r=await sb.from('circles').select('id,name').eq('invite_code',code).maybeSingle();if(r.error||!r.data)return toast('Circle not found');let m=await sb.from('circle_members').upsert({circle_id:r.data.id,user_id:user.id},{onConflict:'circle_id,user_id'});toast(m.error?m.error.message:'Joined '+r.data.name);loadCircles()}
+   if(!name || !username){
+    error.textContent="Enter your name and username.";
+    return;
+   }
 
-function toggleLocation(){if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null;$("locText").textContent='Off — your location is private';$("locBtn").textContent='ON';return}if(!navigator.geolocation)return toast('GPS unavailable');watch=navigator.geolocation.watchPosition(p=>{$("locText").textContent='Sharing ON • '+p.coords.latitude.toFixed(4)+', '+p.coords.longitude.toFixed(4);$("locBtn").textContent='OFF'},()=>toast('Location permission denied'),{enableHighAccuracy:true,maximumAge:10000,timeout:15000})}
+   const {data,error:e}=await supabaseClient.auth.signUp({
+    email,
+    password,
+    options:{
+     data:{
+      display_name:name,
+      username:username.toLowerCase()
+     }
+    }
+   });
 
-function ask(x){$("aiText").value=x;sendAI()}
-async function sendAI(){let i=$("aiText"),x=i.value.trim();if(!x)return;let box=$("aiMsgs");box.insertAdjacentHTML('beforeend',`<div class="msg user">${esc(x)}</div>`);i.value='';let w=document.createElement('div');w.className='msg';w.textContent='Thinking…';box.appendChild(w);try{let r=await sb.functions.invoke('track-circle-ai',{body:{message:x,history:[]}});if(r.error)throw r.error;w.textContent=r.data?.reply||r.data?.response||'No response'}catch(e){w.textContent='AI connection is not ready. Connect your track-circle-ai Edge Function.'}}
+   if(e)throw e;
 
-function openGift(id){giftTarget=id;closeM('userModal');openM('giftModal')}
-function gift(icon,amount){closeM('giftModal');toast(icon+' ₦'+amount.toLocaleString()+' selected. Secure payment backend required before charging.')}
-function callUser(id,n,a){closeM('userModal');$("call").classList.add('show');$("callPic").src=a;$("callName").textContent=n;$("callStatus").textContent='Call screen ready • WebRTC signaling required for live audio/video'}
-function endCall(){$("call").classList.remove('show')}
+   if(data.session){
+    currentUser=data.user;
+    await enterApp();
+   }else{
+    error.textContent="Account created. Check your email if confirmation is enabled.";
+   }
 
-function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x.dataset.p===id));if(id==='feed')loadPosts();if(id==='circles')loadCircles();if(id==='people')people();if(id==='profile')loadProfile()}
-async function logout(){await sb.auth.signOut();location.reload()}
-boot();
-</script></body></html>
+  }else{
+
+   const {data,error:e}=await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+   });
+
+   if(e)throw e;
+
+   currentUser=data.user;
+   await enterApp();
+  }
+
+ }catch(e){
+  error.textContent=e.message || "Authentication failed.";
+ }
+}
+
+async function oauth(provider){
+
+ if(!supabaseClient){
+  toast("Add your Supabase keys first.");
+  return;
+ }
+
+ try{
+  await supabaseClient.auth.signInWithOAuth({
+   provider,
+   options:{
+    redirectTo:window.location.href
+   }
+  });
+ }catch(e){
+  toast(e.message);
+ }
+}
+
+async function signOut(){
+
+ if(supabaseClient){
+  await supabaseClient.auth.signOut();
+ }
+
+ currentUser=null;
+ profile=null;
+
+ document.getElementById("main").classList.add("hidden");
+ showAuth();
+ setAuthMode("login");
+}
+
+/* ---------- APP ENTRY ---------- */
+
+async function enterApp(){
+
+ showMain();
+
+ await loadProfile();
+ await loadFeed();
+ await loadCircles();
+ await loadChats();
+
+ updateHome();
+
+ if(supabaseClient){
+
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+   if(session){
+    currentUser=session.user;
+   }
+  });
+
+ }
+}
+
+function updateHome(){
+
+ const name=
+  profile?.display_name ||
+  currentUser?.user_metadata?.display_name ||
+  "there";
+
+ document.getElementById("homeName").textContent=
+  "Hey "+name.split(" ")[0]+" 👋";
+
+ document.getElementById("welcomeText").textContent=
+  "WELCOME BACK";
+
+ document.getElementById("profileName").textContent=
+  profile?.display_name || name;
+
+ document.getElementById("profileUsername").textContent=
+  "@"+(profile?.username || currentUser?.user_metadata?.username || "user");
+
+ document.getElementById("profileEmail").textContent=
+  currentUser?.email || "";
+
+ loadProfileImage();
+}
+
+/* ---------- NAVIGATION ---------- */
+
+function go(page){
+
+ document.querySelectorAll(".page").forEach(p=>{
+  p.classList.remove("active");
+ });
+
+ const target=document.getElementById(page);
+
+ if(target)target.classList.add("active");
+
+ document.querySelectorAll(".nav button").forEach(b=>{
+  b.classList.remove("active");
+
+  if(b.dataset.page===page){
+   b.classList.add("active");
+  }
+ });
+
+ if(page==="feed")loadFeed();
+ if(page==="circles")loadCircles();
+ if(page==="messages")loadChats();
+}
+
+/* ---------- PROFILE ---------- */
+
+async function loadProfile(){
+
+ if(!currentUser)return;
+
+ if(!supabaseClient)return;
+
+ try{
+
+  const {data}=await supabaseClient
+   .from("profiles")
+   .select("*")
+   .eq("id",currentUser.id)
+   .maybeSingle();
+
+  profile=data || {
+   display_name:currentUser.user_metadata?.display_name,
+   username:currentUser.user_metadata?.username
+  };
+
+ }catch(e){
+  profile={
+   display_name:currentUser.user_metadata?.display_name,
+   username:currentUser.user_metadata?.username
+  };
+ }
+}
+
+function loadProfileImage(){
+
+ const url=profile?.avatar_url;
+
+ if(!url)return;
+
+ document.getElementById("profilePic").innerHTML=
+  `<img src="${escapeAttr(url)}">`;
+}
+
+async function saveProfile(){
+
+ if(!supabaseClient || !currentUser){
+  toast("Supabase is not connected.");
+  return;
+ }
+
+ const display_name=document.getElementById("editName").value.trim();
+ const username=document.getElementById("editUsername").value.trim().replace(/^@/,"");
+ const bio=document.getElementById("editBio").value.trim();
+
+ try{
+
+  const {error}=await supabaseClient
+   .from("profiles")
+   .upsert({
+    id:currentUser.id,
+    display_name,
+    username,
+    bio,
+    updated_at:new Date().toISOString()
+   });
+
+  if(error)throw error;
+
+  await loadProfile();
+  updateHome();
+  closeModal("editProfileModal");
+  toast("Profile updated.");
+
+ }catch(e){
+  toast(e.message);
+ }
+}
+
+async function uploadAvatar(event){
+
+ const file=event.target.files[0];
+
+ if(!file || !currentUser || !supabaseClient)return;
+
+ try{
+
+  const ext=file.name.split(".").pop();
+  const path=`${currentUser.id}/avatar.${ext}`;
+
+  const {error}=await supabaseClient.storage
+   .from("avatar")
+   .upload(path,file,{
+    upsert:true,
+    contentType:file.type
+   });
+
+  if(error)throw error;
+
+  const {data}=supabaseClient.storage
+   .from("avatar")
+   .getPublicUrl(path);
+
+  await supabaseClient
+   .from("profiles")
+   .upsert({
+    id:currentUser.id,
+    avatar_url:data.publicUrl,
+    updated_at:new Date().toISOString()
+   });
+
+  await loadProfile();
+  updateHome();
+
+  toast("Profile picture updated.");
+
+ }catch(e){
+  toast(e.message);
+ }
+}
+
+/* ---------- LOCATION ---------- */
+
+function toggleLocation(){
+
+ if(locationOn){
+  locationOn=false;
+  updateLocationUI();
+  toast("Location sharing turned off.");
+  return;
+ }
+
+ if(!navigator.geolocation){
+  toast("GPS is not supported on this device.");
+  return;
+ }
+
+ navigator.geolocation.getCurrentPosition(
+  async position=>{
+   locationOn=true;
+   updateLocationUI();
+
+   if(supabaseClient && currentUser){
+
+    /*
+     This is intentionally best-effort.
+     Your final production location table should store
+     circle-scoped location with RLS.
+    */
+
+    try{
+     await supabaseClient
+      .from("locations")
+      .upsert({
+       user_id:currentUser.id,
+       latitude:position.coords.latitude,
+       longitude:position.coords.longitude,
+       updated_at:new Date().toISOString()
+      });
+    }catch(e){}
+   }
+
+   toast("Location sharing is on.");
+  },
+  ()=>{
+   toast("Allow location permission to turn it on.");
+  },
+  {
+   enableHighAccuracy:true,
+   timeout:10000
+  }
+ );
+}
+
+function updateLocationUI(){
+
+ const sw=document.getElementById("locationSwitch");
+ const text=document.getElementById("locationStatus");
+
+ if(locationOn){
+  sw.classList.add("on");
+  text.textContent="Location sharing is on";
+ }else{
+  sw.classList.remove("on");
+  text.textContent="Location is off";
+ }
+}
+
+/* ---------- POSTS ---------- */
+
+function showSelectedMedia(){
+
+ const image=document.getElementById("postImage").files[0];
+ const video=document.getElementById("postVideo").files[0];
+
+ const file=image || video;
+
+ document.getElementById("selectedMedia").textContent=
+  file ? file.name+" selected" : "";
+}
+
+async function createPost(){
+
+ if(!currentUser){
+  toast("Sign in first.");
+  return;
+ }
+
+ if(!supabaseClient){
+  toast("Supabase is not connected.");
+  return;
+ }
+
+ const text=document.getElementById("postText").value.trim();
+
+ const image=document.getElementById("postImage").files[0];
+ const video=document.getElementById("postVideo").files[0];
+
+ if(!text && !image && !video){
+  toast("Write something or select media.");
+  return;
+ }
+
+ let media_url=null;
+ let media_type=null;
+
+ try{
+
+  const file=image || video;
+
+  if(file){
+
+   const ext=file.name.split(".").pop();
+   const path=
+    `${currentUser.id}/${Date.now()}.${ext}`;
+
+   const {error}=await supabaseClient.storage
+    .from("track-media")
+    .upload(path,file,{
+     upsert:false,
+     contentType:file.type
+    });
+
+   if(error)throw error;
+
+   const {data}=supabaseClient.storage
+    .from("track-media")
+    .getPublicUrl(path);
+
+   media_url=data.publicUrl;
+   media_type=image?"image":"video";
+  }
+
+  const {error}=await supabaseClient
+   .from("posts")
+   .insert({
+    user_id:currentUser.id,
+    content:text,
+    media_url,
+    media_type
+   });
+
+  if(error)throw error;
+
+  document.getElementById("postText").value="";
+  document.getElementById("postImage").value="";
+  document.getElementById("postVideo").value="";
+  document.getElementById("selectedMedia").textContent="";
+
+  toast("Post published.");
+  await loadFeed();
+
+ }catch(e){
+  toast(e.message);
+ }
+}
+
+async function loadFeed(){
+
+ const list=document.getElementById("feedList");
+
+ if(!supabaseClient){
+  list.innerHTML=
+   `<div class="card">Connect Supabase to load posts.</div>`;
+  return;
+ }
+
+ try{
+
+  const {data,error}=await supabaseClient
+   .from("posts")
+   .select("*")
+   .order("created_at",{ascending:false})
+   .limit(50);
+
+  if(error)throw error;
+
+  if(!data || !data.length){
+   list.innerHTML=
+    `<div class="card">No posts yet. Be the first to post.</div>`;
+   return;
+  }
+
+  list.innerHTML=data.map(post=>renderPost(post)).join("");
+
+ }catch(e){
+  list.innerHTML=
+   `<div class="card">${escapeHtml(e.message)}</div>`;
+ }
+}
+
+function renderPost(post){
+
+ const initial=
+  (post.username || "TC").charAt(0).toUpperCase();
+
+ let media="";
+
+ if(post.media_url && post.media_type==="image"){
+  media=`<img class="postMedia" src="${escapeAttr(post.media_url)}">`;
+ }
+
+ if(post.media_url && post.media_type==="video"){
+  media=`<video class="postMedia" src="${escapeAttr(post.media_url)}" controls playsinline></video>`;
+ }
+
+ return `
+ <article class="post">
+
+  <div class="postHead">
+
+   <div class="postUserAvatar">
+    ${post.avatar_url
+     ? `<img src="${escapeAttr(post.avatar_url)}">`
+     : initial}
+   </div>
+
+   <div>
+    <div class="postName">
+     ${escapeHtml(post.display_name || post.username || "Track Circle User")}
+    </div>
+    <div class="postTime">
+     ${formatDate(post.created_at)}
+    </div>
+   </div>
+
+  </div>
+
+  ${post.content
+   ? `<div class="postText">${escapeHtml(post.content)}</div>`
+   : ""}
+
+  ${media}
+
+  <div class="actions">
+   <button onclick="likePost('${escapeAttr(post.id)}',this)">♡ Like</button>
+   <button onclick="toast('Comments open here')">💬 Comment</button>
+   <button onclick="openModal('giftModal')">🎁 Gift</button>
+   <button onclick="sharePost('${escapeAttr(post.id)}')">↗ Share</button>
+  </div>
+
+ </article>`;
+}
+
+async function likePost(id,button){
+
+ if(button.classList.contains("liked")){
+  return;
+ }
+
+ button.classList.add("liked");
+ button.textContent="♥ Liked";
+
+ if(supabaseClient && currentUser){
+
+  try{
+   await supabaseClient
+    .from("post_likes")
+    .upsert({
+     post_id:id,
+     user_id:currentUser.id
+    });
+  }catch(e){}
+ }
+}
+
+async function sharePost(id){
+
+ if(navigator.share){
+  try{
+   await navigator.share({
+    title:"Track Circle",
+    text:"Check this out on Track Circle."
+   });
+  }catch(e){}
+ }else{
+  toast("Post ready to share.");
+ }
+}<script>
+/* ---------- USER SEARCH / FRIENDS ---------- */
+
+let searchTimer=null;
+
+function searchUsers(){
+
+ clearTimeout(searchTimer);
+
+ searchTimer=setTimeout(async()=>{
+
+  const q=document.getElementById("userSearch").value
+   .trim()
+   .replace(/^@/,"")
+   .toLowerCase();
+
+  const result=document.getElementById("userResults");
+
+  if(q.length<2){
+   result.innerHTML=
+    `<div class="muted">Type at least 2 characters.</div>`;
+   return;
+  }
+
+  if(!supabaseClient){
+   result.innerHTML=
+    `<div class="card">Connect Supabase to search users.</div>`;
+   return;
+  }
+
+  try{
+
+   const {data,error}=await supabaseClient
+    .from("profiles")
+    .select("id,display_name,username,avatar_url")
+    .ilike("username",`%${q}%`)
+    .limit(30);
+
+   if(error)throw error;
+
+   if(!data.length){
+    result.innerHTML=
+     `<div class="card">No users found.</div>`;
+    return;
+   }
+
+   result.innerHTML=data.map(u=>`
+
+    <div class="userResult">
+
+     <div class="avatar">
+      ${u.avatar_url
+       ? `<img src="${escapeAttr(u.avatar_url)}">`
+       : escapeHtml((u.display_name||"U").charAt(0))}
+     </div>
+
+     <div class="userInfo">
+      <b>${escapeHtml(u.display_name||"Track Circle User")}</b>
+      <div class="muted">@${escapeHtml(u.username||"user")}</div>
+     </div>
+
+     <button class="addBtn"
+      onclick="addFriend('${escapeAttr(u.id)}')">
+      Add
+     </button>
+
+    </div>
+
+   `).join("");
+
+  }catch(e){
+   result.innerHTML=
+    `<div class="card">${escapeHtml(e.message)}</div>`;
+  }
+
+ },300);
+}
+
+async function addFriend(id){
+
+ if(!supabaseClient || !currentUser){
+  toast("Sign in first.");
+  return;
+ }
+
+ try{
+
+  const {error}=await supabaseClient
+   .from("friends")
+   .upsert({
+    user_id:currentUser.id,
+    friend_id:id,
+    status:"pending"
+   });
+
+  if(error)throw error;
+
+  toast("Friend request sent.");
+
+ }catch(e){
+  toast(e.message);
+ }
+}
+
+/* ---------- CIRCLES ---------- */
+
+async function createCircle(){
+
+ const name=document.getElementById("circleName").value.trim();
+ const type=document.getElementById("circleType").value.trim();
+
+ if(!name){
+  toast("Enter a circle name.");
+  return;
+ }
+
+ if(!supabaseClient || !currentUser){
+  toast("Sign in first.");
+  return;
+ }
+
+ try{
+
+  const invite=
+   "TC-"+Math.random().toString(36).substring(2,8).toUpperCase();
+
+  const {data,error}=await supabaseClient
+   .from("circles")
+   .insert({
+    name,
+    type,
+    invite_code:invite,
+    owner_id:currentUser.id
+   })
+   .select()
+   .single();
+
+  if(error)throw error;
+
+  try{
+   await supabaseClient
+    .from("circle_members")
+    .insert({
+     circle_id:data.id,
+     user_id:currentUser.id,
+     role:"owner"
+    });
+  }catch(e){}
+
+  closeModal("circleModal");
+
+  document.getElementById("circleName").value="";
+  document.getElementById("circleType").value="";
+
+  toast("Circle created: "+invite);
+
+  await loadCircles();
+
+ }catch(e){
+  toast(e.message);
+ }
+}
+
+async function joinCircle(){
+
+ const code=document.getElementById("joinCode")
+  .value.trim()
+  .toUpperCase();
+
+ if(!code){
+  toast("Enter an invite code.");
+  return;
+ }
+
+ if(!supabaseClient || !currentUser){
+  toast("Sign in first.");
+  return;
+ }
+
+ try{
+
+  const {data,error}=await supabaseClient
+   .from("circles")
+   .select("id")
+   .eq("invite_code",code)
+   .maybeSingle();
+
+  if(error)throw error;
+
+  if(!data){
+   toast("Circle not found.");
+   return;
+  }
+
+  const {error:e}=await supabaseClient
+   .from("circle_members")
+   .insert({
+    circle_id:data.id,
+    user_id:currentUser.id,
+    role:"member"
+   });
+
+  if(e)throw e;
+
+  toast("Joined circle.");
+  document.getElementById("joinCode").value="";
+
+  await loadCircles();
+
+ }catch(e){
+  toast(e.message);
+ }
+}
+
+async function loadCircles(){
+
+ const list=document.getElementById("circleList");
+ const home=document.getElementById("homeCircles");
+
+ if(!supabaseClient || !currentUser){
+  list.innerHTML="";
+  return;
+ }
+
+ try{
+
+  const {data,error}=await supabaseClient
+   .from("circle_members")
+   .select("circle_id,circles(*)")
+   .eq("user_id",currentUser.id);
+
+  if(error)throw error;
+
+  if(!data.length){
+
+   list.innerHTML=
+    `<div class="card">You haven't joined any circles yet.</div>`;
+
+   home.innerHTML=
+    `<div class="circleCard">
+      <b>No circles yet</b>
+      <div class="muted" style="margin-top:5px">
+       Create or join your first circle.
+      </div>
+     </div>`;
+
+   return;
+  }
+
+  list.innerHTML=data.map(row=>{
+
+   const c=row.circles;
+
+   return `
+   <div class="circleCard">
+
+    <div style="display:flex;justify-content:space-between">
+     <div>
+      <b>${escapeHtml(c.name)}</b>
+      <div class="muted">${escapeHtml(c.type||"Circle")}</div>
+     </div>
+     <span class="green">● LIVE</span>
+    </div>
+
+    <div class="muted" style="margin-top:8px">
+     Invite code: <b style="color:white">${escapeHtml(c.invite_code)}</b>
+    </div>
+
+    <div class="avatarStack">
+     <div class="avatar">TC</div>
+     <div class="avatar">+</div>
+    </div>
+
+   </div>`;
+  }).join("");
+
+  const first=data[0].circles;
+
+  home.innerHTML=`
+   <div class="circleCard">
+    <b>${escapeHtml(first.name)}</b>
+    <div class="muted">${escapeHtml(first.type||"Circle")}</div>
+    <div class="avatarStack">
+     <div class="avatar">TC</div>
+     <div class="avatar">+</div>
+    </div>
+   </div>`;
+
+ }catch(e){
+  list.innerHTML=
+   `<div class="card">${escapeHtml(e.message)}</div>`;
+ }
+}
+
+/* ---------- MESSAGES ---------- */
+
+async function loadChats(){
+
+ const list=document.getElementById("chatList");
+
+ if(!supabaseClient){
+  list.innerHTML=
+   `<div class="card">Your conversations will appear here.</div>`;
+  return;
+ }
+
+ /*
+  This reads the messages table if the table already exists.
+  It deliberately does not crash the entire application when
+  the messaging schema has not yet been installed.
+ */
+
+ try{
+
+  const {data,error}=await supabaseClient
+   .from("messages")
+   .select("*")
+   .order("created_at",{ascending:false})
+   .limit(30);
+
+  if(error)throw error;
+
+  if(!data.length){
+   list.innerHTML=`
+    <div class="card">
+     No conversations yet.<br>
+     <span class="muted">
+      Search for someone and start a conversation.
+     </span>
+    </div>`;
+   return;
+  }
+
+  list.innerHTML=data.map(m=>`
+   <div class="chat">
+    <div class="chatAvatar">TC</div>
+    <div class="chatInfo">
+     <div class="chatName">Conversation</div>
+     <div class="chatPreview">${escapeHtml(m.content||"Message")}</div>
+    </div>
+   </div>
+  `).join("");
+
+ }catch(e){
+
+  list.innerHTML=`
+   <div class="card">
+    <b>Messages</b>
+    <div class="muted" style="margin-top:5px">
+     Search for a friend to begin a conversation.
+    </div>
+   </div>`;
+ }
+}
+
+function filterChats(q){
+
+ document.querySelectorAll("#chatList .chat").forEach(row=>{
+  row.style.display=
+   row.textContent.toLowerCase().includes(q.toLowerCase())
+   ? "flex":"none";
+ });
+}
+
+/* ---------- AI ---------- */
+
+async function sendAI(){
+
+ const input=document.getElementById("aiInput");
+ const text=input.value.trim();
+
+ if(!text)return;
+
+ const box=document.getElementById("aiMessages");
+
+ box.innerHTML+=`
+  <div class="aiMsg user">${escapeHtml(text)}</div>`;
+
+ input.value="";
+
+ /*
+  Your real Track Circle AI Edge Function can be connected here.
+  The browser must NOT contain your Gemini/OpenAI secret key.
+ */
+
+ if(supabaseClient){
+
+  try{
+
+   const {data,error}=await supabaseClient.functions.invoke(
+    "track-circle-ai",
+    {
+     body:{
+      message:text,
+      history:[]
+     }
+    }
+   );
+
+   if(!error && data){
+
+    const reply=
+     data.reply ||
+     data.response ||
+     data.message ||
+     "I received your message.";
+
+    box.innerHTML+=
+     `<div class="aiMsg">${escapeHtml(reply)}</div>`;
+
+    box.scrollTop=box.scrollHeight;
+    return;
+   }
+
+  }catch(e){}
+ }
+
+ setTimeout(()=>{
+
+  box.innerHTML+=`
+   <div class="aiMsg">
+    Track Circle AI is connected to the app interface.
+    Your AI backend will answer here once the Edge Function
+    is configured.
+   </div>`;
+
+  box.scrollTop=box.scrollHeight;
+
+ },400);
+}
+
+/* ---------- GIFTS ---------- */
+
+function selectGift(emoji,price){
+
+ selectedGift={emoji,price};
+
+ document.getElementById("giftInfo").innerHTML=
+  `<b style="color:var(--green)">${emoji} ₦${price.toLocaleString()}</b>
+   selected.<br>
+   <span class="muted">
+    Payment confirmation will be required before sending.
+   </span>`;
+
+ /*
+  Real-money gifts require a payment provider and a secure
+  server-side wallet/ledger. The 20% platform commission
+  must be calculated server-side, not trusted from HTML.
+ */
+
+}
+
+function customGift(){
+
+ const amount=prompt("Enter custom gift amount in Naira:");
+
+ if(!amount)return;
+
+ const value=Number(amount);
+
+ if(!Number.isFinite(value) || value<25000){
+  toast("Custom gifts start at ₦25,000.");
+  return;
+ }
+
+ selectedGift={
+  emoji:"✨",
+  price:value
+ };
+
+ document.getElementById("giftInfo").innerHTML=
+  `<b style="color:var(--green)">
+   ✨ Custom gift ₦${value.toLocaleString()}
+  </b><br>
+  <span class="muted">
+   Custom gift selected.
+  </span>`;
+
+}
+
+/* ---------- MODALS ---------- */
+
+function openModal(id){
+ document.getElementById(id).classList.add("show");
+}
+
+function closeModal(id){
+ document.getElementById(id).classList.remove("show");
+}
+
+/* ---------- TOAST ---------- */
+
+let toastTimer=null;
+
+function toast(message){
+
+ const el=document.getElementById("toast");
+
+ el.textContent=message;
+ el.classList.add("show");
+
+ clearTimeout(toastTimer);
+
+ toastTimer=setTimeout(()=>{
+  el.classList.remove("show");
+ },2600);
+}
+
+/* ---------- UTILITIES ---------- */
+
+function formatDate(value){
+
+ if(!value)return"";
+
+ try{
+  return new Date(value).toLocaleString();
+ }catch(e){
+  return"";
+ }
+}
+
+function escapeHtml(value){
+
+ return String(value??"")
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
+}
+
+function escapeAttr(value){
+ return escapeHtml(value);
+}
+</script>
+</body>
+</html>
