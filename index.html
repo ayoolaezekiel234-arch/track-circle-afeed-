@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#070B0A">
+<title>Track Circle</title>
+<style>
+:root{
+ --bg:#050807; --bg2:#08100D; --panel:#0B1511; --panel2:#0E1B16;
+ --green:#19E6A0; --green2:#52FFC5; --green3:#0FCB8A;
+ --white:#F5FFFB; --text:#E9FFF6; --muted:#81978E;
+ --red:#FF5F6D; --yellow:#FFD166;
+ --border:rgba(25,230,160,.14); --border2:rgba(255,255,255,.07);
+ --shadow: 0 20px 60px rgba(0,0,0,.55);
+ --glow: 0 0 25px rgba(25,230,160,.22);
+ --radius:24px; --nav-height:78px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html, body{
+ width:100%; height:100%; overflow:hidden;
+ background: radial-gradient(circle at 50% 10%, rgba(25,230,160,.25), transparent 40%), var(--bg);
+ color:var(--text); font-family:Inter, system-ui, -apple-system, sans-serif;
+}
+#app{width:100%; height:100%; position:relative; overflow:hidden;}
+
+/* FUTURISTIC GREEN SKY SPLASH */
+#splash{
+ position:absolute; inset:0; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center;
+ background: radial-gradient(circle at 50% 20%, rgba(82,255,197,0.35) 0%, rgba(25,230,160,0.15) 35%, #050807 75%);
+ transition: opacity .3s ease, visibility .3s ease; padding: 20px; text-align: center; cursor: pointer;
+}
+#splash.hide{opacity:0; visibility:hidden; pointer-events:none;}
+.splash-logo{
+ width:84px; height:84px; border-radius:26px; display:flex; align-items:center; justify-content:center;
+ border:1px solid rgba(25,230,160,.5); background: linear-gradient(145deg, rgba(25,230,160,.25), rgba(25,230,160,.05));
+ box-shadow: 0 0 30px rgba(25,230,160,.4); font-size:36px; margin-bottom: 22px; color: var(--green);
+}
+.splash-title{font-size:28px; font-weight:900; letter-spacing:2px; color:white;}
+.splash-title span{color:var(--green); text-shadow:0 0 20px rgba(25,230,160,.6);}
+.splash-tagline{margin-top:6px; color:var(--muted); font-size:12px; letter-spacing:1.5px; text-transform: uppercase;}
+.splash-pills{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin: 24px 0; max-width: 320px;}
+.splash-pill{padding:7px 14px; border-radius:20px; background:rgba(25,230,160,.06); border:1px solid rgba(25,230,160,.2); font-size:10px; font-weight: 700; color:var(--green); letter-spacing: 0.5px;}
+.splash-loader{margin-top:15px; width:140px; height:3px; border-radius:20px; overflow:hidden; background:rgba(255,255,255,.08);}
+.splash-loader span{display:block; width:45%; height:100%; border-radius:20px; background:var(--green); box-shadow:0 0 15px var(--green); animation: loader 1s infinite ease-in-out;}
+@keyframes loader{0%{transform:translateX(-130%);} 100%{transform:translateX(320%);}}
+
+/* AUTH SCREEN */
+#auth{
+ position:absolute; inset:0; z-index:50; display:none; overflow:auto; padding:28px 18px;
+ background: radial-gradient(circle at 50% 0%, rgba(25,230,160,.12), transparent 38%), var(--bg);
+}
+#auth.hidden{display:none !important;}
+.auth-wrap{width:100%; max-width:420px; margin:0 auto; min-height:100%; display:flex; flex-direction:column; justify-content:center;}
+.auth-brand{text-align:center; margin-bottom:24px;}
+.auth-brand-icon{width:64px; height:64px; margin:auto; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:26px; background: rgba(25,230,160,.15); border:1px solid var(--border); box-shadow:var(--glow); color:var(--green);}
+.auth-brand h1{margin-top:14px; font-size:24px; letter-spacing:2px;}
+.auth-brand h1 span{color:var(--green);}
+.auth-brand p{margin-top:5px; color:var(--muted); font-size:12px;}
+.auth-card{padding:20px; border-radius:26px; background: rgba(11,21,17,0.95); border:1px solid var(--border); box-shadow:var(--shadow); backdrop-filter:blur(20px);}
+.auth-tabs{display:grid; grid-template-columns:1fr 1fr; gap:4px; padding:4px; background:rgba(255,255,255,.03); border-radius:14px; margin-bottom:16px;}
+.auth-tabs button{border:0; background:transparent; color:var(--muted); padding:10px; border-radius:10px; font-weight:700; cursor:pointer; font-size:12px;}
+.auth-tabs button.active{background:rgba(25,230,160,.15); color:var(--green);}
+.field{margin-top:11px;}
+.field.hidden{display:none !important;}
+.field label{display:block; color:#9DB3AA; font-size:11px; margin-bottom:5px; font-weight:700; text-transform: uppercase;}
+.input{width:100%; height:46px; border-radius:13px; border:1px solid var(--border2); outline:none; background:rgba(255,255,255,.03); color:white; padding:0 14px; font-size:13px;}
+.input:focus{border-color:rgba(25,230,160,.5); box-shadow:0 0 0 3px rgba(25,230,160,.06);}
+.auth-button{width:100%; height:48px; border:0; border-radius:14px; margin-top:18px; background: linear-gradient(135deg, var(--green2), var(--green3)); color:#03110B; font-size:14px; font-weight:900; cursor:pointer; box-shadow:0 6px 25px rgba(25,230,160,.2);}
+.oauth-row{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;}
+.oauth{height:44px; border-radius:13px; border:1px solid var(--border2); background:rgba(255,255,255,.03); color:white; cursor:pointer; font-weight:700; font-size:12px;}
+.auth-error{min-height:18px; margin-top:10px; color:var(--red); font-size:11px; text-align:center;}
+
+/* MAIN APP & NAV */
+#main{position:absolute; inset:0; display:none; flex-direction:column; z-index:10;}
+#main.hidden{display:none !important;}
+.topbar{height:68px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; padding:0 16px; border-bottom:1px solid rgba(255,255,255,.04); background:rgba(5,8,7,.8); backdrop-filter:blur(20px);}
+.brand-mini{display:flex; align-items:center; gap:8px; font-weight:900; letter-spacing:1px; font-size:14px;}
+.brand-mini-icon{width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:rgba(25,230,160,.15); border:1px solid var(--border); color:var(--green);}
+.brand-mini span{color:var(--green);}
+.top-actions{display:flex; gap:6px;}
+.icon-btn{width:36px; height:36px; border-radius:12px; border:1px solid var(--border2); background:rgba(255,255,255,.03); color:white; cursor:pointer;}
+
+.content{flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; padding:16px 14px 90px;}
+.page{display:none; animation:pageIn .2s ease;}
+.page.active{display:block;}
+@keyframes pageIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+.nav{
+ position:absolute; bottom:0; left:0; right:0; height:var(--nav-height);
+ background:rgba(5,8,7,.95); backdrop-filter:blur(25px); border-top:1px solid rgba(255,255,255,.04);
+ display:grid; grid-template-columns:repeat(6, 1fr); align-items:center; padding:0 4px; z-index:100;
+}
+.nav button{background:0; border:0; color:var(--muted); font-size:9px; font-weight:700; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; cursor:pointer; height:100%;}
+.nav button.active{color:var(--green);}
+.nav button span.ico{font-size:16px;}
+
+/* CARDS & SUBVIEWS */
+.hero{min-height:190px; border-radius:26px; position:relative; overflow:hidden; padding:20px; background: radial-gradient(circle at 80% 10%, rgba(25,230,160,.2), transparent 30%), linear-gradient(135deg, #0C2018, #07100D); border:1px solid var(--border); box-shadow:var(--shadow);}
+.hero-small{color:var(--green); font-size:10px; font-weight:900; letter-spacing:1.5px;}
+.hero h2{margin-top:6px; font-size:24px;}
+.hero p{margin-top:6px; color:#8EA59B; font-size:12px;}
+.status-pill{position:absolute; right:15px; bottom:15px; padding:7px 10px; border-radius:16px; background:rgba(0,0,0,.3); border:1px solid rgba(25,230,160,.2); color:var(--green); font-size:10px;}
+
+.section-title{display:flex; align-items:center; justify-content:space-between; margin:18px 2px 8px;}
+.section-title h3{font-size:14px;}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+.stat-card{padding:14px; border-radius:18px; background:rgba(15,26,22,.9); border:1px solid var(--border2);}
+.stat-number{margin-top:8px; font-size:18px; font-weight:900;}
+.stat-label{margin-top:2px; color:var(--muted); font-size:10px;}
+
+.card{padding:15px; border-radius:18px; background:rgba(15,26,22,.9); border:1px solid var(--border2); margin-bottom:8px;}
+.muted{color:var(--muted); font-size:11px;}
+.primary-button{width:100%; min-height:46px; border:0; border-radius:14px; background:linear-gradient(135deg, var(--green2), var(--green3)); color:#02110A; font-weight:900; cursor:pointer; font-size:13px;}
+.secondary-button{width:100%; min-height:44px; border-radius:13px; border:1px solid var(--border); background:rgba(25,230,160,.05); color:var(--green); font-weight:800; cursor:pointer; font-size:12px;}
+
+/* MAP, AI, FEED, PROFILE */
+.map-shell{height:380px; border-radius:24px; overflow:hidden; position:relative; background:linear-gradient(135deg, #07130F, #071019); border:1px solid var(--border);}
+.map-grid{position:absolute; inset:0; opacity:.3; background-image:linear-gradient(rgba(25,230,160,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(25,230,160,.06) 1px, transparent 1px); background-size:30px 30px; transform:perspective(400px) rotateX(55deg) scale(1.6); transform-origin:center bottom;}
+.map-center{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:16px; height:16px; border-radius:50%; background:var(--green); box-shadow:0 0 0 8px rgba(25,230,160,.1), 0 0 25px var(--green);}
+
+.ai-shell{height:calc(100vh - 150px); display:flex; flex-direction:column;}
+.ai-header{padding:14px; border-radius:20px; background:linear-gradient(135deg, #0D2119, #07100D); border:1px solid var(--border); display:flex; align-items:center; gap:10px;}
+.ai-orb{width:36px; height:36px; border-radius:50%; background:radial-gradient(circle, #B8FFE6 0%, var(--green) 40%, transparent 70%); box-shadow:0 0 20px rgba(25,230,160,.5);}
+.ai-messages{flex:1; overflow-y:auto; padding:10px 0; display:flex; flex-direction:column; gap:8px;}
+.ai-msg{max-width:85%; padding:10px 12px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid var(--border2); font-size:12px; line-height:1.4;}
+.ai-msg.user{margin-left:auto; background:rgba(25,230,160,.12); border-color:rgba(25,230,160,.2);}
+.ai-input-row{display:flex; gap:6px;}
+.ai-input{flex:1; height:46px; border-radius:13px; border:1px solid var(--border2); outline:none; background:rgba(255,255,255,.03); color:white; padding:0 12px; font-size:13px;}
+.ai-send{width:46px; height:46px; border:0; border-radius:13px; background:var(--green); color:#03110B; font-weight:900; cursor:pointer;}
+
+.profile-card{text-align:center; padding:20px; border-radius:24px; background:linear-gradient(145deg, #0E2119, #08100D); border:1px solid var(--border);}
+.profile-avatar{width:76px; height:76px; margin:0 auto 12px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(25,230,160,.15); border:2px solid var(--green); font-size:26px; font-weight:900; color:var(--green); overflow:hidden;}
+.profile-avatar img{width:100%; height:100%; object-fit:cover;}
+
+#toast{position:fixed; bottom:85px; left:50%; transform:translateX(-50%) translateY(15px); background:#0E2119; border:1px solid var(--green); color:var(--white); padding:8px 16px; border-radius:12px; font-size:11px; font-weight:700; opacity:0; visibility:hidden; transition:.2s; z-index:9999; box-shadow:var(--glow);}
+#toast.show{opacity:1; visibility:visible; transform:translateX(-50%) translateY(0);}
+.hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- SPLASH SCREEN -->
+  <div id="splash" onclick="dismissSplash()">
+    <div class="splash-logo">📍</div>
+    <div class="splash-title">TRACK <span>CIRCLE</span></div>
+    <div class="splash-tagline">Stay Connected. Stay Close.</div>
+    <div class="splash-pills">
+      <div class="splash-pill">REAL-TIME LOCATION</div>
+      <div class="splash-pill">PRIVATE MESSAGING</div>
+      <div class="splash-pill">TRACK CIRCLE AI</div>
+    </div>
+    <div class="splash-loader"><span></span></div>
+    <div style="font-size:10px; color:var(--muted); margin-top:10px;">Tap anywhere to continue</div>
+  </div>
+
+  <!-- AUTH SCREEN -->
+  <div id="auth" class="hidden">
+    <div class="auth-wrap">
+      <div class="auth-brand">
+        <div class="auth-brand-icon">📍</div>
+        <h1>TRACK <span>CIRCLE</span></h1>
+        <p>Real-time maps, messaging & smart AI</p>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button id="loginTab" onclick="setAuthMode('login')">Sign In</button>
+          <button id="signupTab" onclick="setAuthMode('signup')">Create Account</button>
+        </div>
+
+        <div class="field hidden" id="nameField">
+          <label>Full Name</label>
+          <input type="text" id="authName" class="input" placeholder="Ezekiel Ayoola">
+        </div>
+
+        <div class="field hidden" id="usernameField">
+          <label>Username</label>
+          <input type="text" id="authUsername" class="input" placeholder="ezekiel_01">
+        </div>
+
+        <div class="field">
+          <label>Email Address</label>
+          <input type="email" id="authEmail" class="input" placeholder="user@trackcircle.app">
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="authPassword" class="input" placeholder="••••••••">
+        </div>
+
+        <div id="authError" class="auth-error"></div>
+
+        <button class="auth-button" id="authButton" onclick="submitAuth()">Sign in</button>
+
+        <div class="oauth-row">
+          <button class="oauth" onclick="oauth('google')">Google</button>
+          <button class="oauth" onclick="oauth('apple')">Apple</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="main" class="hidden">
+    <div class="topbar">
+      <div class="brand-mini">
+        <div class="brand-mini-icon">📍</div>
+        TRACK <span>CIRCLE</span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" onclick="go('profile')">⚙</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div id="home" class="page active">
+        <div class="hero">
+          <div class="hero-small">WELCOME BACK</div>
+          <h2 id="homeName">Welcome, friend.</h2>
+          <p>Your tracking circles and live radar are active.</p>
+          <div class="status-pill" id="locationStatus">Location is off</div>
+        </div>
+        <div class="section-title"><h3>Overview</h3></div>
+        <div class="grid2">
+          <div class="stat-card">
+            <div class="stat-number" id="statCircles">0</div>
+            <div class="stat-label">Active Circles</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="statStatus">OFF</div>
+            <div class="stat-label">GPS Status</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="map" class="page">
+        <div class="map-shell">
+          <div class="map-grid"></div>
+          <div class="map-center"></div>
+        </div>
+      </div>
+
+      <div id="feed" class="page">
+        <div class="card">
+          <h3 style="margin-bottom:8px; font-size:13px;">Create Post</h3>
+          <textarea id="postText" class="input" style="height:70px; padding:10px; resize:none;" placeholder="What's happening?"></textarea>
+          <button class="primary-button" style="margin-top:8px;" onclick="createPost()">Publish</button>
+        </div>
+        <div id="feedList" style="margin-top:10px;"></div>
+      </div>
+
+      <div id="messages" class="page">
+        <div id="chatList"><div class="card muted">No conversations yet.</div></div>
+      </div>
+
+      <div id="circles" class="page">
+        <div class="card">
+          <h3 style="margin-bottom:8px; font-size:13px;">Create Circle</h3>
+          <input type="text" id="circleName" class="input" placeholder="Circle Name">
+          <button class="primary-button" style="margin-top:10px;" onclick="createCircle()">Create</button>
+        </div>
+        <div id="circlesList" style="margin-top:10px;"></div>
+      </div>
+
+      <div id="ai" class="page">
+        <div class="ai-shell">
+          <div class="ai-header">
+            <div class="ai-orb"></div>
+            <div><div style="font-weight:900; font-size:14px;">Track Circle AI</div><div class="muted">Gemini Engine</div></div>
+          </div>
+          <div class="ai-messages" id="aiMessages">
+            <div class="ai-msg">Hello! I am your AI assistant. How can I help you today?</div>
+          </div>
+          <div class="ai-input-row">
+            <input type="text" id="aiInput" class="ai-input" placeholder="Ask AI anything..." autocomplete="off">
+            <button class="ai-send" onclick="sendAI()">→</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="profile" class="page">
+        <div class="profile-card">
+          <div class="profile-avatar" id="profilePicture">TC</div>
+          <h2 id="profileName" style="font-size:16px;">User</h2>
+          <p id="profileUsername" class="green" style="font-weight:700; margin-top:2px;">@user</p>
+          <p id="profileEmail" class="muted" style="margin-top:4px; font-size:10px;">—</p>
+        </div>
+        <div style="margin-top:12px;">
+          <button class="secondary-button" style="color:var(--red); border-color:rgba(255,95,109,.25);" onclick="signOut()">Sign Out</button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button data-page="home" class="active" onclick="go('home')"><span class="ico">🏠</span><span>Home</span></button>
+      <button data-page="map" onclick="go('map')"><span class="ico">🗺️</span><span>Map</span></button>
+      <button data-page="feed" onclick="go('feed')"><span class="ico">🎬</span><span>Track</span></button>
+      <button data-page="messages" onclick="go('messages')"><span class="ico">💬</span><span>Chats</span></button>
+      <button data-page="circles" onclick="go('circles')"><span class="ico">👥</span><span>Circles</span></button>
+      <button data-page="ai" onclick="go('ai')"><span class="ico">🤖</span><span>AI</span></button>
+    </nav>
+  </div>
+  <div id="toast"></div>
+</div>
+
+<script>
+let currentUser = null;
+let currentAuthMode = "login";
+
+function dismissSplash(){
+ const splash = document.getElementById("splash");
+ if(splash) splash.classList.add("hide");
+ 
+ // Check if user was already signed in
+ const savedUser = localStorage.getItem("tc_current_user");
+ if(savedUser){
+  currentUser = JSON.parse(savedUser);
+  showMain();
+ } else {
+  showAuth();
+ }
+}
+
+function showAuth(){
+ const auth = document.getElementById("auth");
+ if(auth){ auth.classList.remove("hidden"); auth.style.display="block"; }
+ const main = document.getElementById("main");
+ if(main){ main.classList.add("hidden"); main.style.display="none"; }
+}
+
+function showMain(){
+ const auth = document.getElementById("auth");
+ if(auth){ auth.classList.add("hidden"); auth.style.display="none"; }
+ const main = document.getElementById("main");
+ if(main){ main.classList.remove("hidden"); main.style.display="flex"; }
+ updateProfileUI();
+ loadSavedData();
+}
+
+function setAuthMode(mode){
+ currentAuthMode=mode;
+ document.getElementById("loginTab")?.classList.toggle("active", mode==="login");
+ document.getElementById("signupTab")?.classList.toggle("active", mode==="signup");
+ document.getElementById("nameField")?.classList.toggle("hidden", mode==="login");
+ document.getElementById("usernameField")?.classList.toggle("hidden", mode==="login");
+ document.getElementById("authButton").textContent = mode==="signup" ? "Create account" : "Sign in";
+}
+
+function submitAuth(){
+ const email = document.getElementById("authEmail")?.value.trim();
+ const password = document.getElementById("authPassword")?.value;
+ const name = document.getElementById("authName")?.value.trim();
+ const username = document.getElementById("authUsername")?.value.trim().replace(/^@/,"");
+ const errorBox = document.getElementById("authError");
+
+ if(!email || !password){ errorBox.textContent = "Enter email and password."; return; }
+
+ if(currentAuthMode==="signup"){
+  if(!name){ errorBox.textContent = "Enter your full name."; return; }
+  const userObj = { email, name, username: username || email.split("@")[0] };
+  localStorage.setItem("tc_user_" + email, JSON.stringify(userObj));
+  toast("Account created! You can now sign in.");
+  setAuthMode("login");
+ } else {
+  const existing = localStorage.getItem("tc_user_" + email);
+  currentUser = existing ? JSON.parse(existing) : { email, name: email.split("@")[0], username: email.split("@")[0] };
+  localStorage.setItem("tc_current_user", JSON.stringify(currentUser));
+  showMain();
+  toast("Signed in successfully.");
+ }
+}
+
+function oauth(provider){
+ currentUser = { email: provider + "_user@trackcircle.app", name: "Social User", username: provider + "_member" };
+ localStorage.setItem("tc_current_user", JSON.stringify(currentUser));
+ showMain();
+ toast("Signed in with " + provider);
+}
+
+function go(page){
+ document.querySelectorAll(".page").forEach(s=>s.classList.remove("active"));
+ document.getElementById(page)?.classList.add("active");
+ document.querySelectorAll(".nav button").forEach(b=>{
+  b.classList.toggle("active", b.getAttribute("data-page")===page);
+ });
+}
+
+function toast(msg){
+ const el = document.getElementById("toast");
+ if(!el) return;
+ el.textContent = msg;
+ el.classList.add("show");
+ setTimeout(()=>el.classList.remove("show"), 2500);
+}
+
+function updateProfileUI(){
+ if(!currentUser) return;
+ document.getElementById("profileName").textContent = currentUser.name || "User";
+ document.getElementById("profileUsername").textContent = "@" + (currentUser.username || "user");
+ document.getElementById("profileEmail").textContent = currentUser.email || "";
+ document.getElementById("homeName").textContent = "Welcome, " + (currentUser.name || "friend") + ".";
+}
+
+function signOut(){
+ localStorage.removeItem("tc_current_user");
+ currentUser = null;
+ showAuth();
+ toast("Signed out.");
+}
+
+// Fully functional AI assistant simulation
+function sendAI(){
+ const input = document.getElementById("aiInput");
+ const box = document.getElementById("aiMessages");
+ if(!input || !box) return;
+ const text = input.value.trim();
+ if(!text) return;
+
+ box.innerHTML += `<div class="ai-msg user">${escapeHtml(text)}</div>`;
+ input.value = "";
+ box.scrollTop = box.scrollHeight;
+
+ setTimeout(()=>{
+  let reply = "I analyzed your request regarding \"" + text + "\". Everything is running smoothly on Track Circle!";
+  if(text.toLowerCase().includes("hello") || text.toLowerCase().includes("hi")) {
+   reply = "Hello Ezekiel! How can I assist you with your circles or estate security today?";
+  } else if(text.toLowerCase().includes("security") || text.toLowerCase().includes("gate")) {
+   reply = "For 2000+ residents, using a tripod turnstile gate with ZKTeco QR code and RFID readers is the best and cheapest approach!";
+  }
+  box.innerHTML += `<div class="ai-msg">${escapeHtml(reply)}</div>`;
+  box.scrollTop = box.scrollHeight;
+ }, 600);
+}
+
+function createPost(){
+ const text = document.getElementById("postText")?.value.trim();
+ if(!text) return;
+ const posts = JSON.parse(localStorage.getItem("tc_posts") || "[]");
+ posts.unshift({ name: currentUser?.name || "User", text, time: "Just now" });
+ localStorage.setItem("tc_posts", JSON.stringify(posts));
+ document.getElementById("postText").value = "";
+ loadSavedData();
+ toast("Post published!");
+}
+
+function createCircle(){
+ const name = document.getElementById("circleName")?.value.trim();
+ if(!name) return;
+ const circles = JSON.parse(localStorage.getItem("tc_circles") || "[]");
+ circles.unshift({ name, code: "TC-" + Math.floor(1000 + Math.random() * 9000) });
+ localStorage.setItem("tc_circles", JSON.stringify(circles));
+ document.getElementById("circleName").value = "";
+ loadSavedData();
+ toast("Circle created!");
+}
+
+function loadSavedData(){
+ // Load Posts
+ const posts = JSON.parse(localStorage.getItem("tc_posts") || "[]");
+ const feedList = document.getElementById("feedList");
+ if(feedList){
+  feedList.innerHTML = posts.length ? posts.map(p=>`
+   <div class="card">
+    <div style="font-weight:900; font-size:12px; color:var(--green);">${escapeHtml(p.name)} <span class="muted" style="font-weight:400; font-size:9px; float:right;">${p.time}</span></div>
+    <div style="margin-top:6px; font-size:12px;">${escapeHtml(p.text)}</div>
+   </div>
+  `).join("") : `<div class="card muted">No posts yet. Be the first to share something!</div>`;
+ }
+
+ // Load Circles
+ const circles = JSON.parse(localStorage.getItem("tc_circles") || "[]");
+ document.getElementById("statCircles").textContent = circles.length;
+ const circlesList = document.getElementById("circlesList");
+ if(circlesList){
+  circlesList.innerHTML = circles.length ? circles.map(c=>`
+   <div class="card">
+    <div style="font-weight:900; font-size:13px;">${escapeHtml(c.name)}</div>
+    <div class="muted" style="margin-top:2px;">Invite Code: <b>${escapeHtml(c.code)}</b></div>
+   </div>
+  `).join("") : `<div class="card muted">No active circles created yet.</div>`;
+ }
+}
+
+function escapeHtml(str){
+ return String(str||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+ setAuthMode("login");
+ 
+ // Automatic failsafe splash dismissal after 1 second
+ setTimeout(()=>{
+  const splash = document.getElementById("splash");
+  if(splash && !splash.classList.contains("hide")){
+   dismissSplash();
+  }
+ }, 1000);
+});
+</script>
+</body>
+</html>
