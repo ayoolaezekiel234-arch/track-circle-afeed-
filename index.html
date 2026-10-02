@@ -1,1012 +1,4828 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
+<!DOCTYPE html><html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TRACK CIRCLE — Stay Connected. Stay Close.</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#07100d">
+<meta name="description" content="Track Circle — Stay Connected. Stay Close.">
+<title>Track Circle</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
+:root{
+  --bg:#050806;
+  --bg2:#08100c;
+  --panel:#0c1712;
+  --panel2:#101e17;
+  --line:rgba(104,255,179,.13);
+  --green:#19e6a0;
+  --green2:#6dffc7;
+  --text:#f3fff9;
+  --muted:#8da39a;
+  --danger:#ff5570;
+  --warning:#ffc857;
+  --radius:24px;
+}
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkBg: '#05080E',
-                        secondaryBg: '#0A101D',
-                        cardBg: '#0E1726',
-                        elevatedCard: '#131F33',
-                        mint: '#19E6A0',
-                        secondaryGreen: '#0DFFB2',
-                        skyCyan: '#43D9FF',
-                        textPrimary: '#F5F8FA',
-                        textSecondary: '#87929F',
-                        danger: '#FF4D67',
-                        borderSubtle: 'rgba(25,230,160,0.15)'
-                    }
-                }
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+  background:
+    radial-gradient(circle at 80% -10%,rgba(25,230,160,.15),transparent 32%),
+    radial-gradient(circle at 0% 40%,rgba(25,230,160,.07),transparent 30%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+body{
+  min-height:100vh;
+}
+
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+button{
+  border:0;
+  cursor:pointer;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.app{
+  width:100%;
+  min-height:100vh;
+}
+
+.screen{
+  width:100%;
+  min-height:100vh;
+}
+
+/* AUTH */
+
+.authScreen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(25,230,160,.17),transparent 35%),
+    linear-gradient(160deg,#07100c,#030504);
+}
+
+.authBox{
+  width:min(440px,100%);
+  padding:30px;
+  border:1px solid var(--line);
+  border-radius:32px;
+  background:rgba(8,18,13,.88);
+  box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 70px rgba(25,230,160,.06);
+  backdrop-filter:blur(24px);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:26px;
+}
+
+.logoMark{
+  width:48px;
+  height:48px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  color:#00130c;
+  background:linear-gradient(135deg,var(--green2),var(--green));
+  box-shadow:0 0 30px rgba(25,230,160,.3);
+  font-weight:900;
+}
+
+.logoTitle{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:-.6px;
+}
+
+.logoSub{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:2px;
+}
+
+.authTabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  padding:4px;
+  border-radius:14px;
+  background:#08110d;
+  margin-bottom:20px;
+}
+
+.authTabs button{
+  padding:11px;
+  color:var(--muted);
+  background:transparent;
+  border-radius:11px;
+}
+
+.authTabs button.active{
+  color:#00140c;
+  background:var(--green);
+  font-weight:800;
+}
+
+.field{
+  margin-bottom:13px;
+}
+
+.field label{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:7px;
+}
+
+.input{
+  width:100%;
+  border:1px solid var(--line);
+  outline:none;
+  color:var(--text);
+  background:#07100c;
+  border-radius:14px;
+  padding:14px;
+}
+
+.input:focus{
+  border-color:rgba(25,230,160,.55);
+  box-shadow:0 0 0 3px rgba(25,230,160,.07);
+}
+
+.primary{
+  width:100%;
+  padding:15px;
+  border-radius:15px;
+  color:#00130c;
+  background:linear-gradient(135deg,var(--green2),var(--green));
+  font-weight:900;
+  box-shadow:0 10px 30px rgba(25,230,160,.12);
+}
+
+.secondary{
+  padding:11px 15px;
+  border-radius:13px;
+  color:var(--text);
+  background:#122119;
+  border:1px solid var(--line);
+}
+
+.error{
+  color:#ff8294;
+  font-size:13px;
+  margin:8px 0;
+}
+
+/* MAIN */
+
+.main{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.content{
+  width:min(980px,100%);
+  margin:0 auto;
+  flex:1;
+  padding:22px 18px 110px;
+}
+
+.page{
+  display:none;
+  animation:pageIn .2s ease;
+}
+
+.page.active{
+  display:block;
+}
+
+@keyframes pageIn{
+  from{opacity:0;transform:translateY(7px)}
+  to{opacity:1;transform:none}
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.eyebrow{
+  color:var(--green);
+  font-size:11px;
+  letter-spacing:2px;
+  font-weight:800;
+}
+
+h1{
+  margin:3px 0 0;
+  font-size:28px;
+  letter-spacing:-1px;
+}
+
+h2{
+  margin:0 0 14px;
+  font-size:20px;
+}
+
+.muted{
+  color:var(--muted);
+}
+
+.card{
+  border:1px solid var(--line);
+  background:
+    linear-gradient(145deg,rgba(16,30,23,.95),rgba(8,17,13,.96));
+  border-radius:var(--radius);
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:0 18px 50px rgba(0,0,0,.18);
+}
+
+.glowCard{
+  position:relative;
+  overflow:hidden;
+}
+
+.glowCard:after{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  right:-80px;
+  top:-80px;
+  border-radius:50%;
+  background:rgba(25,230,160,.12);
+  filter:blur(25px);
+  pointer-events:none;
+}
+
+.grid{
+  display:grid;
+  gap:14px;
+}
+
+.grid2{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+@media(max-width:600px){
+  .grid2{
+    grid-template-columns:1fr;
+  }
+}
+
+/* HOME */
+
+.hero{
+  padding:24px;
+  min-height:190px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  background:
+    radial-gradient(circle at 85% 20%,rgba(109,255,199,.18),transparent 28%),
+    linear-gradient(135deg,#10291e,#07110c);
+}
+
+.heroTitle{
+  font-size:30px;
+  line-height:1.05;
+  max-width:620px;
+  letter-spacing:-1.5px;
+}
+
+.heroTitle span{
+  color:var(--green2);
+}
+
+.statRow{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+
+.stat{
+  padding:13px;
+  border-radius:16px;
+  background:rgba(0,0,0,.2);
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.statValue{
+  font-size:20px;
+  font-weight:900;
+}
+
+.statLabel{
+  font-size:10px;
+  color:var(--muted);
+  margin-top:2px;
+}
+
+/* AI */
+
+.aiBox{
+  border:1px solid rgba(25,230,160,.2);
+  background:
+    radial-gradient(circle at 100% 0%,rgba(25,230,160,.13),transparent 35%),
+    #07110c;
+}
+
+.aiHeader{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.aiOrb{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:radial-gradient(circle,#6dffc7,#19e6a0 55%,#0c5c45);
+  color:#00150d;
+  box-shadow:0 0 30px rgba(25,230,160,.35);
+  font-weight:900;
+}
+
+.aiMessages{
+  min-height:120px;
+  max-height:350px;
+  overflow:auto;
+  margin:18px 0;
+}
+
+.aiMsg{
+  max-width:88%;
+  padding:11px 14px;
+  border-radius:16px;
+  margin:7px 0;
+  background:#102018;
+  line-height:1.45;
+  white-space:pre-wrap;
+}
+
+.aiMsg.user{
+  margin-left:auto;
+  background:#123c2b;
+}
+
+.aiComposer{
+  display:flex;
+  gap:8px;
+}
+
+.aiComposer input{
+  flex:1;
+}
+
+.send{
+  width:48px;
+  border-radius:14px;
+  background:var(--green);
+  color:#00150d;
+  font-weight:900;
+}
+
+/* SEARCH */
+
+.search{
+  margin-bottom:14px;
+}
+
+/* USER */
+
+.userRow{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.userRow:last-child{
+  border-bottom:0;
+}
+
+.avatar{
+  width:46px;
+  height:46px;
+  min-width:46px;
+  border-radius:50%;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#173d2e,#0b1913);
+  color:var(--green2);
+  font-weight:900;
+  border:1px solid rgba(25,230,160,.2);
+}
+
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.userInfo{
+  flex:1;
+  min-width:0;
+}
+
+.userName{
+  font-weight:800;
+}
+
+.username{
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* POSTS */
+
+.post{
+  overflow:hidden;
+}
+
+.postHeader{
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.postBody{
+  margin-top:14px;
+}
+
+.postCaption{
+  line-height:1.5;
+  white-space:pre-wrap;
+}
+
+.postMedia{
+  width:100%;
+  max-height:520px;
+  object-fit:cover;
+  border-radius:18px;
+  margin-top:12px;
+  background:#020504;
+}
+
+.postActions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:13px;
+}
+
+.action{
+  padding:9px 12px;
+  border-radius:12px;
+  background:#101d17;
+  color:#dcebe4;
+  border:1px solid rgba(255,255,255,.05);
+}
+
+.action.liked{
+  color:#00130c;
+  background:var(--green);
+}
+
+.commentBox{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+.commentBox input{
+  flex:1;
+}
+
+.comments{
+  margin-top:10px;
+}
+
+.comment{
+  padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:13px;
+}
+
+/* CIRCLES */
+
+.circle{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:14px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.circleIcon{
+  width:50px;
+  height:50px;
+  border-radius:17px;
+  display:grid;
+  place-items:center;
+  background:#10251a;
+  color:var(--green2);
+  font-weight:900;
+}
+
+.circleInfo{
+  flex:1;
+}
+
+/* MAP */
+
+.mapPlaceholder{
+  min-height:410px;
+  border-radius:25px;
+  border:1px solid rgba(25,230,160,.17);
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(25,230,160,.17),transparent 4%),
+    radial-gradient(circle at 50% 50%,transparent 18%,rgba(25,230,160,.07) 18.5%,transparent 19%),
+    radial-gradient(circle at 50% 50%,transparent 38%,rgba(25,230,160,.05) 38.5%,transparent 39%),
+    linear-gradient(135deg,#07100c,#0c1a13);
+}
+
+.mapGrid{
+  position:absolute;
+  inset:0;
+  opacity:.16;
+  background-image:
+    linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);
+  background-size:45px 45px;
+}
+
+.mapCenter{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 0 10px rgba(25,230,160,.09),0 0 35px var(--green);
+}
+
+/* MESSAGES */
+
+.messageList{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.message{
+  max-width:80%;
+  padding:11px 14px;
+  border-radius:17px;
+  background:#102019;
+  align-self:flex-start;
+  white-space:pre-wrap;
+}
+
+.message.mine{
+  align-self:flex-end;
+  background:#14543c;
+}
+
+.messageMeta{
+  font-size:9px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+/* PROFILE */
+
+.profileHero{
+  text-align:center;
+}
+
+.profileLarge{
+  width:96px;
+  height:96px;
+  border-radius:50%;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  margin:0 auto 12px;
+  background:#11271c;
+  color:var(--green2);
+  font-size:30px;
+  font-weight:900;
+  border:2px solid rgba(25,230,160,.3);
+}
+
+.profileLarge img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.profileName{
+  font-size:23px;
+  font-weight:900;
+}
+
+.profileUsername{
+  color:var(--muted);
+}
+
+.profileStats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:18px;
+}
+
+.profileStat{
+  padding:12px;
+  border-radius:14px;
+  background:#09130e;
+}
+
+/* BOTTOM NAV */
+
+.bottomNav{
+  position:fixed;
+  z-index:100;
+  left:50%;
+  bottom:12px;
+  transform:translateX(-50%);
+  width:min(720px,calc(100% - 20px));
+  padding:8px;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:3px;
+  border:1px solid rgba(25,230,160,.15);
+  border-radius:24px;
+  background:rgba(5,12,8,.91);
+  backdrop-filter:blur(22px);
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+}
+
+.navBtn{
+  padding:9px 3px;
+  color:#71857b;
+  background:transparent;
+  border-radius:17px;
+  font-size:10px;
+}
+
+.navIcon{
+  display:block;
+  font-size:18px;
+  margin-bottom:2px;
+}
+
+.navBtn.active{
+  color:#00130c;
+  background:var(--green);
+  font-weight:900;
+}
+
+/* MODAL */
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:300;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  background:rgba(0,0,0,.68);
+  backdrop-filter:blur(8px);
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modalBox{
+  width:min(560px,100%);
+  max-height:90vh;
+  overflow:auto;
+  padding:22px;
+  border-radius:28px 28px 0 0;
+  background:#09120d;
+  border:1px solid var(--line);
+}
+
+.modalActions{
+  display:flex;
+  gap:8px;
+  margin-top:15px;
+}
+
+.modalActions>*{
+  flex:1;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  z-index:500;
+  left:50%;
+  bottom:95px;
+  transform:translateX(-50%) translateY(20px);
+  opacity:0;
+  pointer-events:none;
+  max-width:90%;
+  padding:12px 16px;
+  border-radius:15px;
+  background:#eafff5;
+  color:#03120b;
+  font-weight:800;
+  font-size:13px;
+  transition:.25s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%);
+}
+
+/* CALL */
+
+.callOverlay{
+  position:fixed;
+  inset:0;
+  z-index:400;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:#020604;
+}
+
+.callOverlay.show{
+  display:flex;
+}
+
+.callPanel{
+  width:min(700px,100%);
+  min-height:80vh;
+  border-radius:30px;
+  overflow:hidden;
+  position:relative;
+  background:
+    radial-gradient(circle at 50% 20%,rgba(25,230,160,.13),transparent 30%),
+    #07100b;
+  border:1px solid var(--line);
+}
+
+.remoteVideo,
+.localVideo{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  background:#020504;
+}
+
+.remoteVideo{
+  position:absolute;
+  inset:0;
+}
+
+.localVideo{
+  position:absolute;
+  right:16px;
+  top:16px;
+  width:130px;
+  height:180px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.16);
+  z-index:2;
+}
+
+.callInfo{
+  position:absolute;
+  left:20px;
+  top:20px;
+  z-index:3;
+}
+
+.callControls{
+  position:absolute;
+  bottom:25px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:10px;
+  z-index:4;
+}
+
+.callControl{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:#15231c;
+  color:white;
+  border:1px solid var(--line);
+}
+
+.callControl.end{
+  background:#ef405d;
+}
+
+/* UTILITY */
+
+.row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.between{
+  justify-content:space-between;
+}
+
+.wrap{
+  flex-wrap:wrap;
+}
+
+.small{
+  font-size:12px;
+}
+
+.spacer{
+  height:8px;
+}
+
+.empty{
+  text-align:center;
+  padding:35px 15px;
+  color:var(--muted);
+}
+
+.fileButton{
+  display:inline-block;
+  padding:11px 14px;
+  border-radius:13px;
+  background:#122119;
+  border:1px solid var(--line);
+  cursor:pointer;
+}
+
+input[type=file]{
+  display:none;
+}
+</style></head><body><div id="app" class="app"><!-- AUTH --><section id="authScreen" class="screen authScreen">  <div class="authBox"><div class="logo">
+  <div class="logoMark">TC</div>
+  <div>
+    <div class="logoTitle">TRACK CIRCLE</div>
+    <div class="logoSub">Stay Connected. Stay Close.</div>
+  </div>
+</div>
+
+<div class="authTabs">
+  <button id="loginTab" class="active" onclick="setAuthMode('login')">Sign in</button>
+  <button id="signupTab" onclick="setAuthMode('signup')">Create account</button>
+</div>
+
+<div id="nameField" class="field hidden">
+  <label>Full name</label>
+  <input id="authName" class="input" placeholder="Your name">
+</div>
+
+<div id="usernameField" class="field hidden">
+  <label>Username</label>
+  <input id="authUsername" class="input" placeholder="@username">
+</div>
+
+<div class="field">
+  <label>Email</label>
+  <input id="authEmail" class="input" type="email" autocomplete="email" placeholder="you@example.com">
+</div>
+
+<div class="field">
+  <label>Password</label>
+  <input id="authPassword" class="input" type="password" autocomplete="current-password" placeholder="At least 6 characters">
+</div>
+
+<div id="authError" class="error"></div>
+
+<button id="authButton" class="primary" onclick="submitAuth()">Sign in</button>
+
+  </div></section><!-- MAIN --><section id="mainApp" class="main hidden"><main class="content"><!-- HOME --><section id="page-home" class="page active">  <div class="topbar">
+    <div>
+      <div class="eyebrow">TRACK CIRCLE</div>
+      <h1 id="homeGreeting">Welcome.</h1>
+    </div><button class="secondary" onclick="refreshApp()">↻</button>
+
+  </div>  <div class="card hero glowCard"><div>
+  <div class="eyebrow">YOUR CIRCLE. YOUR WORLD.</div>
+
+  <div class="heroTitle">
+    Stay connected.<br>
+    Stay <span>close.</span>
+  </div>
+
+  <div class="muted small" style="margin-top:10px">
+    People, places, conversations and your Track Circle AI in one place.
+  </div>
+</div>
+
+<div class="statRow" style="margin-top:20px">
+  <div class="stat">
+    <div id="homeFollowers" class="statValue">0</div>
+    <div class="statLabel">FOLLOWERS</div>
+  </div>
+
+  <div class="stat">
+    <div id="homeFollowing" class="statValue">0</div>
+    <div class="statLabel">FOLLOWING</div>
+  </div>
+
+  <div class="stat">
+    <div id="homeCircles" class="statValue">0</div>
+    <div class="statLabel">CIRCLES</div>
+  </div>
+</div>
+
+  </div>  <!-- AI -->  <div class="card aiBox"><div class="aiHeader">
+
+  <div class="aiOrb">AI</div>
+
+  <div>
+    <b>Track Circle AI</b>
+    <div class="muted small">
+      Powered by your Track Circle Edge Function
+    </div>
+  </div>
+
+</div>
+
+<div id="aiMessages" class="aiMessages">
+
+  <div class="aiMsg">
+    Hello. I'm Track Circle AI. Ask me anything.
+  </div>
+
+</div>
+
+<div class="aiComposer">
+
+  <input
+    id="aiInput"
+    class="input"
+    placeholder="Ask Track Circle AI..."
+    autocomplete="off"
+  >
+
+  <button class="send" onclick="sendAI()">➤</button>
+
+</div>
+
+  </div>  <div class="grid grid2"><div class="card">
+
+  <div class="row between">
+    <div>
+      <b>Live location</b>
+      <div id="locationStatus" class="muted small">
+        Location sharing is off
+      </div>
+    </div>
+
+    <button
+      id="locationButton"
+      class="secondary"
+      onclick="toggleLocation()">
+      OFF
+    </button>
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="row between">
+    <div>
+      <b>Messages</b>
+      <div id="messageCount" class="muted small">
+        No new messages
+      </div>
+    </div>
+
+    <button class="secondary" onclick="go('messages')">
+      Open
+    </button>
+  </div>
+
+</div>
+
+  </div></section><!-- MEDIA --><section id="page-media" class="page">  <div class="topbar">
+    <div>
+      <div class="eyebrow">TRACK MEDIA</div>
+      <h1>Discover</h1>
+    </div><button class="secondary" onclick="openCreatePost()">
+  + Post
+</button>
+
+  </div>  <div class="card"><div class="field">
+  <textarea
+    id="postCaption"
+    class="input"
+    rows="4"
+    placeholder="What's happening in your circle?"></textarea>
+</div>
+
+<div class="row wrap">
+
+  <label class="fileButton">
+    📷 Photo
+    <input
+      id="postImageInput"
+      type="file"
+      accept="image/*"
+      onchange="preparePostMedia(this)">
+  </label>
+
+  <label class="fileButton">
+    🎬 Video
+    <input
+      id="postVideoInput"
+      type="file"
+      accept="video/*"
+      onchange="preparePostMedia(this)">
+  </label>
+
+  <button class="primary" style="width:auto" onclick="createPost()">
+    Publish
+  </button>
+
+</div>
+
+<div id="selectedMedia" class="muted small" style="margin-top:9px"></div>
+
+  </div>  <div id="feedList"></div></section><!-- MAP --><section id="page-map" class="page">  <div class="topbar">
+    <div>
+      <div class="eyebrow">LIVE MAP</div>
+      <h1>People nearby</h1>
+    </div>
+  </div>  <div class="card"><div class="mapPlaceholder">
+
+  <div class="mapGrid"></div>
+
+  <div class="mapCenter"></div>
+
+</div>
+
+<div style="margin-top:13px">
+  <b>Real map connection pending</b>
+  <div class="muted small">
+    GPS sharing is functional, but the actual Google Maps/Mapbox layer has intentionally not been added yet.
+  </div>
+</div>
+
+  </div>  <div class="card"><div class="row between">
+  <div>
+    <b>Your location sharing</b>
+    <div id="mapLocationText" class="muted small">
+      Off
+    </div>
+  </div>
+
+  <button class="secondary" onclick="toggleLocation()">
+    Toggle
+  </button>
+</div>
+
+  </div></section><!-- CIRCLES --><section id="page-circles" class="page">  <div class="topbar">
+    <div>
+      <div class="eyebrow">TRACK CIRCLES</div>
+      <h1>Your circles</h1>
+    </div><button class="secondary" onclick="openCircleModal()">
+  + Create
+</button>
+
+  </div>  <div class="card"><div class="row">
+
+  <input
+    id="joinCode"
+    class="input"
+    placeholder="TC-XXXXXX">
+
+  <button class="secondary" onclick="joinCircle()">
+    Join
+  </button>
+
+</div>
+
+  </div>  <div id="circleList"></div></section><!-- MESSAGES --><section id="page-messages" class="page">  <div class="topbar"><div>
+  <div class="eyebrow">MESSAGES</div>
+  <h1>Conversations</h1>
+</div>
+
+  </div>  <div class="card"><input
+  id="messageUserSearch"
+  class="input"
+  placeholder="Search username to message..."
+  oninput="searchMessageUsers()">
+
+<div id="messageUserResults"></div>
+
+  </div>  <div id="conversationList"></div>  <div id="conversationPanel" class="card hidden"><div class="row between">
+
+  <div>
+    <b id="conversationTitle">Conversation</b>
+    <div id="conversationSubtitle" class="muted small"></div>
+  </div>
+
+  <button class="secondary" onclick="closeConversation()">
+    Close
+  </button>
+
+</div>
+
+<div id="messageList" class="messageList" style="margin-top:14px"></div>
+
+<div class="commentBox">
+
+  <input
+    id="messageInput"
+    class="input"
+    placeholder="Write a message...">
+
+  <button class="send" onclick="sendMessage()">➤</button>
+
+</div>
+
+<div class="row wrap" style="margin-top:10px">
+
+  <button class="secondary" onclick="startCall('audio')">
+    📞 Audio
+  </button>
+
+  <button class="secondary" onclick="startCall('video')">
+    📹 Video
+  </button>
+
+</div>
+
+  </div></section><!-- PROFILE --><section id="page-profile" class="page">  <div class="topbar"><div>
+  <div class="eyebrow">PROFILE</div>
+  <h1>Your identity</h1>
+</div>
+
+<button class="secondary" onclick="signOut()">
+  Sign out
+</button>
+
+  </div>  <div class="card profileHero"><div id="profileAvatar" class="profileLarge">
+  TC
+</div>
+
+<div id="profileName" class="profileName">
+  Track Circle User
+</div>
+
+<div id="profileUsername" class="profileUsername">
+  @user
+</div>
+
+<div id="profileBio" class="muted small" style="margin-top:7px">
+  No bio yet.
+</div>
+
+<div class="profileStats">
+
+  <div class="profileStat">
+    <b id="profilePosts">0</b>
+    <div class="muted small">Posts</div>
+  </div>
+
+  <div class="profileStat">
+    <b id="profileFollowers">0</b>
+    <div class="muted small">Followers</div>
+  </div>
+
+  <div class="profileStat">
+    <b id="profileFollowing">0</b>
+    <div class="muted small">Following</div>
+  </div>
+
+</div>
+
+<div style="margin-top:17px">
+
+  <label class="fileButton">
+    Change profile photo
+    <input
+      id="profilePhotoInput"
+      type="file"
+      accept="image/*"
+      onchange="uploadProfilePhoto(this)">
+  </label>
+
+</div>
+
+  </div>  <div class="card"><h2>Edit profile</h2>
+
+<div class="field">
+  <label>Display name</label>
+  <input id="editDisplayName" class="input">
+</div>
+
+<div class="field">
+  <label>Username</label>
+  <input id="editUsername" class="input">
+</div>
+
+<div class="field">
+  <label>Bio</label>
+  <textarea id="editBio" class="input" rows="3"></textarea>
+</div>
+
+<button class="primary" onclick="saveProfile()">
+  Save profile
+</button>
+
+  </div>  <div class="card"><h2>Wallet</h2>
+
+<div class="statRow">
+
+  <div class="stat">
+    <div id="walletAvailable" class="statValue">₦0</div>
+    <div class="statLabel">AVAILABLE</div>
+  </div>
+
+  <div class="stat">
+    <div id="walletPending" class="statValue">₦0</div>
+    <div class="statLabel">PENDING</div>
+  </div>
+
+  <div class="stat">
+    <div id="walletLifetime" class="statValue">₦0</div>
+    <div class="statLabel">RECEIVED</div>
+  </div>
+
+</div>
+
+  </div></section></main><!-- NAV --><nav class="bottomNav">  <button class="navBtn active" data-page="home" onclick="go('home')">
+    <span class="navIcon">⌂</span>
+    Home
+  </button>  <button class="navBtn" data-page="media" onclick="go('media')">
+    <span class="navIcon">◉</span>
+    Media
+  </button>  <button class="navBtn" data-page="map" onclick="go('map')">
+    <span class="navIcon">⌖</span>
+    Map
+  </button>  <button class="navBtn" data-page="circles" onclick="go('circles')">
+    <span class="navIcon">◎</span>
+    Circles
+  </button>  <button class="navBtn" data-page="messages" onclick="go('messages')">
+    <span class="navIcon">◇</span>
+    Messages
+  </button>  <button class="navBtn" data-page="profile" onclick="go('profile')">
+    <span class="navIcon">○</span>
+    Profile
+  </button></nav></section><!-- CIRCLE MODAL --><div id="circleModal" class="modal">  <div class="modalBox"><h2>Create a circle</h2>
+
+<div class="field">
+  <label>Circle name</label>
+  <input id="circleName" class="input" placeholder="Family, Friends, School...">
+</div>
+
+<div class="field">
+  <label>Type</label>
+  <select id="circleType" class="input">
+    <option>Friends</option>
+    <option>Family</option>
+    <option>School</option>
+    <option>Football Team</option>
+    <option>Travel</option>
+    <option>Work</option>
+  </select>
+</div>
+
+<div class="modalActions">
+
+  <button class="secondary" onclick="closeModal('circleModal')">
+    Cancel
+  </button>
+
+  <button class="primary" onclick="createCircle()">
+    Create
+  </button>
+
+</div>
+
+  </div></div><!-- CALL OVERLAY --><div id="callOverlay" class="callOverlay">  <div class="callPanel"><video
+  id="remoteVideo"
+  class="remoteVideo"
+  autoplay
+  playsinline></video>
+
+<video
+  id="localVideo"
+  class="localVideo"
+  autoplay
+  muted
+  playsinline></video>
+
+<div class="callInfo">
+
+  <b id="callTitle">Track Circle Call</b>
+
+  <div id="callStatus" class="muted small">
+    Connecting...
+  </div>
+
+</div>
+
+<div class="callControls">
+
+  <button class="callControl" onclick="toggleCallMic()">
+    🎙
+  </button>
+
+  <button class="callControl" onclick="toggleCallCamera()">
+    📹
+  </button>
+
+  <button class="callControl end" onclick="endCall()">
+    ✕
+  </button>
+
+</div>
+
+  </div></div><div id="toast" class="toast"></div><script>
+/* =========================================================
+   TRACK CIRCLE CORE
+   ========================================================= */
+
+const SUPABASE_URL =
+  "https://olivaregvcejjghrjdio.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9saXZhcmVndmNlampnaHJqZGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyODE4MzUsImV4cCI6MjEwNTg1NzgzNX0.r1aukPMLnShXSFjuE47AIaGKmgwHrFuaWl8-2r8Su0Y";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+let currentUser = null;
+let currentProfile = null;
+let authMode = "login";
+
+let locationWatcher = null;
+let locationEnabled = false;
+
+let selectedPostMedia = null;
+
+let currentConversation = null;
+let currentConversationChannel = null;
+
+let callPeer = null;
+let callChannel = null;
+let localStream = null;
+let callType = "video";
+let callMuted = false;
+let callCameraOff = false;
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+function escapeAttr(value){
+  return escapeHtml(value);
+}
+
+
+function formatDate(value){
+
+  if(!value)
+    return "";
+
+  const date =
+    new Date(value);
+
+  return date.toLocaleString(
+    undefined,
+    {
+      dateStyle:"medium",
+      timeStyle:"short"
+    }
+  );
+}
+
+
+function nairaFromKobo(value){
+
+  return "₦" +
+    (
+      Number(value || 0) / 100
+    ).toLocaleString(
+      undefined,
+      {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      }
+    );
+}
+
+
+function toast(message){
+
+  const element =
+    document.getElementById("toast");
+
+  if(!element)
+    return;
+
+  element.textContent =
+    message;
+
+  element.classList.add("show");
+
+  clearTimeout(
+    window.__toastTimer
+  );
+
+  window.__toastTimer =
+    setTimeout(
+      ()=>{
+        element.classList.remove("show");
+      },
+      2600
+    );
+}
+
+
+function closeModal(id){
+
+  const modal =
+    document.getElementById(id);
+
+  if(modal)
+    modal.classList.remove("show");
+}
+
+
+function openCircleModal(){
+
+  const modal =
+    document.getElementById("circleModal");
+
+  if(modal)
+    modal.classList.add("show");
+}
+
+
+function openCreatePost(){
+
+  go("media");
+
+  setTimeout(
+    ()=>{
+      document
+        .getElementById("postCaption")
+        ?.focus();
+    },
+    100
+  );
+}
+
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+
+function setAuthMode(mode){
+
+  authMode = mode;
+
+  const loginTab =
+    document.getElementById("loginTab");
+
+  const signupTab =
+    document.getElementById("signupTab");
+
+  const nameField =
+    document.getElementById("nameField");
+
+  const usernameField =
+    document.getElementById("usernameField");
+
+  const button =
+    document.getElementById("authButton");
+
+  if(mode === "signup"){
+
+    loginTab.classList.remove("active");
+    signupTab.classList.add("active");
+
+    nameField.classList.remove("hidden");
+    usernameField.classList.remove("hidden");
+
+    button.textContent =
+      "Create account";
+
+  }else{
+
+    loginTab.classList.add("active");
+    signupTab.classList.remove("active");
+
+    nameField.classList.add("hidden");
+    usernameField.classList.add("hidden");
+
+    button.textContent =
+      "Sign in";
+  }
+
+  document
+    .getElementById("authError")
+    .textContent = "";
+}
+
+
+async function submitAuth(){
+
+  const email =
+    document
+      .getElementById("authEmail")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("authPassword")
+      .value;
+
+  const errorBox =
+    document.getElementById("authError");
+
+  errorBox.textContent = "";
+
+  if(!email){
+
+    errorBox.textContent =
+      "Enter your email.";
+
+    return;
+  }
+
+  if(password.length < 6){
+
+    errorBox.textContent =
+      "Password must contain at least 6 characters.";
+
+    return;
+  }
+
+  try{
+
+    if(authMode === "signup"){
+
+      const name =
+        document
+          .getElementById("authName")
+          .value
+          .trim();
+
+      const username =
+        document
+          .getElementById("authUsername")
+          .value
+          .trim()
+          .replace(/^@/,"")
+          .toLowerCase();
+
+      if(!name){
+
+        errorBox.textContent =
+          "Enter your name.";
+
+        return;
+      }
+
+      if(!username){
+
+        errorBox.textContent =
+          "Choose a username.";
+
+        return;
+      }
+
+      const result =
+        await supabaseClient.auth.signUp({
+
+          email,
+          password,
+
+          options:{
+            data:{
+              display_name:name,
+              username:username
             }
-        }
-    </script>
+          }
 
-    <style>
-        body {
-            background-color: #05080E;
-            color: #F5F8FA;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .cinematic-bg {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(180deg, rgba(5,8,14,0.55) 0%, rgba(8,26,22,0.9) 100%), 
-                        radial-gradient(circle at 50% 12%, rgba(25,230,160,0.25) 0%, transparent 65%);
-            z-index: -1;
-            pointer-events: none;
-        }
-        .glow-mint {
-            box-shadow: 0 0 25px rgba(25, 230, 160, 0.25);
-        }
-        .glow-cyan {
-            box-shadow: 0 0 30px rgba(67, 217, 255, 0.22);
-        }
-        .glass-card {
-            background: rgba(14, 23, 38, 0.82);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(25, 230, 160, 0.15);
-            border-radius: 24px;
-        }
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #05080E;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #19E6A0;
-            border-radius: 2px;
-        }
-        .map-container {
-            width: 100%;
-            height: 100%;
-            background: #0A101D;
-            border-radius: 20px;
-            z-index: 1;
-        }
-    </style>
-</head>
-<body class="bg-darkBg text-textPrimary antialiased flex flex-col min-h-screen relative">
-
-    <div class="cinematic-bg"></div>
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-    <!-- WELCOME / SPLASH SCREEN VIEW -->
-    <div id="splash-screen" class="fixed inset-0 z-50 bg-darkBg flex flex-col justify-between items-center p-6 text-center">
-        <div class="w-full max-w-md flex-1 flex flex-col justify-center items-center space-y-6">
-            <div class="w-24 h-24 rounded-3xl bg-mint/15 border border-mint/40 flex items-center justify-center text-mint text-4xl glow-mint">
-                <i class="fa-solid fa-location-crosshairs animate-pulse"></i>
-            </div>
-            <div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-textPrimary">TRACK CIRCLE</h1>
-                <p class="text-mint text-xs font-bold uppercase tracking-widest mt-1">Stay Connected. Stay Close.</p>
-            </div>
-            <div class="grid grid-cols-3 gap-3 w-full pt-4">
-                <div class="glass-card p-3 text-center">
-                    <i class="fa-solid fa-map-location-dot text-mint text-base mb-1"></i>
-                    <p class="text-[10px] text-textSecondary font-semibold">Real-Time Location</p>
-                </div>
-                <div class="glass-card p-3 text-center">
-                    <i class="fa-solid fa-comments text-mint text-base mb-1"></i>
-                    <p class="text-[10px] text-textSecondary font-semibold">Private Messaging</p>
-                </div>
-                <div class="glass-card p-3 text-center">
-                    <i class="fa-solid fa-sparkles text-mint text-base mb-1"></i>
-                    <p class="text-[10px] text-textSecondary font-semibold">Track Circle AI</p>
-                </div>
-            </div>
-        </div>
-        <div class="w-full max-w-md pb-6 space-y-3">
-            <button onclick="showAuthMode('signup')" class="w-full bg-mint text-darkBg font-extrabold py-4 rounded-2xl hover:opacity-95 transition glow-mint cursor-pointer shadow-lg text-sm">
-                Get Started →
-            </button>
-            <button onclick="showAuthMode('login')" class="w-full glass-card text-textPrimary font-bold py-4 rounded-2xl hover:border-mint transition text-sm">
-                I Already Have an Account
-            </button>
-        </div>
-    </div>
-
-    <!-- AUTHENTICATION WRAPPER -->
-    <div id="auth-wrapper" class="fixed inset-0 z-40 bg-darkBg/95 backdrop-blur-2xl flex flex-col justify-center items-center p-4 overflow-y-auto hidden">
-        <div class="w-full max-w-md glass-card p-8 shadow-2xl glow-mint relative z-10">
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-mint/10 border border-mint/30 text-mint text-2xl mb-3 glow-mint">
-                    <i class="fa-solid fa-circle-nodes"></i>
-                </div>
-                <h1 id="auth-title" class="text-2xl font-extrabold tracking-tight text-textPrimary">Welcome Back</h1>
-                <p class="text-textSecondary text-xs mt-1">Sign in to continue to your account</p>
-            </div>
-
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Email Address</label>
-                    <input type="email" id="login-email" required class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Password</label>
-                    <input type="password" id="login-password" required class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
-                </div>
-                <button type="submit" class="w-full bg-mint text-darkBg font-extrabold py-3.5 rounded-2xl hover:opacity-95 transition glow-mint cursor-pointer text-sm">
-                    Sign In →
-                </button>
-                <div class="text-center mt-4">
-                    <button type="button" onclick="switchAuthForm('signup')" class="text-xs text-textSecondary hover:text-mint transition">
-                        Don't have an account? <span class="text-mint font-bold">Sign Up</span>
-                    </button>
-                </div>
-            </form>
-
-            <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-4 hidden">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Full Name / Display Name</label>
-                    <input type="text" id="signup-display-name" required placeholder="e.g. Ezekiel Ayoola" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Username</label>
-                    <input type="text" id="signup-username" required placeholder="e.g. ezekiel_01" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Email Address</label>
-                    <input type="email" id="signup-email" required class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Password</label>
-                    <input type="password" id="signup-password" required class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-mint transition text-textPrimary">
-                </div>
-                <button type="submit" class="w-full bg-mint text-darkBg font-extrabold py-3.5 rounded-2xl hover:opacity-95 transition glow-mint cursor-pointer text-sm">
-                    Create Account →
-                </button>
-                <div class="text-center mt-4">
-                    <button type="button" onclick="switchAuthForm('login')" class="text-xs text-textSecondary hover:text-mint transition">
-                        Already have an account? <span class="text-mint font-bold">Sign In</span>
-                    </button>
-                </div>
-            </form>
-            <div class="mt-4 text-center">
-                <button onclick="backToSplash()" class="text-xs text-textSecondary hover:text-white">← Back to Welcome</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN APP SHELL (6 TABS NAVIGATION) -->
-    <div id="app-shell" class="flex flex-col flex-1 max-w-md w-full mx-auto relative z-10 hidden pb-24">
-        
-        <!-- TOP HEADER -->
-        <header class="flex items-center justify-between px-4 py-3.5 border-b border-borderSubtle bg-darkBg/85 backdrop-blur-xl sticky top-0 z-30">
-            <div class="flex items-center gap-3">
-                <div id="header-avatar" class="w-10 h-10 rounded-2xl bg-mint/20 border border-mint/40 flex items-center justify-center text-mint font-bold text-sm glow-mint">
-                    TC
-                </div>
-                <div>
-                    <h2 id="header-username" class="font-bold text-sm leading-tight text-textPrimary">Track Circle</h2>
-                    <span id="location-status-badge" class="text-[10px] text-textSecondary flex items-center gap-1.5 mt-0.5">
-                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span> Location Off
-                    </span>
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="openAiModal()" class="w-10 h-10 rounded-2xl glass-card flex items-center justify-center text-skyCyan hover:border-skyCyan transition glow-cyan" title="Track Circle AI">
-                    <i class="fa-solid fa-sparkles"></i>
-                </button>
-                <button onclick="signOut()" class="w-10 h-10 rounded-2xl glass-card flex items-center justify-center text-textSecondary hover:text-danger transition" title="Sign Out">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- MAIN VIEWS CONTAINER -->
-        <main class="flex-1 overflow-y-auto">
-            
-            <!-- 1. HOME VIEW -->
-            <section id="view-home" class="p-4 space-y-6">
-                <div class="glass-card p-6 relative overflow-hidden glow-mint">
-                    <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-mint/10 rounded-full blur-3xl pointer-events-none"></div>
-                    <span id="home-greeting" class="text-xs font-bold uppercase tracking-widest text-mint">Good day</span>
-                    <h2 id="home-display-name" class="text-xl font-extrabold mt-1 text-textPrimary">Welcome back</h2>
-                    
-                    <div class="mt-5 pt-4 border-t border-borderSubtle flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-textSecondary">Location Sharing</p>
-                            <p id="home-location-state" class="text-sm font-bold text-yellow-400 mt-0.5">Disabled</p>
-                        </div>
-                        <button onclick="toggleLocationSharing()" id="home-location-btn" class="px-4 py-2 rounded-xl bg-secondaryBg border border-borderSubtle text-xs font-bold text-mint hover:border-mint transition">
-                            Turn On
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary mb-3 px-1">Quick Actions</h3>
-                    <div class="grid grid-cols-4 gap-3">
-                        <button onclick="switchTab('map')" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
-                            <div class="w-10 h-10 rounded-2xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
-                                <i class="fa-solid fa-map-location-dot text-sm"></i>
-                            </div>
-                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Map</span>
-                        </button>
-                        <button onclick="switchTab('track')" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
-                            <div class="w-10 h-10 rounded-2xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
-                                <i class="fa-solid fa-camera-retro text-sm"></i>
-                            </div>
-                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Track</span>
-                        </button>
-                        <button onclick="openCreateCircleModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-mint transition group">
-                            <div class="w-10 h-10 rounded-2xl bg-mint/10 text-mint flex items-center justify-center group-hover:scale-110 transition">
-                                <i class="fa-solid fa-users-rectangle text-sm"></i>
-                            </div>
-                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">Create</span>
-                        </button>
-                        <button onclick="openAiModal()" class="glass-card p-3 flex flex-col items-center justify-center gap-2 hover:border-skyCyan transition group">
-                            <div class="w-10 h-10 rounded-2xl bg-skyCyan/10 text-skyCyan flex items-center justify-center group-hover:scale-110 transition">
-                                <i class="fa-solid fa-robot text-sm"></i>
-                            </div>
-                            <span class="text-[11px] font-semibold text-textSecondary group-hover:text-textPrimary">TC AI</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex items-center justify-between mb-3 px-1">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary">Your Circles</h3>
-                        <button onclick="switchTab('circles')" class="text-xs text-mint font-bold hover:underline">View All</button>
-                    </div>
-                    <div id="home-circles-list" class="space-y-2.5">
-                        <div class="glass-card p-4 text-center text-textSecondary text-xs">
-                            No circles yet. Create or join your first circle.
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 2. LIVE MAP VIEW -->
-            <section id="view-map" class="p-4 h-[calc(100vh-140px)] hidden flex flex-col">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="font-bold text-sm text-textPrimary">Live Location Radar</h2>
-                    <button onclick="centerMapOnUser()" class="px-3.5 py-1.5 glass-card rounded-xl text-xs text-mint font-semibold hover:border-mint transition">
-                        <i class="fa-solid fa-crosshairs mr-1"></i> My Location
-                    </button>
-                </div>
-                <div class="flex-1 rounded-3xl overflow-hidden glass-card relative p-1">
-                    <div id="map" class="map-container"></div>
-                </div>
-            </section>
-
-            <!-- 3. TRACK VIEW (Instagram-Style Social Feed: Photos, Videos, Likes, Comments) -->
-            <section id="view-track" class="p-4 space-y-4 hidden">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-bold text-base text-textPrimary">Track Feed</h2>
-                    <button onclick="openPostModal()" class="px-3.5 py-1.5 bg-mint text-darkBg rounded-xl text-xs font-extrabold hover:opacity-95 transition glow-mint">
-                        <i class="fa-solid fa-plus mr-1"></i> New Post
-                    </button>
-                </div>
-                <div id="track-feed-list" class="space-y-4 pb-10">
-                    <div class="glass-card p-6 text-center text-textSecondary text-xs">
-                        Loading social media feed...
-                    </div>
-                </div>
-            </section>
-
-            <!-- 4. CIRCLES VIEW -->
-            <section id="view-circles" class="p-4 space-y-4 hidden">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-bold text-base text-textPrimary">Your Circles</h2>
-                    <div class="flex gap-2">
-                        <button onclick="openJoinCircleModal()" class="px-3.5 py-1.5 glass-card rounded-xl text-xs font-bold hover:border-mint transition">Join</button>
-                        <button onclick="openCreateCircleModal()" class="px-3.5 py-1.5 bg-mint text-darkBg rounded-xl text-xs font-extrabold hover:opacity-95 transition glow-mint">Create</button>
-                    </div>
-                </div>
-                <div id="circles-full-list" class="space-y-3">
-                    <div class="glass-card p-6 text-center text-textSecondary text-xs">
-                        Loading circles...
-                    </div>
-                </div>
-            </section>
-
-            <!-- 5. MESSAGES VIEW (With Snap-Style Calling Integration) -->
-            <section id="view-messages" class="p-4 space-y-4 hidden">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-bold text-base text-textPrimary">Messages & Chats</h2>
-                    <button onclick="startSnapCall('Tomi')" class="px-3 py-1.5 bg-mint/20 border border-mint/40 text-mint rounded-xl text-xs font-bold hover:bg-mint hover:text-darkBg transition flex items-center gap-1.5 glow-mint">
-                        <i class="fa-solid fa-phone"></i> Snap Call
-                    </button>
-                </div>
-                <div id="messages-list" class="space-y-3">
-                    <div class="glass-card p-4 flex items-center justify-between cursor-pointer hover:border-mint transition" onclick="startSnapCall('Tomi')">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-2xl bg-mint/20 border border-mint/30 flex items-center justify-center font-bold text-mint">
-                                TM
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-sm text-textPrimary">Tomi <span class="text-[10px] text-mint font-normal ml-1">● Online</span></h4>
-                                <p class="text-xs text-textSecondary">Tap to start video/audio snap call</p>
-                            </div>
-                        </div>
-                        <div class="w-9 h-9 rounded-xl bg-mint/10 text-mint flex items-center justify-center">
-                            <i class="fa-solid fa-video"></i>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 6. PROFILE VIEW -->
-            <section id="view-profile" class="p-4 space-y-6 hidden">
-                <div class="glass-card p-6 text-center relative glow-mint">
-                    <div class="w-24 h-24 rounded-3xl bg-mint/20 border-2 border-mint mx-auto flex items-center justify-center text-mint text-3xl font-extrabold mb-3 glow-mint" id="profile-avatar-display">
-                        TC
-                    </div>
-                    <h2 id="profile-display-name" class="font-extrabold text-xl text-textPrimary">User Name</h2>
-                    <p id="profile-username" class="text-xs text-mint font-semibold mt-0.5">@username</p>
-                    
-                    <div class="mt-6 pt-6 border-t border-borderSubtle grid grid-cols-2 gap-4 text-center">
-                        <div>
-                            <p class="text-xs text-textSecondary">Location Sharing</p>
-                            <p id="profile-loc-status" class="text-sm font-bold text-yellow-400 mt-1">Off</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-textSecondary">Account Status</p>
-                            <p class="text-sm font-bold text-mint mt-1">Active</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-card p-4 space-y-3">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-textSecondary">Settings</h3>
-                    <button onclick="toggleLocationSharing()" class="w-full flex items-center justify-between p-3.5 bg-secondaryBg/80 rounded-2xl text-xs hover:border hover:border-mint transition text-textPrimary">
-                        <span>Toggle Location Sharing</span>
-                        <i class="fa-solid fa-location-arrow text-mint"></i>
-                    </button>
-                    <button onclick="signOut()" class="w-full flex items-center justify-between p-3.5 bg-secondaryBg/80 rounded-2xl text-xs text-danger hover:bg-danger/10 transition">
-                        <span>Sign Out</span>
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            </section>
-
-        </main>
-
-        <!-- 6-TAB BOTTOM NAVIGATION BAR -->
-        <nav class="absolute bottom-3 left-3 right-3 h-16 glass-card border border-borderSubtle flex items-center justify-around px-1 z-30 glow-mint">
-            <button onclick="switchTab('home')" id="nav-btn-home" class="flex flex-col items-center justify-center w-14 text-mint transition py-1">
-                <i class="fa-solid fa-house text-sm"></i>
-                <span class="text-[9px] mt-1 font-bold">Home</span>
-            </button>
-            <button onclick="switchTab('map')" id="nav-btn-map" class="flex flex-col items-center justify-center w-14 text-textSecondary hover:text-mint transition py-1">
-                <i class="fa-solid fa-map text-sm"></i>
-                <span class="text-[9px] mt-1 font-medium">Map</span>
-            </button>
-            <button onclick="switchTab('track')" id="nav-btn-track" class="flex flex-col items-center justify-center w-14 text-textSecondary hover:text-mint transition py-1">
-                <i class="fa-solid fa-camera-retro text-sm"></i>
-                <span class="text-[9px] mt-1 font-medium">Track</span>
-            </button>
-            <button onclick="switchTab('circles')" id="nav-btn-circles" class="flex flex-col items-center justify-center w-14 text-textSecondary hover:text-mint transition py-1">
-                <i class="fa-solid fa-users text-sm"></i>
-                <span class="text-[9px] mt-1 font-medium">Circles</span>
-            </button>
-            <button onclick="switchTab('messages')" id="nav-btn-messages" class="flex flex-col items-center justify-center w-14 text-textSecondary hover:text-mint transition py-1">
-                <i class="fa-solid fa-message text-sm"></i>
-                <span class="text-[9px] mt-1 font-medium">Chats</span>
-            </button>
-            <button onclick="switchTab('profile')" id="nav-btn-profile" class="flex flex-col items-center justify-center w-14 text-textSecondary hover:text-mint transition py-1">
-                <i class="fa-solid fa-user text-sm"></i>
-                <span class="text-[9px] mt-1 font-medium">Profile</span>
-            </button>
-        </nav>
-    </div>
-
-    <!-- SNAP-STYLE CALLING OVERLAY INTERFACE -->
-    <div id="snap-call-modal" class="fixed inset-0 z-50 bg-darkBg/95 backdrop-blur-2xl flex flex-col justify-between p-6 text-center hidden">
-        <div class="pt-8">
-            <p id="call-status-text" class="text-xs uppercase tracking-widest text-mint font-bold animate-pulse">Ringing Secure Line...</p>
-            <h2 id="call-username" class="text-2xl font-extrabold text-textPrimary mt-1">Tomi</h2>
-        </div>
-        <div class="flex flex-col items-center justify-center my-auto">
-            <div class="w-32 h-32 rounded-full bg-mint/20 border-4 border-mint flex items-center justify-center text-mint text-4xl font-extrabold glow-mint animate-bounce" id="call-avatar-initials">
-                TM
-            </div>
-            <p class="text-xs text-textSecondary mt-4">Encrypted P2P Audio / Video Stream</p>
-        </div>
-        <div class="flex items-center justify-center gap-6 pb-6">
-            <button onclick="toggleCallMute()" class="w-14 h-14 rounded-full glass-card flex items-center justify-center text-textPrimary hover:border-mint text-lg">
-                <i class="fa-solid fa-microphone-slash"></i>
-            </button>
-            <button onclick="endSnapCall()" class="w-16 h-16 rounded-full bg-danger text-white flex items-center justify-center text-2xl shadow-lg hover:scale-105 transition">
-                <i class="fa-solid fa-phone-slash"></i>
-            </button>
-            <button onclick="toggleCallSpeaker()" class="w-14 h-14 rounded-full glass-card flex items-center justify-center text-textPrimary hover:border-mint text-lg">
-                <i class="fa-solid fa-volume-high"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- TRACK CIRCLE AI MODAL -->
-    <div id="ai-modal" class="fixed inset-0 z-50 bg-darkBg/95 backdrop-blur-2xl flex flex-col hidden">
-        <div class="flex items-center justify-between px-4 py-4 border-b border-borderSubtle glass-card">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-skyCyan/20 text-skyCyan flex items-center justify-center glow-cyan">
-                    <i class="fa-solid fa-sparkles text-sm"></i>
-                </div>
-                <div>
-                    <h3 class="font-extrabold text-sm text-textPrimary">Track Circle AI</h3>
-                    <p class="text-[10px] text-skyCyan font-semibold">Powered by Gemini & Supabase Edge Function</p>
-                </div>
-            </div>
-            <button onclick="closeAiModal()" class="w-10 h-10 rounded-2xl glass-card flex items-center justify-center text-textSecondary hover:text-textPrimary">
-                <i class="fa-solid fa-xmark text-base"></i>
-            </button>
-        </div>
-        <div id="ai-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3.5">
-            <div class="glass-card p-4 text-xs max-w-[85%] text-textPrimary">
-                Hello! I am Track Circle AI, your assistant connected via Supabase. How can I help you coordinate your circles or location today?
-            </div>
-        </div>
-        <div class="p-4 border-t border-borderSubtle glass-card flex gap-2">
-            <input type="text" id="ai-input" placeholder="Ask Track Circle AI..." onkeydown="if(event.key==='Enter')sendAI()" class="flex-1 bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3.5 text-xs focus:outline-none focus:border-skyCyan text-textPrimary">
-            <button onclick="sendAI()" class="bg-skyCyan text-darkBg px-5 py-3.5 rounded-2xl font-extrabold text-xs hover:opacity-95 transition glow-cyan flex items-center justify-center">
-                <i class="fa-solid fa-paper-plane text-sm"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- CREATE CIRCLE MODAL -->
-    <div id="create-circle-modal" class="fixed inset-0 z-50 bg-darkBg/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="w-full max-w-sm glass-card p-6 space-y-4 glow-mint">
-            <h3 class="font-extrabold text-base text-textPrimary">Create a Circle</h3>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Circle Name</label>
-                <input type="text" id="new-circle-name" placeholder="e.g. Lagos Family" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-mint text-textPrimary">
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Circle Type</label>
-                <select id="new-circle-type" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-mint text-textPrimary">
-                    <option value="Family">Family</option>
-                    <option value="Friends">Friends</option>
-                    <option value="School">School</option>
-                    <option value="Work">Work</option>
-                    <option value="Trip">Trip</option>
-                    <option value="Community">Community</option>
-                </select>
-            </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeCreateCircleModal()" class="flex-1 bg-secondaryBg py-3 rounded-2xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
-                <button onclick="submitCreateCircle()" class="flex-1 bg-mint text-darkBg py-3 rounded-2xl text-xs font-extrabold hover:opacity-95 glow-mint">Create</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- JOIN CIRCLE MODAL -->
-    <div id="join-circle-modal" class="fixed inset-0 z-50 bg-darkBg/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="w-full max-w-sm glass-card p-6 space-y-4 glow-mint">
-            <h3 class="font-extrabold text-base text-textPrimary">Join a Circle</h3>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Invite Code</label>
-                <input type="text" id="join-invite-code" placeholder="e.g. TC-7K4P9" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-mint uppercase text-textPrimary">
-            </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeJoinCircleModal()" class="flex-1 bg-secondaryBg py-3 rounded-2xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
-                <button onclick="submitJoinCircle()" class="flex-1 bg-mint text-darkBg py-3 rounded-2xl text-xs font-extrabold hover:opacity-95 glow-mint">Join</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SOCIAL POST MODAL (Track Feed) -->
-    <div id="post-modal" class="fixed inset-0 z-50 bg-darkBg/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="w-full max-w-sm glass-card p-6 space-y-4 glow-mint">
-            <h3 class="font-extrabold text-base text-textPrimary">Create Track Post</h3>
-            <div>
-                <textarea id="post-content-input" rows="3" placeholder="Share your location or moment..." class="w-full bg-secondaryBg border border-borderSubtle rounded-xl p-3 text-xs focus:outline-none focus:border-mint text-textPrimary resize-none"></textarea>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-textSecondary mb-2">Image URL (Optional)</label>
-                <input type="text" id="post-media-input" placeholder="https://image-link.com/photo.jpg" class="w-full bg-secondaryBg border border-borderSubtle rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-mint text-textPrimary">
-            </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closePostModal()" class="flex-1 bg-secondaryBg py-3 rounded-2xl text-xs font-bold text-textSecondary hover:text-textPrimary">Cancel</button>
-                <button onclick="submitPost()" class="flex-1 bg-mint text-darkBg py-3 rounded-2xl text-xs font-extrabold hover:opacity-95 glow-mint">Publish</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- APPLICATION SCRIPT -->
-    <script>
-        const SUPABASE_URL = "https://olivaregvcejjghrjdio.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9saXZhcmVndmNlampnaHJqZGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyODE4MzUsImV4cCI6MjEwNTg1NzgzNX0.r1aukPMLnShXSFjuE47AIaGKmgwHrFuaWl8-2r8Su0Y"; 
-
-        let supabaseClient = null;
-        let currentUser = null;
-        let currentProfile = null;
-        let mapInstance = null;
-        let locationWatcherId = null;
-        let isLocationActive = false;
-        let aiHistory = [];
-
-        window.addEventListener('DOMContentLoaded', () => {
-            try {
-                initializeSupabase();
-                initializeAuthCheck();
-            } catch (err) {
-                console.error("Initialization error:", err);
-                toast("Error initializing application.", "error");
-            }
         });
 
-        function initializeSupabase() {
-            if (window.supabase && typeof window.supabase.createClient === 'function') {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            } else {
-                console.error("Supabase script failed to load.");
+      if(result.error)
+        throw result.error;
+
+      if(!result.data.session){
+
+        errorBox.style.color =
+          "var(--green)";
+
+        errorBox.textContent =
+          "Account created. Check your email if confirmation is enabled.";
+
+        return;
+      }
+
+      currentUser =
+        result.data.user;
+
+      await ensureProfile(
+        name,
+        username
+      );
+
+      await enterApp();
+
+    }else{
+
+      const result =
+        await supabaseClient.auth.signInWithPassword({
+
+          email,
+          password
+
+        });
+
+      if(result.error)
+        throw result.error;
+
+      currentUser =
+        result.data.user;
+
+      await enterApp();
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    errorBox.textContent =
+      error.message ||
+      "Authentication failed.";
+  }
+}
+
+
+async function ensureProfile(
+  name,
+  username
+){
+
+  if(!currentUser)
+    return;
+
+  const {data,error} =
+    await supabaseClient
+      .from("profiles")
+      .upsert(
+        {
+          id:currentUser.id,
+          display_name:name,
+          username:username
+        },
+        {
+          onConflict:"id"
+        }
+      )
+      .select()
+      .single();
+
+  if(error)
+    throw error;
+
+  currentProfile =
+    data;
+}
+
+
+async function loadProfile(){
+
+  if(!currentUser)
+    return null;
+
+  const {data,error} =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id",currentUser.id)
+      .maybeSingle();
+
+  if(error)
+    throw error;
+
+  if(!data){
+
+    const name =
+      currentUser
+        .user_metadata
+        ?.display_name ||
+      currentUser.email
+        ?.split("@")[0] ||
+      "Track Circle User";
+
+    const username =
+      currentUser
+        .user_metadata
+        ?.username ||
+      (
+        currentUser.email
+          ?.split("@")[0] ||
+        "user"
+      )
+        .replace(/[^a-zA-Z0-9_]/g,"")
+        .toLowerCase();
+
+    await ensureProfile(
+      name,
+      username
+    );
+
+    return currentProfile;
+  }
+
+  currentProfile =
+    data;
+
+  return data;
+}
+
+
+async function enterApp(){
+
+  document
+    .getElementById("authScreen")
+    .classList.add("hidden");
+
+  document
+    .getElementById("mainApp")
+    .classList.remove("hidden");
+
+  await loadProfile();
+
+  await refreshApp();
+
+  subscribeToRealtime();
+}
+
+
+async function signOut(){
+
+  await stopLocation();
+
+  await endCall();
+
+  await supabaseClient.auth.signOut();
+
+  currentUser = null;
+  currentProfile = null;
+
+  document
+    .getElementById("mainApp")
+    .classList.add("hidden");
+
+  document
+    .getElementById("authScreen")
+    .classList.remove("hidden");
+
+  setAuthMode("login");
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+function go(page){
+
+  document
+    .querySelectorAll(".page")
+    .forEach(
+      element =>
+        element.classList.remove("active")
+    );
+
+  const target =
+    document.getElementById(
+      "page-" + page
+    );
+
+  if(target)
+    target.classList.add("active");
+
+  document
+    .querySelectorAll(".navBtn")
+    .forEach(button=>{
+
+      button.classList.toggle(
+        "active",
+        button.dataset.page === page
+      );
+
+    });
+
+  if(page === "media")
+    loadFeed();
+
+  if(page === "circles")
+    loadCircles();
+
+  if(page === "messages")
+    loadConversations();
+
+  if(page === "profile")
+    loadProfilePage();
+}
+
+
+/* =========================================================
+   HOME
+   ========================================================= */
+
+async function loadHome(){
+
+  if(!currentProfile)
+    return;
+
+  const name =
+    currentProfile.display_name ||
+    "there";
+
+  const hour =
+    new Date().getHours();
+
+  let greeting =
+    "Good evening";
+
+  if(hour < 12)
+    greeting = "Good morning";
+
+  else if(hour < 18)
+    greeting = "Good afternoon";
+
+  document
+    .getElementById("homeGreeting")
+    .textContent =
+      greeting + ", " + name.split(" ")[0] + ".";
+
+  const followerResult =
+    await supabaseClient
+      .from("follows")
+      .select("follower_id",{
+        count:"exact",
+        head:true
+      })
+      .eq(
+        "following_id",
+        currentUser.id
+      );
+
+  const followingResult =
+    await supabaseClient
+      .from("follows")
+      .select("following_id",{
+        count:"exact",
+        head:true
+      })
+      .eq(
+        "follower_id",
+        currentUser.id
+      );
+
+  const circlesResult =
+    await supabaseClient
+      .from("circle_members")
+      .select("circle_id",{
+        count:"exact",
+        head:true
+      })
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+  document
+    .getElementById("homeFollowers")
+    .textContent =
+      followerResult.count || 0;
+
+  document
+    .getElementById("homeFollowing")
+    .textContent =
+      followingResult.count || 0;
+
+  document
+    .getElementById("homeCircles")
+    .textContent =
+      circlesResult.count || 0;
+}
+
+
+/* =========================================================
+   TRACK CIRCLE AI
+   ========================================================= */
+
+async function sendAI(){
+
+  const input =
+    document.getElementById("aiInput");
+
+  const box =
+    document.getElementById("aiMessages");
+
+  const text =
+    input.value.trim();
+
+  if(!text)
+    return;
+
+  box.innerHTML +=
+    `<div class="aiMsg user">${escapeHtml(text)}</div>`;
+
+  input.value = "";
+
+  box.scrollTop =
+    box.scrollHeight;
+
+  const loading =
+    document.createElement("div");
+
+  loading.className =
+    "aiMsg";
+
+  loading.textContent =
+    "Track Circle AI is thinking...";
+
+  box.appendChild(loading);
+
+  try{
+
+    /*
+      THIS CALLS YOUR REAL SUPABASE EDGE FUNCTION.
+
+      Function name:
+      track-circle-a
+
+      It is NOT a local fake AI response.
+    */
+
+    const result =
+      await supabaseClient.functions.invoke(
+        "track-circle-a",
+        {
+          body:{
+            message:text,
+            history:[]
+          }
+        }
+      );
+
+    if(result.error)
+      throw result.error;
+
+    const data =
+      result.data;
+
+    loading.textContent =
+      data?.reply ||
+      data?.response ||
+      data?.message ||
+      (
+        typeof data === "string"
+          ? data
+          : "The AI returned no text."
+      );
+
+  }catch(error){
+
+    console.error(
+      "Track Circle AI:",
+      error
+    );
+
+    loading.textContent =
+      "I couldn't reach Track Circle AI right now. Check the Edge Function deployment and try again.";
+  }
+
+  box.scrollTop =
+    box.scrollHeight;
+}
+
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+
+function toggleLocation(){
+
+  if(locationEnabled)
+    stopLocation();
+
+  else
+    startLocation();
+}
+
+
+function startLocation(){
+
+  if(!navigator.geolocation){
+
+    toast(
+      "This device does not support GPS location."
+    );
+
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+
+    async position=>{
+
+      locationEnabled = true;
+
+      updateLocationUI();
+
+      await saveLocation(
+        position.coords.latitude,
+        position.coords.longitude
+      );
+
+      locationWatcher =
+        navigator.geolocation.watchPosition(
+
+          position=>{
+
+            saveLocation(
+              position.coords.latitude,
+              position.coords.longitude
+            );
+
+          },
+
+          error=>{
+
+            console.warn(
+              "GPS watcher:",
+              error
+            );
+
+          },
+
+          {
+            enableHighAccuracy:true,
+            maximumAge:10000,
+            timeout:20000
+          }
+        );
+
+      toast(
+        "Location sharing is ON."
+      );
+    },
+
+    error=>{
+
+      console.warn(error);
+
+      toast(
+        "Location permission was not granted."
+      );
+    },
+
+    {
+      enableHighAccuracy:true,
+      maximumAge:0,
+      timeout:20000
+    }
+  );
+}
+
+
+async function stopLocation(){
+
+  if(locationWatcher !== null){
+
+    navigator.geolocation.clearWatch(
+      locationWatcher
+    );
+
+    locationWatcher = null;
+  }
+
+  locationEnabled = false;
+
+  if(currentUser){
+
+    await supabaseClient
+      .from("locations")
+      .upsert(
+        {
+          user_id:currentUser.id,
+          sharing_enabled:false,
+          updated_at:new Date().toISOString()
+        },
+        {
+          onConflict:"user_id"
+        }
+      );
+  }
+
+  updateLocationUI();
+}
+
+
+async function saveLocation(
+  latitude,
+  longitude
+){
+
+  if(!currentUser)
+    return;
+
+  const {error} =
+    await supabaseClient
+      .from("locations")
+      .upsert(
+        {
+          user_id:currentUser.id,
+          latitude,
+          longitude,
+          sharing_enabled:true,
+          updated_at:new Date().toISOString()
+        },
+        {
+          onConflict:"user_id"
+        }
+      );
+
+  if(error)
+    console.warn(
+      "Location save:",
+      error
+    );
+}
+
+
+function updateLocationUI(){
+
+  const status =
+    document.getElementById(
+      "locationStatus"
+    );
+
+  const button =
+    document.getElementById(
+      "locationButton"
+    );
+
+  const mapText =
+    document.getElementById(
+      "mapLocationText"
+    );
+
+  if(locationEnabled){
+
+    status.textContent =
+      "Location sharing is ON";
+
+    button.textContent =
+      "ON";
+
+    mapText.textContent =
+      "ON — GPS data is being stored.";
+
+  }else{
+
+    status.textContent =
+      "Location sharing is off";
+
+    button.textContent =
+      "OFF";
+
+    mapText.textContent =
+      "Off";
+  }
+}
+
+
+/* =========================================================
+   POSTS
+   ========================================================= */
+
+async function preparePostMedia(input){
+
+  const file =
+    input.files?.[0];
+
+  if(!file)
+    return;
+
+  selectedPostMedia =
+    file;
+
+  document
+    .getElementById("selectedMedia")
+    .textContent =
+      file.name +
+      " selected. Publishing media requires the Track Media storage bucket.";
+}
+
+
+async function createPost(){
+
+  if(!currentUser){
+
+    toast("Sign in first.");
+
+    return;
+  }
+
+  const caption =
+    document
+      .getElementById("postCaption")
+      .value
+      .trim();
+
+  if(!caption && !selectedPostMedia){
+
+    toast(
+      "Write something or select media."
+    );
+
+    return;
+  }
+
+  let mediaUrl = null;
+  let mediaType = null;
+
+  /*
+    If media was selected, upload it to the
+    existing Supabase storage bucket named
+    "track-media".
+
+    If that bucket has not been created,
+    the application reports the real error
+    rather than pretending the media uploaded.
+  */
+
+  if(selectedPostMedia){
+
+    const extension =
+      selectedPostMedia.name
+        .split(".")
+        .pop()
+        .toLowerCase();
+
+    const path =
+      currentUser.id +
+      "/" +
+      crypto.randomUUID() +
+      "." +
+      extension;
+
+    const upload =
+      await supabaseClient.storage
+        .from("track-media")
+        .upload(
+          path,
+          selectedPostMedia,
+          {
+            upsert:false,
+            contentType:selectedPostMedia.type
+          }
+        );
+
+    if(upload.error){
+
+      toast(
+        upload.error.message
+      );
+
+      return;
+    }
+
+    const publicUrl =
+      supabaseClient.storage
+        .from("track-media")
+        .getPublicUrl(path);
+
+    mediaUrl =
+      publicUrl.data.publicUrl;
+
+    mediaType =
+      selectedPostMedia.type.startsWith("video/")
+        ? "video"
+        : "image";
+  }
+
+  const {error} =
+    await supabaseClient
+      .from("posts")
+      .insert(
+        {
+          user_id:currentUser.id,
+          caption:caption || null,
+          media_url:mediaUrl,
+          media_type:mediaType
+        }
+      );
+
+  if(error){
+
+    toast(
+      error.message
+    );
+
+    return;
+  }
+
+  document
+    .getElementById("postCaption")
+    .value = "";
+
+  selectedPostMedia = null;
+
+  document
+    .getElementById("selectedMedia")
+    .textContent = "";
+
+  document
+    .getElementById("postImageInput")
+    .value = "";
+
+  document
+    .getElementById("postVideoInput")
+    .value = "";
+
+  toast(
+    "Post published."
+  );
+
+  await loadFeed();
+}
+
+
+async function loadFeed(){
+
+  const feed =
+    document.getElementById(
+      "feedList"
+    );
+
+  if(!feed)
+    return;
+
+  feed.innerHTML =
+    `<div class="card">Loading Track Media...</div>`;
+
+  const {data,error} =
+    await supabaseClient
+      .from("posts")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      )
+      .limit(50);
+
+  if(error){
+
+    feed.innerHTML =
+      `<div class="card">${escapeHtml(error.message)}</div>`;
+
+    return;
+  }
+
+  if(!data?.length){
+
+    feed.innerHTML =
+      `<div class="card empty">
+        No posts yet. Create the first one.
+      </div>`;
+
+    return;
+  }
+
+  const userIds =
+    [...new Set(
+      data.map(post=>post.user_id)
+    )];
+
+  const {data:profiles} =
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "id,display_name,username,avatar_url"
+      )
+      .in(
+        "id",
+        userIds
+      );
+
+  const profileMap =
+    Object.fromEntries(
+      (profiles || [])
+        .map(profile=>[
+          profile.id,
+          profile
+        ])
+    );
+
+  const postIds =
+    data.map(
+      post=>post.id
+    );
+
+  const {data:likes} =
+    await supabaseClient
+      .from("post_likes")
+      .select(
+        "post_id,user_id"
+      )
+      .in(
+        "post_id",
+        postIds
+      );
+
+  const likeMap = {};
+
+  (likes || []).forEach(
+    like=>{
+
+      if(!likeMap[like.post_id])
+        likeMap[like.post_id] = {
+          count:0,
+          mine:false
+        };
+
+      likeMap[like.post_id].count++;
+
+      if(
+        like.user_id ===
+        currentUser.id
+      ){
+
+        likeMap[like.post_id].mine =
+          true;
+      }
+    }
+  );
+
+  feed.innerHTML =
+    data.map(post=>{
+
+      const profile =
+        profileMap[post.user_id] ||
+        {};
+
+      const stats =
+        likeMap[post.id] ||
+        {
+          count:0,
+          mine:false
+        };
+
+      const avatar =
+        profile.avatar_url
+          ? `<img src="${escapeAttr(profile.avatar_url)}">`
+          : escapeHtml(
+              (
+                profile.display_name ||
+                "T"
+              )
+                .charAt(0)
+                .toUpperCase()
+            );
+
+      let media = "";
+
+      if(
+        post.media_url &&
+        post.media_type === "video"
+      ){
+
+        media =
+          `<video
+             class="postMedia"
+             controls
+             playsinline
+             src="${escapeAttr(post.media_url)}">
+           </video>`;
+
+      }else if(post.media_url){
+
+        media =
+          `<img
+             class="postMedia"
+             src="${escapeAttr(post.media_url)}"
+             alt="Track Media post">`;
+      }
+
+      return `
+        <article class="card post">
+
+          <div class="postHeader">
+
+            <div class="avatar">
+              ${avatar}
+            </div>
+
+            <div>
+
+              <div class="userName">
+                ${escapeHtml(
+                  profile.display_name ||
+                  "Track Circle User"
+                )}
+              </div>
+
+              <div class="username">
+                @${escapeHtml(
+                  profile.username ||
+                  "user"
+                )}
+                ·
+                ${escapeHtml(
+                  formatDate(
+                    post.created_at
+                  )
+                )}
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="postBody">
+
+            ${
+              post.caption
+                ? `<div class="postCaption">
+                    ${escapeHtml(post.caption)}
+                   </div>`
+                : ""
             }
-        }
 
-        async function initializeAuthCheck() {
-            if (!supabaseClient) {
-                showSplash();
-                return;
-            }
-            try {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                if (error || !session) {
-                    showSplash();
-                } else {
-                    currentUser = session.user;
-                    await loadUserProfile();
-                    showMainApp();
-                }
-            } catch (err) {
-                console.error("Auth check failed:", err);
-                showSplash();
-            }
-        }
+            ${media}
 
-        function showSplash() {
-            document.getElementById('splash-screen').classList.remove('hidden');
-            document.getElementById('auth-wrapper').classList.add('hidden');
-            document.getElementById('app-shell').classList.add('hidden');
-        }
+          </div>
 
-        function showAuthMode(mode) {
-            document.getElementById('splash-screen').classList.add('hidden');
-            document.getElementById('auth-wrapper').classList.remove('hidden');
-            document.getElementById('app-shell').classList.add('hidden');
-            switchAuthForm(mode);
-        }
+          <div class="postActions">
 
-        function backToSplash() { showSplash(); }
+            <button
+              class="action ${stats.mine ? "liked":""}"
+              onclick="toggleLike('${escapeAttr(post.id)}')">
 
-        function switchAuthForm(formType) {
-            const loginForm = document.getElementById('login-form');
-            const signupForm = document.getElementById('signup-form');
-            const titleEl = document.getElementById('auth-title');
+              ${stats.mine ? "♥" : "♡"}
+              ${stats.count}
 
-            if (formType === 'signup') {
-                loginForm.classList.add('hidden');
-                signupForm.classList.remove('hidden');
-                titleEl.textContent = "Create Account";
-            } else {
-                signupForm.classList.add('hidden');
-                loginForm.classList.remove('hidden');
-                titleEl.textContent = "Welcome Back";
-            }
-        }
+            </button>
 
-        function showMainApp() {
-            document.getElementById('splash-screen').classList.add('hidden');
-            document.getElementById('auth-wrapper').classList.add('hidden');
-            document.getElementById('app-shell').classList.remove('hidden');
-            updateGreeting();
-            loadHomeData();
-        }
+            <button
+              class="action"
+              onclick="toggleComments('${escapeAttr(post.id)}')">
 
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
+              ◯ Comments
 
-            try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-                currentUser = data.user;
-                await loadUserProfile();
-                showMainApp();
-                toast("Successfully signed in!", "success");
-            } catch (err) {
-                toast(err.message || "Login failed", "error");
-            }
-        }
+            </button>
 
-        async function handleSignup(e) {
-            e.preventDefault();
-            const displayName = document.getElementById('signup-display-name').value.trim();
-            const username = document.getElementById('signup-username').value.trim().toLowerCase().replace(/^@/, '');
-            const email = document.getElementById('signup-email').value.trim();
-            const password = document.getElementById('signup-password').value;
-
-            try {
-                const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) throw error;
-                currentUser = data.user;
-
-                if (currentUser) {
-                    await supabaseClient.from('profiles').upsert({
-                        id: currentUser.id,
-                        display_name: displayName,
-                        username: username,
-                        created_at: new Date().toISOString()
-                    });
-                }
-                await loadUserProfile();
-                showMainApp();
-                toast("Account created successfully!", "success");
-            } catch (err) {
-                toast(err.message || "Signup failed", "error");
-            }
-        }
-
-        async function signOut() {
-            if (supabaseClient) await supabaseClient.auth.signOut();
-            currentUser = null;
-            currentProfile = null;
-            if (locationWatcherId !== null) {
-                navigator.geolocation.clearWatch(locationWatcherId);
-                locationWatcherId = null;
-            }
-            showSplash();
-            toast("Signed out successfully", "success");
-        }
-
-        async function loadUserProfile() {
-            if (!currentUser) return;
-            try {
-                const { data } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
-                if (data) {
-                    currentProfile = data;
-                    const name = currentProfile.display_name || currentProfile.username || "User";
-                    document.getElementById('header-username').textContent = name;
-                    document.getElementById('profile-display-name').textContent = name;
-                    document.getElementById('profile-username').textContent = `@${currentProfile.username || 'user'}`;
-                    const initials = name.substring(0, 2).toUpperCase();
-                    document.getElementById('header-avatar').textContent = initials;
-                    document.getElementById('profile-avatar-display').textContent = initials;
-                }
-            } catch (err) {
-                const fallbackName = currentUser.email.split('@')[0];
-                document.getElementById('header-username').textContent = fallbackName;
-                document.getElementById('profile-display-name').textContent = fallbackName;
-            }
-        }
-
-        function updateGreeting() {
-            const hour = new Date().getHours();
-            let greeting = "Good evening";
-            if (hour < 12) greeting = "Good morning";
-            else if (hour < 18) greeting = "Good afternoon";
-
-            document.getElementById('home-greeting').textContent = greeting;
-            const displayName = currentProfile?.display_name || currentUser?.email?.split('@')[0] || "User";
-            document.getElementById('home-display-name').textContent = `Welcome back, ${displayName}.`;
-        }
-
-        async function loadHomeData() {
-            loadCirclesPreview();
-            loadTrackFeed();
-        }
-
-        // 6 TABS SWITCHING
-        function switchTab(tabName) {
-            const tabs = ['home', 'map', 'track', 'circles', 'messages', 'profile'];
-            tabs.forEach(t => {
-                const sec = document.getElementById(`view-${t}`);
-                const btn = document.getElementById(`nav-btn-${t}`);
-                if (sec) sec.classList.add('hidden');
-                if (btn) {
-                    btn.classList.remove('text-mint');
-                    btn.classList.add('text-textSecondary');
-                }
-            });
-
-            const activeSec = document.getElementById(`view-${tabName}`);
-            const activeBtn = document.getElementById(`nav-btn-${tabName}`);
-            if (activeSec) activeSec.classList.remove('hidden');
-            if (activeBtn) {
-                activeBtn.classList.remove('text-textSecondary');
-                activeBtn.classList.add('text-mint');
+            ${
+              post.user_id !== currentUser.id
+                ? `
+                  <button
+                    class="action"
+                    onclick="toggleFollow('${escapeAttr(post.user_id)}')">
+                    Follow
+                  </button>
+                `
+                : ""
             }
 
-            if (tabName === 'map') {
-                setTimeout(() => initMap(), 200);
-            } else if (tabName === 'track') {
-                loadTrackFeed();
-            } else if (tabName === 'circles') {
-                loadFullCircles();
+          </div>
+
+          <div
+            id="comments-${escapeAttr(post.id)}"
+            class="comments hidden">
+          </div>
+
+        </article>
+      `;
+
+    }).join("");
+}
+
+
+/* =========================================================
+   LIKES
+   ========================================================= */
+
+async function toggleLike(postId){
+
+  const existing =
+    await supabaseClient
+      .from("post_likes")
+      .select("id")
+      .eq(
+        "post_id",
+        postId
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .maybeSingle();
+
+  if(existing.error){
+
+    toast(
+      existing.error.message
+    );
+
+    return;
+  }
+
+  if(existing.data){
+
+    const {error} =
+      await supabaseClient
+        .from("post_likes")
+        .delete()
+        .eq(
+          "id",
+          existing.data.id
+        );
+
+    if(error)
+      toast(error.message);
+
+  }else{
+
+    const {error} =
+      await supabaseClient
+        .from("post_likes")
+        .insert(
+          {
+            post_id:postId,
+            user_id:currentUser.id
+          }
+        );
+
+    if(error)
+      toast(error.message);
+  }
+
+  await loadFeed();
+}
+
+
+/* =========================================================
+   COMMENTS
+   ========================================================= */
+
+async function toggleComments(postId){
+
+  const box =
+    document.getElementById(
+      "comments-" + postId
+    );
+
+  if(!box)
+    return;
+
+  box.classList.toggle("hidden");
+
+  if(box.classList.contains("hidden"))
+    return;
+
+  await loadComments(postId);
+}
+
+
+async function loadComments(postId){
+
+  const box =
+    document.getElementById(
+      "comments-" + postId
+    );
+
+  const {data,error} =
+    await supabaseClient
+      .from("comments")
+      .select(
+        "id,user_id,text,created_at"
+      )
+      .eq(
+        "post_id",
+        postId
+      )
+      .order(
+        "created_at",
+        {
+          ascending:true
+        }
+      );
+
+  if(error){
+
+    box.innerHTML =
+      `<div class="muted">${escapeHtml(error.message)}</div>`;
+
+    return;
+  }
+
+  const userIds =
+    [...new Set(
+      (data || [])
+        .map(comment=>comment.user_id)
+    )];
+
+  let profiles = [];
+
+  if(userIds.length){
+
+    const result =
+      await supabaseClient
+        .from("profiles")
+        .select(
+          "id,display_name,username"
+        )
+        .in(
+          "id",
+          userIds
+        );
+
+    profiles =
+      result.data || [];
+  }
+
+  const profileMap =
+    Object.fromEntries(
+      profiles.map(
+        profile=>[
+          profile.id,
+          profile
+        ]
+      )
+    );
+
+  box.innerHTML =
+    (data || [])
+      .map(comment=>{
+
+        const profile =
+          profileMap[comment.user_id] ||
+          {};
+
+        return `
+          <div class="comment">
+            <b>
+              ${escapeHtml(
+                profile.display_name ||
+                "User"
+              )}
+            </b>
+            <span class="muted">
+              @${escapeHtml(
+                profile.username ||
+                "user"
+              )}
+            </span>
+            <br>
+            ${escapeHtml(
+              comment.text
+            )}
+          </div>
+        `;
+
+      })
+      .join("") +
+
+      `
+      <div class="commentBox">
+
+        <input
+          id="commentInput-${escapeAttr(postId)}"
+          class="input"
+          placeholder="Write a comment...">
+
+        <button
+          class="send"
+          onclick="addComment('${escapeAttr(postId)}')">
+          ➤
+        </button>
+
+      </div>
+      `;
+}
+
+
+async function addComment(postId){
+
+  const input =
+    document.getElementById(
+      "commentInput-" + postId
+    );
+
+  const text =
+    input?.value.trim();
+
+  if(!text)
+    return;
+
+  const {error} =
+    await supabaseClient
+      .from("comments")
+      .insert(
+        {
+          post_id:postId,
+          user_id:currentUser.id,
+          text:text
+        }
+      );
+
+  if(error){
+
+    toast(
+      error.message
+    );
+
+    return;
+  }
+
+  await loadComments(postId);
+}
+
+
+/* =========================================================
+   FOLLOWERS
+   ========================================================= */
+
+async function toggleFollow(userId){
+
+  const existing =
+    await supabaseClient
+      .from("follows")
+      .select("id")
+      .eq(
+        "follower_id",
+        currentUser.id
+      )
+      .eq(
+        "following_id",
+        userId
+      )
+      .maybeSingle();
+
+  if(existing.error){
+
+    toast(
+      existing.error.message
+    );
+
+    return;
+  }
+
+  if(existing.data){
+
+    const {error} =
+      await supabaseClient
+        .from("follows")
+        .delete()
+        .eq(
+          "id",
+          existing.data.id
+        );
+
+    if(error)
+      toast(error.message);
+
+  }else{
+
+    const {error} =
+      await supabaseClient
+        .from("follows")
+        .insert(
+          {
+            follower_id:currentUser.id,
+            following_id:userId
+          }
+        );
+
+    if(error)
+      toast(error.message);
+  }
+
+  await loadFeed();
+  await loadHome();
+}
+
+
+/* =========================================================
+   CIRCLES
+   ========================================================= */
+
+async function createCircle(){
+
+  const name =
+    document
+      .getElementById("circleName")
+      .value
+      .trim();
+
+  const type =
+    document
+      .getElementById("circleType")
+      .value;
+
+  if(!name){
+
+    toast(
+      "Enter a circle name."
+    );
+
+    return;
+  }
+
+  const inviteCode =
+    "TC-" +
+    Math.random()
+      .toString(36)
+      .substring(2,8)
+      .toUpperCase();
+
+  const result =
+    await supabaseClient
+      .from("circles")
+      .insert(
+        {
+          name,
+          type,
+          invite_code:inviteCode,
+          owner_id:currentUser.id
+        }
+      )
+      .select()
+      .single();
+
+  if(result.error){
+
+    toast(
+      result.error.message
+    );
+
+    return;
+  }
+
+  const member =
+    await supabaseClient
+      .from("circle_members")
+      .insert(
+        {
+          circle_id:result.data.id,
+          user_id:currentUser.id,
+          role:"owner"
+        }
+      );
+
+  if(member.error){
+
+    toast(
+      member.error.message
+    );
+
+    return;
+  }
+
+  closeModal("circleModal");
+
+  document
+    .getElementById("circleName")
+    .value = "";
+
+  toast(
+    "Circle created. Invite code: " +
+    inviteCode
+  );
+
+  await loadCircles();
+}
+
+
+async function joinCircle(){
+
+  const input =
+    document.getElementById(
+      "joinCode"
+    );
+
+  const code =
+    input.value
+      .trim()
+      .toUpperCase();
+
+  if(!code)
+    return;
+
+  const result =
+    await supabaseClient
+      .from("circles")
+      .select(
+        "id,name"
+      )
+      .eq(
+        "invite_code",
+        code
+      )
+      .maybeSingle();
+
+  if(result.error){
+
+    toast(
+      result.error.message
+    );
+
+    return;
+  }
+
+  if(!result.data){
+
+    toast(
+      "Circle not found."
+    );
+
+    return;
+  }
+
+  const member =
+    await supabaseClient
+      .from("circle_members")
+      .upsert(
+        {
+          circle_id:result.data.id,
+          user_id:currentUser.id,
+          role:"member"
+        },
+        {
+          onConflict:
+            "circle_id,user_id"
+        }
+      );
+
+  if(member.error){
+
+    toast(
+      member.error.message
+    );
+
+    return;
+  }
+
+  input.value = "";
+
+  toast(
+    "Joined " +
+    result.data.name
+  );
+
+  await loadCircles();
+}
+
+
+async function loadCircles(){
+
+  const list =
+    document.getElementById(
+      "circleList"
+    );
+
+  const result =
+    await supabaseClient
+      .from("circle_members")
+      .select(
+        "circle_id,role,circles(id,name,type,invite_code,owner_id,created_at)"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+  if(result.error){
+
+    list.innerHTML =
+      `<div class="card">${escapeHtml(result.error.message)}</div>`;
+
+    return;
+  }
+
+  if(!result.data?.length){
+
+    list.innerHTML =
+      `<div class="card empty">
+        You haven't joined any circles yet.
+      </div>`;
+
+    return;
+  }
+
+  list.innerHTML =
+    result.data
+      .map(item=>{
+
+        const circle =
+          item.circles;
+
+        return `
+          <div class="card circle">
+
+            <div class="circleIcon">
+              ◎
+            </div>
+
+            <div class="circleInfo">
+
+              <b>
+                ${escapeHtml(circle.name)}
+              </b>
+
+              <div class="muted small">
+                ${escapeHtml(circle.type)}
+                ·
+                ${escapeHtml(item.role)}
+              </div>
+
+              <div class="muted small">
+                Invite: ${escapeHtml(circle.invite_code)}
+              </div>
+
+            </div>
+
+          </div>
+        `;
+
+      })
+      .join("");
+}
+
+
+/* =========================================================
+   MESSAGING
+   ========================================================= */
+
+async function searchMessageUsers(){
+
+  const input =
+    document.getElementById(
+      "messageUserSearch"
+    );
+
+  const box =
+    document.getElementById(
+      "messageUserResults"
+    );
+
+  const query =
+    input.value
+      .trim()
+      .replace(/^@/,"")
+      .toLowerCase();
+
+  if(query.length < 2){
+
+    box.innerHTML = "";
+
+    return;
+  }
+
+  const result =
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "id,display_name,username,avatar_url"
+      )
+      .ilike(
+        "username",
+        "%" + query + "%"
+      )
+      .neq(
+        "id",
+        currentUser.id
+      )
+      .limit(20);
+
+  if(result.error){
+
+    box.innerHTML =
+      `<div class="error">${escapeHtml(result.error.message)}</div>`;
+
+    return;
+  }
+
+  box.innerHTML =
+    (result.data || [])
+      .map(profile=>`
+
+        <div class="userRow">
+
+          <div class="avatar">
+            ${
+              profile.avatar_url
+                ? `<img src="${escapeAttr(profile.avatar_url)}">`
+                : escapeHtml(
+                    profile.display_name
+                      ?.charAt(0)
+                      .toUpperCase() ||
+                    "U"
+                  )
             }
-        }
+          </div>
 
-        // LIVE MAP
-        function initMap() {
-            if (!mapInstance) {
-                mapInstance = L.map('map', { zoomControl: false }).setView([6.5244, 3.3792], 13);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; OpenStreetMap & CARTO'
-                }).addTo(mapInstance);
+          <div class="userInfo">
+
+            <div class="userName">
+              ${escapeHtml(
+                profile.display_name
+              )}
+            </div>
+
+            <div class="username">
+              @${escapeHtml(
+                profile.username
+              )}
+            </div>
+
+          </div>
+
+          <button
+            class="secondary"
+            onclick="openDirectConversation('${escapeAttr(profile.id)}')">
+            Message
+          </button>
+
+        </div>
+
+      `)
+      .join("");
+}
+
+
+async function getOrCreateConversation(
+  otherUserId
+){
+
+  const mine =
+    await supabaseClient
+      .from("conversation_members")
+      .select(
+        "conversation_id"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+  if(mine.error)
+    throw mine.error;
+
+  const myConversationIds =
+    (mine.data || [])
+      .map(row=>row.conversation_id);
+
+  if(myConversationIds.length){
+
+    const theirs =
+      await supabaseClient
+        .from("conversation_members")
+        .select(
+          "conversation_id"
+        )
+        .eq(
+          "user_id",
+          otherUserId
+        )
+        .in(
+          "conversation_id",
+          myConversationIds
+        );
+
+    if(theirs.error)
+      throw theirs.error;
+
+    if(theirs.data?.length){
+
+      return theirs.data[0].conversation_id;
+    }
+  }
+
+  const conversation =
+    await supabaseClient
+      .from("conversations")
+      .insert(
+        {
+          type:"direct",
+          created_by:currentUser.id
+        }
+      )
+      .select()
+      .single();
+
+  if(conversation.error)
+    throw conversation.error;
+
+  const members =
+    await supabaseClient
+      .from("conversation_members")
+      .insert(
+        [
+          {
+            conversation_id:
+              conversation.data.id,
+            user_id:
+              currentUser.id,
+            role:"member"
+          },
+          {
+            conversation_id:
+              conversation.data.id,
+            user_id:
+              otherUserId,
+            role:"member"
+          }
+        ]
+      );
+
+  if(members.error)
+    throw members.error;
+
+  return conversation.data.id;
+}
+
+
+async function openDirectConversation(
+  userId
+){
+
+  try{
+
+    const conversationId =
+      await getOrCreateConversation(
+        userId
+      );
+
+    const profile =
+      await supabaseClient
+        .from("profiles")
+        .select(
+          "display_name,username,avatar_url"
+        )
+        .eq(
+          "id",
+          userId
+        )
+        .single();
+
+    if(profile.error)
+      throw profile.error;
+
+    currentConversation = {
+      id:conversationId,
+      otherUserId:userId,
+      otherProfile:profile.data
+    };
+
+    document
+      .getElementById("conversationPanel")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("conversationTitle")
+      .textContent =
+        profile.data.display_name;
+
+    document
+      .getElementById("conversationSubtitle")
+      .textContent =
+        "@" + profile.data.username;
+
+    await loadMessages();
+
+    subscribeConversation();
+
+    document
+      .getElementById("messageUserSearch")
+      .value = "";
+
+    document
+      .getElementById("messageUserResults")
+      .innerHTML = "";
+
+  }catch(error){
+
+    toast(
+      error.message ||
+      "Could not open conversation."
+    );
+  }
+}
+
+
+async function loadConversations(){
+
+  const list =
+    document.getElementById(
+      "conversationList"
+    );
+
+  const memberships =
+    await supabaseClient
+      .from("conversation_members")
+      .select(
+        "conversation_id"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+  if(memberships.error){
+
+    list.innerHTML =
+      `<div class="card">${escapeHtml(memberships.error.message)}</div>`;
+
+    return;
+  }
+
+  if(!memberships.data?.length){
+
+    list.innerHTML =
+      `<div class="card empty">
+        No conversations yet.
+      </div>`;
+
+    return;
+  }
+
+  const ids =
+    memberships.data
+      .map(
+        row=>row.conversation_id
+      );
+
+  const conversations =
+    await supabaseClient
+      .from("conversations")
+      .select("*")
+      .in(
+        "id",
+        ids
+      )
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
+
+  if(conversations.error){
+
+    list.innerHTML =
+      `<div class="card">${escapeHtml(conversations.error.message)}</div>`;
+
+    return;
+  }
+
+  list.innerHTML =
+    conversations.data
+      .map(conversation=>`
+
+        <div class="card">
+
+          <div class="row between">
+
+            <div>
+              <b>
+                ${escapeHtml(
+                  conversation.name ||
+                  "Direct conversation"
+                )}
+              </b>
+
+              <div class="muted small">
+                ${escapeHtml(
+                  conversation.type
+                )}
+              </div>
+            </div>
+
+            <button
+              class="secondary"
+              onclick="openConversationById('${escapeAttr(conversation.id)}')">
+              Open
+            </button>
+
+          </div>
+
+        </div>
+
+      `)
+      .join("");
+}
+
+
+async function openConversationById(
+  conversationId
+){
+
+  const members =
+    await supabaseClient
+      .from("conversation_members")
+      .select(
+        "user_id"
+      )
+      .eq(
+        "conversation_id",
+        conversationId
+      );
+
+  if(members.error)
+    return;
+
+  const other =
+    members.data.find(
+      row =>
+        row.user_id !==
+        currentUser.id
+    );
+
+  if(!other){
+
+    toast(
+      "This conversation has no other member."
+    );
+
+    return;
+  }
+
+  await openDirectConversation(
+    other.user_id
+  );
+}
+
+
+async function loadMessages(){
+
+  if(!currentConversation)
+    return;
+
+  const box =
+    document.getElementById(
+      "messageList"
+    );
+
+  const result =
+    await supabaseClient
+      .from("conversation_messages")
+      .select("*")
+      .eq(
+        "conversation_id",
+        currentConversation.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending:true
+        }
+      );
+
+  if(result.error){
+
+    box.innerHTML =
+      `<div class="error">${escapeHtml(result.error.message)}</div>`;
+
+    return;
+  }
+
+  box.innerHTML =
+    (result.data || [])
+      .map(message=>`
+
+        <div class="message ${
+          message.sender_id ===
+          currentUser.id
+            ? "mine"
+            : ""
+        }">
+
+          ${
+            message.is_deleted
+              ? "Message deleted"
+              : escapeHtml(
+                  message.content || ""
+                )
+          }
+
+          <div class="messageMeta">
+            ${escapeHtml(
+              formatDate(
+                message.created_at
+              )
+            )}
+          </div>
+
+        </div>
+
+      `)
+      .join("");
+
+  box.scrollTop =
+    box.scrollHeight;
+}
+
+
+async function sendMessage(){
+
+  if(!currentConversation)
+    return;
+
+  const input =
+    document.getElementById(
+      "messageInput"
+    );
+
+  const content =
+    input.value.trim();
+
+  if(!content)
+    return;
+
+  const result =
+    await supabaseClient
+      .from("conversation_messages")
+      .insert(
+        {
+          conversation_id:
+            currentConversation.id,
+          sender_id:
+            currentUser.id,
+          message_type:"text",
+          content:content,
+          is_deleted:false
+        }
+      );
+
+  if(result.error){
+
+    toast(
+      result.error.message
+    );
+
+    return;
+  }
+
+  input.value = "";
+
+  await loadMessages();
+}
+
+
+function closeConversation(){
+
+  currentConversation = null;
+
+  if(currentConversationChannel){
+
+    supabaseClient
+      .removeChannel(
+        currentConversationChannel
+      );
+
+    currentConversationChannel = null;
+  }
+
+  document
+    .getElementById("conversationPanel")
+    .classList.add("hidden");
+}
+
+
+function subscribeConversation(){
+
+  if(currentConversationChannel){
+
+    supabaseClient
+      .removeChannel(
+        currentConversationChannel
+      );
+  }
+
+  currentConversationChannel =
+    supabaseClient
+      .channel(
+        "conversation-" +
+        currentConversation.id
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:"INSERT",
+          schema:"public",
+          table:"conversation_messages",
+          filter:
+            "conversation_id=eq." +
+            currentConversation.id
+        },
+        ()=>{
+          loadMessages();
+        }
+      )
+      .subscribe();
+}
+
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+async function loadProfilePage(){
+
+  if(!currentProfile)
+    await loadProfile();
+
+  const avatar =
+    document.getElementById(
+      "profileAvatar"
+    );
+
+  if(currentProfile.avatar_url){
+
+    avatar.innerHTML =
+      `<img src="${escapeAttr(currentProfile.avatar_url)}">`;
+
+  }else{
+
+    avatar.textContent =
+      (
+        currentProfile.display_name ||
+        "T"
+      )
+        .charAt(0)
+        .toUpperCase();
+  }
+
+  document
+    .getElementById("profileName")
+    .textContent =
+      currentProfile.display_name ||
+      "Track Circle User";
+
+  document
+    .getElementById("profileUsername")
+    .textContent =
+      "@" +
+      (
+        currentProfile.username ||
+        "user"
+      );
+
+  document
+    .getElementById("profileBio")
+    .textContent =
+      currentProfile.bio ||
+      "No bio yet.";
+
+  document
+    .getElementById("editDisplayName")
+    .value =
+      currentProfile.display_name ||
+      "";
+
+  document
+    .getElementById("editUsername")
+    .value =
+      currentProfile.username ||
+      "";
+
+  document
+    .getElementById("editBio")
+    .value =
+      currentProfile.bio ||
+      "";
+
+  const posts =
+    await supabaseClient
+      .from("posts")
+      .select("id",{
+        count:"exact",
+        head:true
+      })
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+  const followers =
+    await supabaseClient
+      .from("follows")
+      .select("follower_id",{
+        count:"exact",
+        head:true
+      })
+      .eq(
+        "following_id",
+        currentUser.id
+      );
+
+  const following =
+    await supabaseClient
+      .from("follows")
+      .select("following_id",{
+        count:"exact",
+        head:true
+      })
+      .eq(
+        "follower_id",
+        currentUser.id
+      );
+
+  document
+    .getElementById("profilePosts")
+    .textContent =
+      posts.count || 0;
+
+  document
+    .getElementById("profileFollowers")
+    .textContent =
+      followers.count || 0;
+
+  document
+    .getElementById("profileFollowing")
+    .textContent =
+      following.count || 0;
+
+  await loadWallet();
+}
+
+
+async function saveProfile(){
+
+  const displayName =
+    document
+      .getElementById("editDisplayName")
+      .value
+      .trim();
+
+  const username =
+    document
+      .getElementById("editUsername")
+      .value
+      .trim()
+      .replace(/^@/,"")
+      .toLowerCase();
+
+  const bio =
+    document
+      .getElementById("editBio")
+      .value
+      .trim();
+
+  const result =
+    await supabaseClient
+      .from("profiles")
+      .update(
+        {
+          display_name:displayName,
+          username,
+          bio,
+          updated_at:new Date().toISOString()
+        }
+      )
+      .eq(
+        "id",
+        currentUser.id
+      )
+      .select()
+      .single();
+
+  if(result.error){
+
+    toast(
+      result.error.message
+    );
+
+    return;
+  }
+
+  currentProfile =
+    result.data;
+
+  toast(
+    "Profile saved."
+  );
+
+  await loadProfilePage();
+  await loadHome();
+}
+
+
+async function uploadProfilePhoto(input){
+
+  const file =
+    input.files?.[0];
+
+  if(!file)
+    return;
+
+  const extension =
+    file.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+  const path =
+    currentUser.id +
+    "/profile-" +
+    Date.now() +
+    "." +
+    extension;
+
+  const upload =
+    await supabaseClient.storage
+      .from("avatar")
+      .upload(
+        path,
+        file,
+        {
+          upsert:true,
+          contentType:file.type
+        }
+      );
+
+  if(upload.error){
+
+    toast(
+      upload.error.message
+    );
+
+    return;
+  }
+
+  const publicUrl =
+    supabaseClient.storage
+      .from("avatar")
+      .getPublicUrl(path);
+
+  const avatarUrl =
+    publicUrl.data.publicUrl;
+
+  const update =
+    await supabaseClient
+      .from("profiles")
+      .update(
+        {
+          avatar_url:avatarUrl,
+          updated_at:new Date().toISOString()
+        }
+      )
+      .eq(
+        "id",
+        currentUser.id
+      );
+
+  if(update.error){
+
+    toast(
+      update.error.message
+    );
+
+    return;
+  }
+
+  currentProfile.avatar_url =
+    avatarUrl;
+
+  toast(
+    "Profile photo updated."
+  );
+
+  await loadProfilePage();
+}
+
+
+/* =========================================================
+   WALLET
+   ========================================================= */
+
+async function loadWallet(){
+
+  const result =
+    await supabaseClient
+      .from("wallets")
+      .select(
+        "available_kobo,pending_kobo,lifetime_received_kobo"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .maybeSingle();
+
+  if(result.error){
+
+    console.warn(
+      "Wallet:",
+      result.error
+    );
+
+    return;
+  }
+
+  const wallet =
+    result.data || {
+      available_kobo:0,
+      pending_kobo:0,
+      lifetime_received_kobo:0
+    };
+
+  document
+    .getElementById("walletAvailable")
+    .textContent =
+      nairaFromKobo(
+        wallet.available_kobo
+      );
+
+  document
+    .getElementById("walletPending")
+    .textContent =
+      nairaFromKobo(
+        wallet.pending_kobo
+      );
+
+  document
+    .getElementById("walletLifetime")
+    .textContent =
+      nairaFromKobo(
+        wallet.lifetime_received_kobo
+      );
+}
+
+
+/* =========================================================
+   REALTIME
+   ========================================================= */
+
+let globalRealtimeChannel = null;
+
+function subscribeToRealtime(){
+
+  if(globalRealtimeChannel){
+
+    supabaseClient
+      .removeChannel(
+        globalRealtimeChannel
+      );
+  }
+
+  globalRealtimeChannel =
+    supabaseClient
+      .channel(
+        "track-circle-global"
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:"*",
+          schema:"public",
+          table:"posts"
+        },
+        ()=>{
+          loadFeed();
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:"*",
+          schema:"public",
+          table:"follows"
+        },
+        ()=>{
+          loadHome();
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:"*",
+          schema:"public",
+          table:"circle_members"
+        },
+        ()=>{
+          loadCircles();
+          loadHome();
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:"*",
+          schema:"public",
+          table:"notifications"
+        },
+        ()=>{
+          loadHome();
+        }
+      )
+      .subscribe();
+}
+
+
+/* =========================================================
+   WEBRTC CALLING
+   =========================================================
+
+   This uses Supabase Realtime Broadcast as the signaling
+   transport.
+
+   No fake call screen is used:
+   the browser requests the actual microphone/camera,
+   creates an RTCPeerConnection, exchanges SDP/ICE,
+   and renders the actual remote stream.
+
+   Calls require HTTPS, which Vercel provides.
+   The user must grant microphone/camera permissions.
+   ========================================================= */
+
+const rtcConfiguration = {
+  iceServers:[
+    {
+      urls:"stun:stun.l.google.com:19302"
+    },
+    {
+      urls:"stun:stun1.l.google.com:19302"
+    }
+  ]
+};
+
+
+async function startCall(type){
+
+  if(!currentConversation){
+
+    toast(
+      "Open a conversation first."
+    );
+
+    return;
+  }
+
+  callType = type;
+
+  try{
+
+    localStream =
+      await navigator.mediaDevices.getUserMedia(
+        {
+          audio:true,
+          video:
+            type === "video"
+        }
+      );
+
+    const overlay =
+      document.getElementById(
+        "callOverlay"
+      );
+
+    overlay.classList.add("show");
+
+    const localVideo =
+      document.getElementById(
+        "localVideo"
+      );
+
+    localVideo.srcObject =
+      localStream;
+
+    const remoteVideo =
+      document.getElementById(
+        "remoteVideo"
+      );
+
+    remoteVideo.srcObject =
+      null;
+
+    callPeer =
+      new RTCPeerConnection(
+        rtcConfiguration
+      );
+
+    localStream
+      .getTracks()
+      .forEach(
+        track=>{
+          callPeer.addTrack(
+            track,
+            localStream
+          );
+        }
+      );
+
+    callPeer.ontrack =
+      event=>{
+
+        if(event.streams?.[0]){
+
+          remoteVideo.srcObject =
+            event.streams[0];
+        }
+      };
+
+    callPeer.onicecandidate =
+      event=>{
+
+        if(
+          event.candidate &&
+          callChannel
+        ){
+
+          callChannel.send(
+            {
+              type:"broadcast",
+              event:"ice",
+              payload:{
+                from:currentUser.id,
+                candidate:event.candidate
+              }
             }
-            mapInstance.invalidateSize();
+          );
         }
+      };
 
-        function toggleLocationSharing() {
-            isLocationActive = !isLocationActive;
-            const stateEl = document.getElementById('home-location-state');
-            const btnEl = document.getElementById('home-location-btn');
-            const badgeEl = document.getElementById('location-status-badge');
-            const profileLoc = document.getElementById('profile-loc-status');
+    await setupCallChannel();
 
-            if (isLocationActive) {
-                if ("geolocation" in navigator) {
-                    locationWatcherId = navigator.geolocation.watchPosition(
-                        async (position) => {
-                            const lat = position.coords.latitude;
-                            const lng = position.coords.longitude;
-                            if (currentUser && supabaseClient) {
-                                await supabaseClient.from('profiles').update({
-                                    latitude: lat,
-                                    longitude: lng,
-                                    location_updated_at: new Date().toISOString()
-                                }).eq('id', currentUser.id);
-                            }
-                            if (mapInstance) {
-                                mapInstance.setView([lat, lng], 15);
-                                L.marker([lat, lng]).addTo(mapInstance).bindPopup("You are here").openPopup();
-                            }
-                        },
-                        () => { toast("Geolocation unavailable.", "error"); isLocationActive = false; },
-                        { enableHighAccuracy: true }
-                    );
-                }
-                stateEl.textContent = "● LIVE";
-                stateEl.className = "text-sm font-bold text-mint mt-0.5";
-                btnEl.textContent = "Turn Off";
-                badgeEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span> Location Live';
-                if(profileLoc) { profileLoc.textContent = "Live"; profileLoc.className = "text-sm font-bold text-mint mt-1"; }
-                toast("Location sharing enabled.", "success");
-            } else {
-                if (locationWatcherId !== null) { navigator.geolocation.clearWatch(locationWatcherId); locationWatcherId = null; }
-                stateEl.textContent = "Disabled";
-                stateEl.className = "text-sm font-bold text-yellow-400 mt-0.5";
-                btnEl.textContent = "Turn On";
-                badgeEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500"></span> Location Off';
-                if(profileLoc) { profileLoc.textContent = "Off"; profileLoc.className = "text-sm font-bold text-yellow-400 mt-1"; }
-                toast("Location sharing disabled.", "success");
+    const offer =
+      await callPeer.createOffer();
+
+    await callPeer.setLocalDescription(
+      offer
+    );
+
+    await callChannel.send(
+      {
+        type:"broadcast",
+        event:"offer",
+        payload:{
+          from:currentUser.id,
+          offer
+        }
+      }
+    );
+
+    document
+      .getElementById("callTitle")
+      .textContent =
+        "Calling " +
+        (
+          currentConversation
+            .otherProfile
+            ?.display_name ||
+          "user"
+        );
+
+    document
+      .getElementById("callStatus")
+      .textContent =
+        "Calling...";
+
+  }catch(error){
+
+    console.error(
+      "WebRTC call:",
+      error
+    );
+
+    toast(
+      error.message ||
+      "Microphone/camera permission failed."
+    );
+
+    await endCall();
+  }
+}
+
+
+async function setupCallChannel(){
+
+  if(callChannel){
+
+    supabaseClient
+      .removeChannel(
+        callChannel
+      );
+  }
+
+  callChannel =
+    supabaseClient
+      .channel(
+        "call-" +
+        currentConversation.id
+      )
+      .on(
+        "broadcast",
+        {
+          event:"offer"
+        },
+        async payload=>{
+
+          if(
+            payload.payload?.from ===
+            currentUser.id
+          )
+            return;
+
+          if(!callPeer){
+
+            await prepareIncomingCall();
+          }
+
+          const offer =
+            payload.payload.offer;
+
+          await callPeer.setRemoteDescription(
+            offer
+          );
+
+          const answer =
+            await callPeer.createAnswer();
+
+          await callPeer.setLocalDescription(
+            answer
+          );
+
+          await callChannel.send(
+            {
+              type:"broadcast",
+              event:"answer",
+              payload:{
+                from:currentUser.id,
+                answer
+              }
             }
+          );
+
+          document
+            .getElementById("callOverlay")
+            .classList.add("show");
+
+          document
+            .getElementById("callStatus")
+            .textContent =
+              "Connected";
         }
+      )
+      .on(
+        "broadcast",
+        {
+          event:"answer"
+        },
+        async payload=>{
 
-        function centerMapOnUser() {
-            if (!isLocationActive) { toast("Turn on location sharing first.", "error"); return; }
-            navigator.geolocation.getCurrentPosition((pos) => {
-                if (mapInstance) mapInstance.setView([pos.coords.latitude, pos.coords.longitude], 16);
-            });
+          if(
+            payload.payload?.from ===
+            currentUser.id
+          )
+            return;
+
+          if(callPeer){
+
+            await callPeer.setRemoteDescription(
+              payload.payload.answer
+            );
+
+            document
+              .getElementById("callStatus")
+              .textContent =
+                "Connected";
+          }
         }
+      )
+      .on(
+        "broadcast",
+        {
+          event:"ice"
+        },
+        async payload=>{
 
-        // TRACK FEED (Instagram Style: Post pictures/videos, likes, comments)
-        function openPostModal() { document.getElementById('post-modal').classList.remove('hidden'); }
-        function closePostModal() { document.getElementById('post-modal').classList.add('hidden'); }
+          if(
+            payload.payload?.from ===
+            currentUser.id
+          )
+            return;
 
-        async function submitPost() {
-            const content = document.getElementById('post-content-input').value.trim();
-            const mediaUrl = document.getElementById('post-media-input').value.trim();
-            if (!content) { toast("Write something for your post.", "error"); return; }
+          if(
+            callPeer &&
+            payload.payload.candidate
+          ){
 
-            try {
-                const { error } = await supabaseClient.from('posts').insert({
-                    user_id: currentUser.id,
-                    content: content,
-                    media_url: mediaUrl || null
-                });
-                if (error) throw error;
-                closePostModal();
-                document.getElementById('post-content-input').value = '';
-                document.getElementById('post-media-input').value = '';
-                toast("Published to Track Feed!", "success");
-                loadTrackFeed();
-            } catch (err) {
-                toast(err.message || "Failed to post.", "error");
+            try{
+
+              await callPeer.addIceCandidate(
+                payload.payload.candidate
+              );
+
+            }catch(error){
+
+              console.warn(
+                "ICE:",
+                error
+              );
             }
+          }
         }
+      )
+      .subscribe();
+}
 
-        async function loadTrackFeed() {
-            const container = document.getElementById('track-feed-list');
-            if (!supabaseClient) return;
-            try {
-                const { data, error } = await supabaseClient
-                    .from('posts')
-                    .select('id, content, media_url, created_at, user_id, profiles(display_name, username)')
-                    .order('created_at', { ascending: false })
-                    .limit(10);
 
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    container.innerHTML = data.map(post => `
-                        <div class="glass-card p-4 space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2.5">
-                                    <div class="w-8 h-8 rounded-full bg-mint/20 border border-mint/40 flex items-center justify-center text-mint font-bold text-xs">
-                                        ${(post.profiles?.display_name || 'TC').substring(0,2).toUpperCase()}
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-xs text-textPrimary">${escapeHtml(post.profiles?.display_name || 'User')}</h4>
-                                        <span class="text-[10px] text-mint">@${escapeHtml(post.profiles?.username || 'user')}</span>
-                                    </div>
-                                </div>
-                                <span class="text-[10px] text-textSecondary">${new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                            </div>
-                            <p class="text-xs text-textPrimary leading-relaxed">${escapeHtml(post.content)}</p>
-                            ${post.media_url ? `<div class="rounded-2xl overflow-hidden border border-borderSubtle max-h-60"><img src="${escapeHtml(post.media_url)}" class="w-full h-full object-cover"></div>` : ''}
-                            <div class="flex items-center justify-between pt-2 border-t border-borderSubtle text-xs text-textSecondary">
-                                <button onclick="toast('Liked post!', 'success')" class="hover:text-mint transition flex items-center gap-1.5"><i class="fa-regular fa-heart"><span>0</span></i> Like</button>
-                                <button onclick="toast('Comments open', 'success')" class="hover:text-mint transition flex items-center gap-1.5"><i class="fa-regular fa-comment"></i> Comment</button>
-                                <button onclick="toast('Post link shared!', 'success')" class="hover:text-mint transition flex items-center gap-1.5"><i class="fa-solid fa-share"></i> Share</button>
-                            </div>
-                        </div>
-                    `).join('');
-                } else {
-                    container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">No track posts yet. Tap New Post to share!</div>`;
-                }
-            } catch (err) {
-                container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">Feed is ready for updates.</div>`;
+async function prepareIncomingCall(){
+
+  localStream =
+    await navigator.mediaDevices.getUserMedia(
+      {
+        audio:true,
+        video:
+          callType === "video"
+      }
+    );
+
+  callPeer =
+    new RTCPeerConnection(
+      rtcConfiguration
+    );
+
+  localStream
+    .getTracks()
+    .forEach(
+      track=>{
+        callPeer.addTrack(
+          track,
+          localStream
+        );
+      }
+    );
+
+  document
+    .getElementById("localVideo")
+    .srcObject =
+      localStream;
+
+  callPeer.ontrack =
+    event=>{
+
+      document
+        .getElementById("remoteVideo")
+        .srcObject =
+          event.streams[0];
+    };
+
+  callPeer.onicecandidate =
+    event=>{
+
+      if(
+        event.candidate &&
+        callChannel
+      ){
+
+        callChannel.send(
+          {
+            type:"broadcast",
+            event:"ice",
+            payload:{
+              from:currentUser.id,
+              candidate:event.candidate
             }
+          }
+        );
+      }
+    };
+}
+
+
+function toggleCallMic(){
+
+  if(!localStream)
+    return;
+
+  const tracks =
+    localStream.getAudioTracks();
+
+  callMuted =
+    !callMuted;
+
+  tracks.forEach(
+    track=>{
+      track.enabled =
+        !callMuted;
+    }
+  );
+}
+
+
+function toggleCallCamera(){
+
+  if(!localStream)
+    return;
+
+  const tracks =
+    localStream.getVideoTracks();
+
+  callCameraOff =
+    !callCameraOff;
+
+  tracks.forEach(
+    track=>{
+      track.enabled =
+        !callCameraOff;
+    }
+  );
+}
+
+
+async function endCall(){
+
+  if(localStream){
+
+    localStream
+      .getTracks()
+      .forEach(
+        track=>track.stop()
+      );
+
+    localStream = null;
+  }
+
+  if(callPeer){
+
+    callPeer.close();
+
+    callPeer = null;
+  }
+
+  if(callChannel){
+
+    await supabaseClient
+      .removeChannel(
+        callChannel
+      );
+
+    callChannel = null;
+  }
+
+  document
+    .getElementById("remoteVideo")
+    .srcObject = null;
+
+  document
+    .getElementById("localVideo")
+    .srcObject = null;
+
+  document
+    .getElementById("callOverlay")
+    .classList.remove("show");
+}
+
+
+/* =========================================================
+   REFRESH
+   ========================================================= */
+
+async function refreshApp(){
+
+  try{
+
+    await loadProfile();
+    await loadHome();
+    await loadFeed();
+    await loadCircles();
+    await loadConversations();
+    await loadProfilePage();
+
+  }catch(error){
+
+    console.error(
+      "Refresh:",
+      error
+    );
+  }
+}
+
+
+/* =========================================================
+   STARTUP
+   ========================================================= */
+
+async function start(){
+
+  try{
+
+    const sessionResult =
+      await supabaseClient.auth.getSession();
+
+    if(
+      sessionResult.error
+    ){
+
+      console.error(
+        sessionResult.error
+      );
+
+      return;
+    }
+
+    const session =
+      sessionResult.data.session;
+
+    if(session){
+
+      currentUser =
+        session.user;
+
+      await enterApp();
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "Startup:",
+      error
+    );
+  }
+}
+
+
+supabaseClient.auth.onAuthStateChange(
+  async(event,session)=>{
+
+    if(
+      event === "SIGNED_IN" &&
+      session
+    ){
+
+      currentUser =
+        session.user;
+
+      if(
+        document
+          .getElementById("mainApp")
+          .classList
+          .contains("hidden")
+      ){
+
+        await enterApp();
+      }
+    }
+
+    if(
+      event === "SIGNED_OUT"
+    ){
+
+      currentUser = null;
+      currentProfile = null;
+    }
+  }
+);
+
+
+/* AI ENTER KEY */
+
+document
+  .getElementById("aiInput")
+  .addEventListener(
+    "keydown",
+    event=>{
+
+      if(
+        event.key === "Enter" &&
+        !event.shiftKey
+      ){
+
+        event.preventDefault();
+
+        sendAI();
+      }
+    }
+  );
+
+
+/* MESSAGE ENTER KEY */
+
+document
+  .getElementById("messageInput")
+  .addEventListener(
+    "keydown",
+    event=>{
+
+      if(
+        event.key === "Enter"
+      ){
+
+        event.preventDefault();
+
+        sendMessage();
+      }
+    }
+  );
+
+
+/* CLOSE MODALS BY BACKDROP */
+
+document
+  .querySelectorAll(".modal")
+  .forEach(
+    modal=>{
+
+      modal.addEventListener(
+        "click",
+        event=>{
+
+          if(
+            event.target === modal
+          ){
+
+            modal.classList.remove(
+              "show"
+            );
+          }
         }
+      );
+    }
+  );
 
-        // SNAP-STYLE CALLING LOGIC
-        function startSnapCall(friendName) {
-            document.getElementById('call-username').textContent = friendName;
-            document.getElementById('call-avatar-initials').textContent = friendName.substring(0, 2).toUpperCase();
-            document.getElementById('snap-call-modal').classList.remove('hidden');
-            toast(`Calling ${friendName}...`, "success");
-        }
 
-        function endSnapCall() {
-            document.getElementById('snap-call-modal').classList.add('hidden');
-            toast("Call ended", "error");
-        }
+/* START */
 
-        function toggleCallMute() { toast("Microphone toggled", "success"); }
-        function toggleCallSpeaker() { toast("Audio output toggled", "success"); }
+start();
 
-        // CIRCLES & AI
-        function openCreateCircleModal() { document.getElementById('create-circle-modal').classList.remove('hidden'); }
-        function closeCreateCircleModal() { document.getElementById('create-circle-modal').classList.add('hidden'); }
-        function openJoinCircleModal() { document.getElementById('join-circle-modal').classList.remove('hidden'); }
-        function closeJoinCircleModal() { document.getElementById('join-circle-modal').classList.add('hidden'); }
-
-        async function submitCreateCircle() {
-            const name = document.getElementById('new-circle-name').value.trim();
-            const type = document.getElementById('new-circle-type').value;
-            if (!name) { toast("Circle name required.", "error"); return; }
-            const inviteCode = "TC-" + Math.random().toString(36).substring(2, 7).toUpperCase();
-
-            try {
-                const { data, error } = await supabaseClient.from('circles').insert({ name, type, invite_code: inviteCode, owner_id: currentUser.id }).select().single();
-                if (error) throw error;
-                if (data) await supabaseClient.from('circle_members').insert({ circle_id: data.id, user_id: currentUser.id, role: 'owner' });
-                closeCreateCircleModal();
-                toast(`Circle created! Code: ${inviteCode}`, "success");
-                loadCirclesPreview();
-            } catch (err) { toast(err.message, "error"); }
-        }
-
-        async function submitJoinCircle() {
-            const code = document.getElementById('join-invite-code').value.trim().toUpperCase();
-            if (!code) { toast("Invite code required.", "error"); return; }
-            try {
-                const { data: circle, error: findError } = await supabaseClient.from('circles').select('id, name').eq('invite_code', code).single();
-                if (findError || !circle) throw new Error("Circle not found.");
-                await supabaseClient.from('circle_members').insert({ circle_id: circle.id, user_id: currentUser.id, role: 'member' });
-                closeJoinCircleModal();
-                toast(`Joined ${circle.name}!`, "success");
-                loadCirclesPreview();
-            } catch (err) { toast(err.message, "error"); }
-        }
-
-        async function loadCirclesPreview() {
-            const container = document.getElementById('home-circles-list');
-            if (!supabaseClient || !currentUser) return;
-            try {
-                const { data } = await supabaseClient.from('circle_members').select('circles(id, name, type, invite_code)').eq('user_id', currentUser.id);
-                if (data && data.length > 0) {
-                    container.innerHTML = data.map(item => `
-                        <div class="glass-card p-4 flex items-center justify-between">
-                            <div><h4 class="font-bold text-sm text-textPrimary">${escapeHtml(item.circles.name)}</h4><span class="text-xs text-mint font-medium">${item.circles.type} • Code: ${item.circles.invite_code}</span></div>
-                            <span class="text-xs text-mint font-bold bg-mint/10 px-2.5 py-1 rounded-lg">Active</span>
-                        </div>
-                    `).join('');
-                }
-            } catch (err) { console.warn(err); }
-        }
-
-        async function loadFullCircles() {
-            const container = document.getElementById('circles-full-list');
-            if (!supabaseClient || !currentUser) return;
-            try {
-                const { data } = await supabaseClient.from('circle_members').select('circles(id, name, type, invite_code)').eq('user_id', currentUser.id);
-                if (data && data.length > 0) {
-                    container.innerHTML = data.map(item => `
-                        <div class="glass-card p-4 flex items-center justify-between">
-                            <div><h4 class="font-bold text-sm text-textPrimary">${escapeHtml(item.circles.name)}</h4><p class="text-xs text-textSecondary">Code: <span class="text-mint font-mono font-bold">${item.circles.invite_code}</span></p></div>
-                            <button onclick="navigator.clipboard.writeText('${item.circles.invite_code}'); toast('Copied!', 'success');" class="px-3 py-1.5 glass-card rounded-xl text-xs font-bold text-mint">Copy</button>
-                        </div>
-                    `).join('');
-                } else { container.innerHTML = `<div class="glass-card p-6 text-center text-textSecondary text-xs">No circles found.</div>`; }
-            } catch (err) { container.innerHTML = `<div class="glass-card p-6 text-center text-danger text-xs">Error loading circles.</div>`; }
-        }
-
-        // TRACK CIRCLE AI (Gemini Backend)
-        function openAiModal() { document.getElementById('ai-modal').classList.remove('hidden'); }
-        function closeAiModal() { document.getElementById('ai-modal').classList.add('hidden'); }
-
-        async function sendAI() {
-            const inputEl = document.getElementById('ai-input');
-            const message = inputEl.value.trim();
-            if (!message) return;
-
-            const chatContainer = document.getElementById('ai-chat-messages');
-            chatContainer.innerHTML += `<div class="glass-card p-3.5 text-xs max-w-[85%] ml-auto text-textPrimary border border-skyCyan/30">${escapeHtml(message)}</div>`;
-            inputEl.value = '';
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-
-            const loadingId = 'ai-loading-' + Date.now();
-            chatContainer.innerHTML += `<div id="${loadingId}" class="glass-card p-3.5 text-xs max-w-[85%] text-textSecondary animate-pulse">Track Circle AI is thinking...</div>`;
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-
-            try {
-                const { data, error } = await supabaseClient.functions.invoke("track-circle-ai", {
-                    body: { message: message, history: aiHistory }
-                });
-                document.getElementById(loadingId)?.remove();
-                if (error) throw error;
-                const reply = data?.reply || "No response received.";
-                chatContainer.innerHTML += `<div class="glass-card p-3.5 text-xs max-w-[85%] text-textPrimary border border-skyCyan/20">${escapeHtml(reply)}</div>`;
-                aiHistory.push({ role: 'user', content: message });
-                aiHistory.push({ role: 'assistant', content: reply });
-                if (aiHistory.length > 10) aiHistory = aiHistory.slice(-10);
-            } catch (err) {
-                document.getElementById(loadingId)?.remove();
-                chatContainer.innerHTML += `<div class="glass-card p-3.5 text-xs max-w-[85%] text-danger border border-danger/30">AI unavailable right now. Check Edge Function logs.</div>`;
-            }
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function toast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const el = document.createElement('div');
-            el.className = `pointer-events-auto px-4 py-3 rounded-2xl text-xs font-bold shadow-2xl border backdrop-blur-xl transition duration-300 ${type === 'error' ? 'bg-danger/90 text-textPrimary border-danger' : 'glass-card text-mint border-mint/40 glow-mint'}`;
-            el.textContent = message;
-            container.appendChild(el);
-            setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 3500);
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
-    </script>
-</body>
+</script></body>
 </html>
